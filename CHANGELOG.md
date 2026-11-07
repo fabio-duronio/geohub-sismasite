@@ -2,6 +2,21 @@
 
 ## Non rilasciato
 
+**Stampa A4 per la relazione**
+- Nuovo layout di stampa A4 pensato come allegato: frontespizio con titolo e riferimenti normativi, sezioni numerate (1. Dati del sito, 2. Parametri, 3. Spettri, 4. Inquadramento sismico, 5. Note metodologiche e fonti), tabella dei dati del sito, mappa centrata sul sito con legenda MPS04 a lato e didascalia (Figura 1).
+- Intestazione con sito/commessa e data del calcolo; piè di pagina con riferimento dell'allegato, «pag. x di y» e versione (Chrome/Edge). Nuovo campo «Riferimento dell'allegato» (predefinito «Allegato E1»).
+- Stile da relazione: Arial, testo giustificato, tabelle con bordi sottili e intestazioni colorate; elenchi dei cataloghi in formato compatto.
+- Il pulsante «Stampa / Salva PDF» ridisegna mappa e grafici alla larghezza della pagina A4 e attende il caricamento della mappa prima di aprire la stampa.
+
+**Formato dei numeri e grafici**
+- Virgola decimale in tutti i valori mostrati (tabelle, indicatori, coordinate, assi e suggerimenti dei grafici).
+- Tabella degli stati limite: F_0 con 3 decimali, come nelle altre tabelle e negli indicatori.
+- Asse dei periodi degli spettri con etichette e griglia ogni 0,5 s.
+- Sottotitoli degli spettri con lo stato limite rappresentato (es. «stato limite SLV»).
+
+**Documentazione**
+- README: P_VR degli stati limite riferita alla Tab. 3.2.I delle NTC 2018 (prima indicata per errore come Tab. 2.5.I).
+
 - Immagine di anteprima del link (`assets/og-image.png`) aggiornata con il nuovo indirizzo in minuscolo `fabio-duronio.github.io/geohub-sismasite` (il vecchio indirizzo non viene reindirizzato). Già attiva sul sito pubblicato; entrerà nella prossima release.
 
 ## 1.7.0 — 2026-11-06

@@ -236,23 +236,94 @@
   .scroll-box .data-table{margin:0;}
   .footer-note{text-align:center; color:var(--slate-600); font-size:12px; padding:8px 24px 40px; max-width:1100px; margin:0 auto; line-height:1.6;}
 
-  /* ===== Stampa: tutte le schede, una dopo l'altra ===== */
+  .print-only{display:none;}
+
+  /* ===== Stampa A4: allegato alla relazione =====
+     Le regole di dimensione valgono anche durante la preparazione alla stampa
+     (classe prep-stampa sul body): grafici e mappa vengono ridisegnati alla
+     larghezza utile della pagina A4 (210 − 2×18 mm) prima che il browser
+     generi l'anteprima. Intestazione e piè di pagina sono in @page (vedi
+     stilePagina() nello script). */
+  body.prep-stampa .wrap{max-width:174mm; padding:0; margin:0 auto;}
+  body.prep-stampa .hero{display:block;}
+  body.prep-stampa .side{display:none;}
+  body.prep-stampa .map-card{display:grid; grid-template-columns:minmax(0,1fr) 36mm; gap:0 3mm;}
+  body.prep-stampa #map{min-height:0; height:100mm; flex:none;}
+  body.prep-stampa .tabpanel{padding:0;}
+  body.prep-stampa .grid-2{grid-template-columns:repeat(2,minmax(0,1fr)); gap:6mm;}
+  body.prep-stampa .chart-wrap{height:64mm !important;}
+  body.prep-stampa .kpi-mini{display:none;}
+
+  @page{size:A4 portrait; margin:20mm 18mm 17mm 18mm;}
   @media print{
-    body{background:#fff; font-size:11.5px;}
-    .no-print, .tabs, .leaflet-control-container .hz-ctrl, .leaflet-control-zoom, .lock-ctrl, .leaflet-control-layers{display:none !important;}
-    .wrap{padding:0; max-width:100%; gap:12px;}
+    html, body{background:#fff;}
+    body{font-family:Arial, Helvetica, sans-serif; font-size:9.5pt; line-height:1.35; color:#000;
+      -webkit-print-color-adjust:exact; print-color-adjust:exact;}
+    h1, h2, h3, .num, table.data-table td, .kpi .kpi-value{font-family:Arial, Helvetica, sans-serif;}
+    .print-only{display:block;}
+    .no-print, .topbar, .tabs, .ls-bar, .report-header, .footer-note, .map-foot,
+    .leaflet-control-container, .kpi-mini{display:none !important;}
+    .wrap{max-width:none; padding:0; margin:0; display:block;}
     .hero{display:block;}
     .side{display:none;}
-    .map-card{break-inside:avoid; margin-bottom:12px;}
-    #map{height:260px;}
+    .panel{border:0; border-radius:0; background:transparent; box-shadow:none;}
     .tabpanel[hidden]{display:block !important;}
-    .tabpanel{padding:8px 0; break-before:auto;}
-    .print-title{display:block; font-size:14px; font-weight:700; margin:6px 0 8px; padding-bottom:4px; border-bottom:1.5px solid #333;}
-    .panel{border:1px solid #999; break-inside:avoid; box-shadow:none;}
-    .scroll-box{max-height:none; overflow:visible; border:0;}
-    .kpi-row{grid-template-columns:repeat(6,1fr);}
-    .chart-wrap{height:250px;}
-    .grid-2{grid-template-columns:1fr 1fr;}
+    .tabpanel{padding:0;}
+    #panel-spettri, #panel-inquadramento{break-before:page;}
+    .stack{gap:3mm;}
+    .tabpanel .panel + .panel, .tabpanel .stack > .panel ~ .panel{border-top:0; padding-top:0;}
+    .tabpanel .panel-header{padding:0;}
+
+    /* titoli */
+    .st-testata{border-bottom:1pt solid #1e4e8c; padding-bottom:3mm; margin-bottom:1mm;}
+    .st-allegato{font-size:9pt; font-weight:700; color:#1e4e8c; letter-spacing:.05em; text-transform:uppercase;}
+    .st-titolo{font-size:15pt; font-weight:700; margin:1.5mm 0 1mm; line-height:1.2;}
+    .st-norma{font-size:8.5pt; color:#333;}
+    .print-title{display:block; font-size:11pt; font-weight:700; color:#1e4e8c; margin:5mm 0 2.5mm;
+      padding-bottom:1.2mm; border-bottom:.6pt solid #1e4e8c; break-after:avoid;}
+    .sub-title, .tabpanel .panel-header h2, .st-note h3{font-size:10pt; font-weight:700; color:#000; margin:3mm 0 1.5mm; break-after:avoid;}
+    .sub-title small{font-size:9pt; color:#333;}
+
+    /* testo giustificato */
+    .disclaimer, .alert, .hint, .st-didascalia, .st-note li, .st-avvertenza{text-align:justify;}
+    .disclaimer{background:none; padding:1mm 0 0; margin-top:1.5mm; font-size:8pt; color:#222;}
+    .hint{font-size:8pt; color:#222;}
+    .alert{background:none !important; border:.5pt solid #888; color:#000 !important; font-size:8.5pt; padding:2mm 3mm; break-inside:avoid;}
+    #warnBox{margin-top:3mm;}
+
+    /* tabelle come nelle relazioni: bordi sottili, intestazioni colorate */
+    table.data-table{font-size:8.5pt; border-collapse:collapse; width:100%;}
+    table.data-table th, table.data-table td{padding:1mm 2mm; border:.5pt solid #9aa5b1; text-align:center;
+      white-space:normal !important; color:#000;}
+    table.data-table th:first-child, table.data-table td:first-child{text-align:left;}
+    table.data-table th{background:#dce6f2; font-weight:700; font-size:8.5pt;}
+    table.data-table thead{display:table-header-group;}
+    table.data-table tr{break-inside:avoid;}
+    tr.hl td{background:#f1f5fa;}
+    .scroll-box, .table-scroll{max-height:none; overflow:visible; border:0;}
+    /* elenchi lunghi dei cataloghi: carattere e righe più compatti */
+    .scroll-box table.data-table{font-size:7.5pt;}
+    .scroll-box table.data-table th, .scroll-box table.data-table td{padding:.45mm 1.5mm; line-height:1.2;}
+    .st-note{break-before:page;}
+    .st-dati td{text-align:left !important;}
+    .st-dati td:first-child{width:55mm; background:#dce6f2; font-weight:700;}
+
+    /* mappa con legenda a lato e didascalia */
+    .map-card{display:grid; grid-template-columns:minmax(0,1fr) 36mm; gap:0 3mm; break-inside:avoid; margin-top:4mm;}
+    #map{height:100mm; min-height:0; border:.5pt solid #777;}
+    .st-legenda{font-size:7.5pt; line-height:1.25;}
+    .st-legenda img{display:block; max-width:100%; max-height:90mm; margin-top:1mm;}
+    .st-didascalia{grid-column:1 / -1; font-size:8.5pt; margin-top:1.5mm;}
+
+    /* grafici */
+    .grid-2{grid-template-columns:repeat(2,minmax(0,1fr)); gap:6mm;}
+    .chart-wrap{height:64mm !important; break-inside:avoid;}
+    .legend-note{font-size:8pt; color:#000; padding-top:1mm;}
+
+    /* note metodologiche */
+    .st-note ol, .st-note ul{margin:0 0 2mm; padding-left:5mm;}
+    .st-note li{margin-bottom:1mm;}
+    .st-avvertenza{font-size:8.5pt; margin-top:3mm; padding-top:2mm; border-top:.5pt solid #9aa5b1;}
     a{color:#000; text-decoration:none;}
   }
 </style>
@@ -277,6 +348,17 @@
 </header>
 
 <div class="wrap">
+
+  <!-- ================= SOLO STAMPA: frontespizio e dati del sito ================= -->
+  <div class="print-only st-testata">
+    <div class="st-allegato" id="stAllegato">Allegato E1</div>
+    <h1 class="st-titolo">Pericolosità sismica di base e parametri sismici del sito</h1>
+    <div class="st-norma">D.M. 17/01/2018 (NTC 2018) · Circolare 21/01/2019, n. 7 · Allegati A e B al D.M. 14/01/2008</div>
+  </div>
+  <div class="print-only st-sezione">
+    <h2 class="print-title">1. Dati del sito</h2>
+    <table class="data-table st-dati"><tbody id="stDati"></tbody></table>
+  </div>
 
   <div class="hero">
 
@@ -304,6 +386,10 @@
           <div class="field" style="margin:12px 0 0;">
             <label for="siteName">Nome sito / commessa (facoltativo)</label>
             <input type="text" id="siteName" placeholder="es. Comune di …, località …, comm. 2026/xx">
+          </div>
+          <div class="field" style="margin:10px 0 0;">
+            <label for="allegatoRif">Riferimento dell'allegato (piè di pagina in stampa)</label>
+            <input type="text" id="allegatoRif" value="Allegato E1">
           </div>
         </div>
       </div>
@@ -392,6 +478,8 @@
     <!-- ================= MAPPA ================= -->
     <section class="panel map-card" aria-label="Mappa del sito">
       <div id="map"></div>
+      <div class="print-only st-legenda"><div class="st-legenda-tit" id="stLegendaTit"></div><img id="stLegendaImg" alt=""></div>
+      <div class="print-only st-didascalia" id="stDidascalia"></div>
       <div class="map-foot">
         <span>Carta di pericolosità: INGV, modello MPS04 (Meletti et al., 2006), <a href="https://data.ingv.it/dataset/193" target="_blank" rel="noopener">CC BY 4.0</a> · I parametri sono calcolati dal reticolo di riferimento (Allegato B), non dalla carta.</span>
         <span id="mapLockHint" class="no-print"></span>
@@ -453,7 +541,7 @@
 
     <!-- ---------- Parametri ---------- -->
     <div class="tabpanel" role="tabpanel" id="panel-parametri" aria-labelledby="tab-parametri">
-      <div class="print-title">Parametri</div>
+      <h2 class="print-title">2. Parametri di pericolosità sismica e coefficienti</h2>
       <div class="stack">
         <div>
           <h3 class="sub-title">Parametri di pericolosità sismica per gli stati limite</h3>
@@ -508,11 +596,11 @@
 
     <!-- ---------- Spettri ---------- -->
     <div class="tabpanel" role="tabpanel" id="panel-spettri" aria-labelledby="tab-spettri" hidden>
-      <div class="print-title">Spettri di risposta</div>
+      <h2 class="print-title">3. Spettri di risposta</h2>
       <div class="stack">
         <div class="grid-2">
           <div>
-            <h3 class="sub-title">Spettri di risposta elastici <small>· stato limite selezionato</small></h3>
+            <h3 class="sub-title">Spettri di risposta elastici <small>· stato limite <span class="lsNome">SLV</span></small></h3>
             <div class="chart-toolbar no-print">
               <label for="spectrumMode">Componente</label>
               <select id="spectrumMode">
@@ -537,7 +625,7 @@
         <div>
           <div style="display:flex; flex-wrap:wrap; justify-content:space-between; gap:6px 12px; align-items:baseline;">
             <h3 class="sub-title">Spettri di risposta di progetto S<sub>d</sub>(T)</h3>
-            <div style="font-size:12.5px; color:var(--slate-600);">Stato limite selezionato · q = <span id="designQLabel">–</span></div>
+            <div style="font-size:12.5px; color:var(--slate-600);">Stato limite <span class="lsNome">SLV</span> · q = <span id="designQLabel">–</span></div>
           </div>
           <div class="chart-toolbar no-print">
             <label for="designMode">Componente</label>
@@ -566,7 +654,7 @@
 
     <!-- ---------- Inquadramento ---------- -->
     <div class="tabpanel" role="tabpanel" id="panel-inquadramento" aria-labelledby="tab-inquadramento" hidden>
-      <div class="print-title">Inquadramento sismico del sito</div>
+      <h2 class="print-title">4. Inquadramento sismico del sito</h2>
       <div class="stack">
         <div class="panel">
           <div class="panel-header"><h2>Comune e classificazione sismica</h2></div>
@@ -619,6 +707,41 @@
     </div>
   </section>
 
+  <!-- ================= SOLO STAMPA: note metodologiche e fonti ================= -->
+  <section class="print-only st-note">
+    <h2 class="print-title">5. Note metodologiche e fonti</h2>
+
+    <h3>Metodo di calcolo</h3>
+    <ol>
+      <li><b>Periodo di ritorno.</b> T<sub>R</sub> = −V<sub>R</sub> / ln(1 − P<sub>VR</sub>), con V<sub>R</sub> = V<sub>N</sub>·C<sub>U</sub> (NTC 2018, §2.4.3) e P<sub>VR</sub> pari a 81 %, 63 %, 10 % e 5 % per SLO, SLD, SLV e SLC (NTC 2018, Tab. 3.2.I). T<sub>R</sub> è limitato all'intervallo tabulato 30–2475 anni (Allegato A al D.M. 14/01/2008).</li>
+      <li><b>Coordinate.</b> Le coordinate del sito (WGS84) sono convertite nel datum ED50 del reticolo di riferimento con la trasformazione di Molodensky ridotta (parametri EPSG:1133), con accuratezza dell'ordine di alcuni metri.</li>
+      <li><b>Parametri di pericolosità.</b> a<sub>g</sub>, F<sub>0</sub> e T*<sub>C</sub> sono ricavati dal reticolo dell'Allegato B al D.M. 14/01/2008 secondo l'Allegato A: interpolazione logaritmica in T<sub>R</sub> per i 4 vertici della maglia che contiene il sito, quindi media pesata con l'inverso delle distanze. Per le isole escluse dal reticolo si adottano i valori costanti della Tabella 2 dell'Allegato B.</li>
+      <li><b>Amplificazione.</b> S<sub>S</sub> e C<sub>C</sub> da NTC 2018, Tab. 3.2.IV; S<sub>T</sub> da Tab. 3.2.V; T<sub>C</sub> = C<sub>C</sub>·T*<sub>C</sub>, T<sub>B</sub> = T<sub>C</sub>/3, T<sub>D</sub> = 4·a<sub>g</sub>/g + 1,6 s; η = √(10/(5 + ξ)) ≥ 0,55.</li>
+      <li><b>Spettri elastici.</b> Componente orizzontale secondo il §3.2.3.2.1; componente verticale secondo il §3.2.3.2.2 (F<sub>v</sub> = 1,35·F<sub>0</sub>·(a<sub>g</sub>/g)<sup>0,5</sup>, S<sub>S</sub> = 1, T<sub>B</sub> = 0,05 s, T<sub>C</sub> = 0,15 s, T<sub>D</sub> = 1,0 s). Gli spettri per i 9 periodi di ritorno del reticolo sono riferiti a sottosuolo di categoria A, superficie T1 e ξ = 5 %.</li>
+      <li><b>Spettri di progetto.</b> Per lo SLO lo spettro di progetto coincide con quello elastico (§3.2.3.4). Per SLD, SLV e SLC si sostituisce η con 1/q (§3.2.3.5), con il minimo S<sub>d</sub>(T) ≥ 0,2·a<sub>g</sub> per q &gt; 1; per lo SLD q è limitato a 1,5 (Tab. 7.3.I); per la componente verticale si adotta q = 1,5 (1,0 per lo SLO).</li>
+      <li><b>Coefficienti sismici.</b> a<sub>max</sub> = S<sub>S</sub>·S<sub>T</sub>·a<sub>g</sub>; k<sub>h</sub> = β<sub>s</sub>·a<sub>max</sub>/g e k<sub>v</sub> = ±0,5·k<sub>h</sub>, con β<sub>s</sub> da NTC 2018, Tab. 7.11.I (§7.11.3.5.2). Per a<sub>g</sub> &gt; 0,4 g la tabella non definisce β<sub>s</sub> e i coefficienti non sono calcolati.</li>
+    </ol>
+
+    <h3>Riferimenti normativi</h3>
+    <ul>
+      <li>D.M. 17 gennaio 2018, Aggiornamento delle «Norme tecniche per le costruzioni» (NTC 2018).</li>
+      <li>Circolare 21 gennaio 2019, n. 7 C.S.LL.PP., Istruzioni per l'applicazione dell'«Aggiornamento delle Norme tecniche per le costruzioni» di cui al D.M. 17 gennaio 2018.</li>
+      <li>D.M. 14 gennaio 2008, Allegato A (pericolosità sismica) e Allegato B (tabelle dei parametri spettrali), G.U. n. 29 del 4 febbraio 2008, S.O. n. 30.</li>
+    </ul>
+
+    <h3>Dati e fonti</h3>
+    <ul>
+      <li>Reticolo di riferimento: Ministero delle Infrastrutture e dei Trasporti, Open Data, dataset «Parametri Spettrali Sismici» (Allegato B al D.M. 14/01/2008).</li>
+      <li>Carta di pericolosità in Figura 1: Meletti C., Montaldo V., Stucchi M., Martinelli F. (2006). Database della pericolosità sismica MPS04. INGV, doi:10.13127/sh/mps04/db, CC BY 4.0. Basi cartografiche: © OpenStreetMap contributors (ODbL); © Esri e fornitori.</li>
+      <li>Comuni: ISTAT, Confini delle unità amministrative a fini statistici al 1° gennaio 2026 (versione generalizzata), CC BY 4.0. Classificazione sismica: Dipartimento della Protezione Civile, Classificazione sismica aggiornata a maggio 2025, CC BY 4.0.</li>
+      <li>Eventi strumentali: INGV, servizio FDSN webservices.ingv.it (catalogo ISIDe), CC BY 4.0.</li>
+      <li>Storia sismica: Rovida A., Locati M., Camassi R., Lolli B., Gasperini P., Antonucci A. (eds) (2022). Italian Parametric Earthquake Catalogue (CPTI15), version 4.0. INGV, doi:10.13127/CPTI/CPTI15.4 · Locati M. et al. (2022). Database Macrosismico Italiano (DBMI15), versione 4.0. INGV, doi:10.13127/DBMI/DBMI15.4 · CC BY-SA 4.0.</li>
+      <li>Faglie attive e capaci: ITHACA Working Group (2019). ITHACA (ITaly HAzard from CApable faulting), versione dicembre 2019. ISPRA – Servizio Geologico d'Italia, CC BY 4.0.</li>
+    </ul>
+
+    <p class="st-avvertenza">I valori sono ottenuti con procedura automatica a partire dai dati ufficiali citati. La scelta della categoria di sottosuolo e topografica, della vita nominale, della classe d'uso e del fattore di comportamento, nonché l'impiego dei risultati, restano di competenza del professionista. Elaborato prodotto con <span id="stVersione">SismaSite</span>, software libero (licenza GNU AGPL-3.0) di Fabio Duronio, geologo – github.com/fabio-duronio/geohub-sismasite.</p>
+  </section>
+
 </div>
 
 <div class="footer-note" id="fonti">
@@ -637,7 +760,7 @@
    restano quindi accessibili al resto del codice (es. map.invalidateSize()
    nel gestore di window 'load' più in basso).
 ====================================================================== */
-let map, marker;
+let map, marker, basiMappa = null;
 
 document.addEventListener('DOMContentLoaded', function initMap(){
   if(typeof L === 'undefined'){
@@ -659,6 +782,7 @@ document.addEventListener('DOMContentLoaded', function initMap(){
       attribution:'&copy; Esri, Maxar, Earthstar Geographics', maxZoom:19 })
   };
   basi['Stradale (OpenStreetMap)'].addTo(map);
+  basiMappa = basi;
   L.control.layers(basi, null, {position:'topleft', collapsed:true}).addTo(map);
   L.control.scale({imperial:false, position:'bottomleft'}).addTo(map);
 
@@ -1473,6 +1597,16 @@ function seDesignVertical(T, r, q){
    devono mostrare un messaggio al posto del grafico, senza eccezioni.
 ====================================================================== */
 function chartDisponibile(){ return typeof Chart !== 'undefined'; }
+// valori degli assi con la virgola decimale
+if(chartDisponibile()) Chart.defaults.locale = 'it-IT';
+// Asse dei periodi (passo 0,02 s): etichette e griglia ogni 0,5 s
+function assePeriodo(){
+  const ogni = 25;
+  return { title:{display:true, text:'Periodo T (s)'},
+           ticks:{ autoSkip:false, maxRotation:0,
+                   callback(v, i){ return i % ogni === 0 ? this.getLabelForValue(v).replace(/0$/, '') : ''; } },
+           grid:{ color:(c)=> (c.index % ogni === 0) ? 'rgba(0,0,0,0.1)' : 'transparent' } };
+}
 
 function mostraGraficoNonDisponibile(containerSelector, altezza){
   const canvas = document.querySelector(containerSelector);
@@ -1503,14 +1637,14 @@ function buildSpectrumChart(TArray, hSeries, vSeries, mode){
   if(spectrumChart) spectrumChart.destroy();
   spectrumChart = new Chart(ctx, {
     type:'line',
-    data:{ labels:TArray.map(t=>t.toFixed(2)), datasets },
+    data:{ labels:TArray.map(t=>fmt(t,2)), datasets },
     options:{
       responsive:true, maintainAspectRatio:false,
       animation:{duration:250},
       interaction:{mode:'index', intersect:false},
       plugins:{ legend:{display:false}, tooltip:{callbacks:{title:(items)=>'T = '+items[0].label+' s'}} },
       scales:{
-        x:{ title:{display:true, text:'Periodo T (s)'}, ticks:{maxTicksLimit:12} },
+        x:assePeriodo(),
         y:{ title:{display:true, text:'Accelerazione spettrale S_e (g)'}, beginAtZero:true }
       }
     }
@@ -1613,8 +1747,8 @@ function runCalculation(){
                      distanzaNodo:hz.distanzaNodo, trClampato:hz.trClampato, TRrichiesto:TR};
   });
 
-  lastResults = {lat, lon, latEd:ed.lat, lonEd:ed.lon, VR, VN, CU, soilCat, topoCat, damping, eta, byLS};
-  document.getElementById('edChip').textContent = ed.lat.toFixed(5) + ' · ' + ed.lon.toFixed(5);
+  lastResults = {lat, lon, latEd:ed.lat, lonEd:ed.lon, VR, VN, CU, soilCat, topoCat, damping, eta, byLS, data:new Date()};
+  document.getElementById('edChip').textContent = fmt(ed.lat,5) + ' · ' + fmt(ed.lon,5);
   document.getElementById('comuneChip').textContent = '…';
   renderWarnings();
   updateReportHeader();
@@ -1639,11 +1773,11 @@ function updateReportHeader(){
   const r = lastResults.byLS['SLV'];
 
   document.getElementById('rhSite').textContent = nome || '(non specificato)';
-  document.getElementById('rhDate').textContent = italianDate(new Date());
+  document.getElementById('rhDate').textContent = italianDate(lastResults.data);
   document.getElementById('rhVersion').textContent = APP_VERSION + ' del ' + APP_VERSION_DATE;
   document.getElementById('rhCoords').textContent =
-    lastResults.lat.toFixed(5) + ' N, ' + lastResults.lon.toFixed(5) + ' E (WGS84)  →  ' +
-    lastResults.latEd.toFixed(5) + ' N, ' + lastResults.lonEd.toFixed(5) + ' E (ED50, datum del reticolo)';
+    fmt(lastResults.lat,5) + ' N, ' + fmt(lastResults.lon,5) + ' E (WGS84)  →  ' +
+    fmt(lastResults.latEd,5) + ' N, ' + fmt(lastResults.lonEd,5) + ' E (ED50, datum del reticolo)';
   document.getElementById('rhSource').textContent = r.fonte || 'reticolo di riferimento';
 
   if(r.fonte && r.fonte.indexOf('Tabella 2') >= 0){
@@ -1652,7 +1786,7 @@ function updateReportHeader(){
   } else {
     const sel = interpNodes(lastResults.latEd, lastResults.lonEd);
     document.getElementById('rhNodes').textContent = sel.nodi
-      .map(n=>'ID ' + n.id + ' (' + n.lat.toFixed(4) + ' N, ' + n.lon.toFixed(4) + ' E; '
+      .map(n=>'ID ' + n.id + ' (' + fmt(n.lat,4) + ' N, ' + fmt(n.lon,4) + ' E; '
               + n.d.toFixed(2).replace('.', ',') + ' km)')
       .join('  ·  ') + '  —  criterio: ' + METODO_NODI[sel.metodo];
   }
@@ -1667,7 +1801,7 @@ function renderWarnings(){
   const msgs = [];
   const r = lastResults.byLS['SLV'];
   if(r.fuoriReticolo){
-    msgs.push(`<b>Punto fuori dal reticolo di riferimento.</b> Il nodo più vicino dista ${r.distanzaNodo.toFixed(0)} km: la copertura ufficiale è limitata al territorio nazionale (maglia ≤ 10 km, escluse le isole minori). I valori mostrati sono un'estrapolazione e <b>non sono utilizzabili</b> ai fini delle NTC.`);
+    msgs.push(`<b>Punto fuori dal reticolo di riferimento.</b> Il nodo più vicino dista ${fmt(r.distanzaNodo,0)} km: la copertura ufficiale è limitata al territorio nazionale (maglia ≤ 10 km, escluse le isole minori). I valori mostrati sono un'estrapolazione e <b>non sono utilizzabili</b> ai fini delle NTC.`);
   }
   if(r.metodoNodi === 'vicini' && !r.fuoriReticolo){
     msgs.push(`<b>Sito non contenuto in una maglia completa del reticolo</b> (bordo del reticolo o lacuna lungo la costa). L'interpolazione usa i <b>4 nodi più vicini</b> invece dei vertici di una maglia (Allegato A): verificare i valori, soprattutto in zone ad alto gradiente di pericolosità.`);
@@ -1692,7 +1826,8 @@ function renderWarnings(){
   box.innerHTML = msgs.length ? msgs.map(m=>`<div class="alert alert-warn" style="margin:0 0 10px;">${m}</div>`).join('') : '';
 }
 
-function fmt(v, d=3){ return (isFinite(v) ? v.toFixed(d) : '–'); }
+/* Numeri in formato italiano (virgola decimale), come nelle relazioni */
+function fmt(v, d=3){ return (isFinite(v) ? v.toFixed(d).replace('.', ',') : '–'); }
 
 function renderHazardTable(){
   const tbody = document.getElementById('hazardTableBody');
@@ -1701,7 +1836,7 @@ function renderHazardTable(){
     const r = lastResults.byLS[ls.code];
     const tr = document.createElement('tr');
     if(ls.code==='SLV') tr.classList.add('hl');
-    tr.innerHTML = `<td>${ls.label}</td><td>${(ls.pvr*100).toFixed(0)}%</td><td>${r.TR.toFixed(0)}</td><td>${fmt(r.ag,3)}</td><td>${fmt(r.F0,2)}</td><td>${fmt(r.Tc0,3)}</td>`;
+    tr.innerHTML = `<td>${ls.label}</td><td>${(ls.pvr*100).toFixed(0)}%</td><td>${r.TR.toFixed(0)}</td><td>${fmt(r.ag,3)}</td><td>${fmt(r.F0,3)}</td><td>${fmt(r.Tc0,3)}</td>`;
     tbody.appendChild(tr);
   });
 }
@@ -1733,11 +1868,11 @@ function renderFase1(){
   if(famChart) famChart.destroy();
   famChart = new Chart(document.getElementById('famChart').getContext('2d'), {
     type:'line',
-    data:{ labels:T.map(t=>t.toFixed(2)), datasets },
+    data:{ labels:T.map(t=>fmt(t,2)), datasets },
     options:{ responsive:true, maintainAspectRatio:false, animation:{duration:250},
       interaction:{mode:'index', intersect:false},
       plugins:{ legend:{display:false}, tooltip:{callbacks:{title:(it)=>'T = '+it[0].label+' s'}} },
-      scales:{ x:{ title:{display:true, text:'Periodo T (s)'}, ticks:{maxTicksLimit:12} },
+      scales:{ x:assePeriodo(),
                y:{ title:{display:true, text:'S_e (g) · suolo A, T1'}, beginAtZero:true } } }
   });
   document.getElementById('famLegend').innerHTML = righe.map((x,i)=>
@@ -1760,6 +1895,7 @@ function renderSelectedLS(){
   document.getElementById('kpiKh').textContent = fmt(r.kh, 3);
   document.getElementById('kpiKv').textContent = isFinite(r.kv) ? '±' + fmt(r.kv, 3) : '–';
   document.getElementById('ampliLsLabel').textContent = '· ' + code;
+  document.querySelectorAll('.lsNome').forEach(el=>el.textContent = code);
   document.querySelectorAll('#hazardTableBody tr').forEach((tr,i)=>tr.classList.toggle('hl', LIMIT_STATES[i] && LIMIT_STATES[i].code === code));
   document.querySelectorAll('#lsSeg button').forEach(b=>b.setAttribute('aria-pressed', String(b.dataset.ls === code)));
   hzSeguiSL();
@@ -1845,15 +1981,15 @@ function renderDesignPanel(){
   if(!ctx){ renderDesignTablesOnly(r, q, qv, code, qIn); return; }
   designChart = new Chart(ctx, {
     type:'line',
-    data:{ labels:TArray.map(t=>t.toFixed(2)), datasets },
+    data:{ labels:TArray.map(t=>fmt(t,2)), datasets },
     options:{
       responsive:true, maintainAspectRatio:false, animation:{duration:200},
       interaction:{mode:'index', intersect:false},
       plugins:{ legend:{display:false},
                 tooltip:{callbacks:{ title:(items)=>'T = '+items[0].label+' s',
-                                     label:(it)=>`${it.dataset.label}: ${it.parsed.y.toFixed(4)} g` }} },
+                                     label:(it)=>`${it.dataset.label}: ${fmt(it.parsed.y,4)} g` }} },
       scales:{
-        x:{ title:{display:true, text:'Periodo T (s)'}, ticks:{maxTicksLimit:12} },
+        x:assePeriodo(),
         y:{ title:{display:true, text:'Accelerazione spettrale S_d (g)'}, beginAtZero:true }
       }
     }
@@ -1933,7 +2069,7 @@ function renderLiquefaction(){
     const div = document.createElement('div');
     div.className = 'alert alert-warn';
     div.innerHTML = `<span class="alert-title">Amplificazione topografica attiva (${topoCat})</span>
-      Sito su pendio/rilievo: S<sub>T</sub> = ${computeSt(topoCat).toFixed(2)}. Verificare la stabilita' del pendio in condizioni sismiche (analisi pseudostatica con k<sub>h</sub>, k<sub>v</sub> calcolati, o analisi agli spostamenti secondo Newmark se richiesto).`;
+      Sito su pendio/rilievo: S<sub>T</sub> = ${fmt(computeSt(topoCat),2)}. Verificare la stabilita' del pendio in condizioni sismiche (analisi pseudostatica con k<sub>h</sub>, k<sub>v</sub> calcolati, o analisi agli spostamenti secondo Newmark se richiesto).`;
     box.appendChild(div);
   }
 
@@ -1960,20 +2096,20 @@ function renderLiquefaction(){
   if(omissibileAcc){
     div.className = 'alert alert-ok';
     div.innerHTML = `<span class="alert-title">Verifica a liquefazione omissibile — criterio 1, §7.11.3.4.2</span>
-      a<sub>max</sub> in campo libero = <b>${amax.toFixed(3)} g &lt; 0,10 g</b>: la verifica a liquefazione può essere omessa
+      a<sub>max</sub> in campo libero = <b>${fmt(amax,3)} g &lt; 0,10 g</b>: la verifica a liquefazione può essere omessa
       (NTC 2018, §7.11.3.4.2, condizione 1). Resta comunque da valutare la stabilità del sito nei confronti di altri
       fenomeni (cedimenti, amplificazione locale).`;
   } else if(omissibileFalda){
     div.className = 'alert alert-ok';
     div.innerHTML = `<span class="alert-title">Verifica a liquefazione omissibile — criterio 2, §7.11.3.4.2</span>
-      a<sub>max</sub> = ${amax.toFixed(3)} g e falda a <b>${gw.toFixed(1)} m &gt; 15 m</b> dal piano campagna:
+      a<sub>max</sub> = ${fmt(amax,3)} g e falda a <b>${fmt(gw,1)} m &gt; 15 m</b> dal piano campagna:
       la verifica può essere omessa (NTC 2018, §7.11.3.4.2, condizione 2), <b>a condizione che</b> il piano campagna
       sia sub-orizzontale e le strutture abbiano fondazioni superficiali. Se queste ipotesi non valgono, la verifica è
       comunque necessaria.`;
   } else if(sabbiaSciolta){
     div.className = 'alert alert-danger';
     div.innerHTML = `<span class="alert-title">Verifica a liquefazione NON omissibile: necessario il calcolo di F<sub>S</sub></span>
-      a<sub>max</sub> = ${amax.toFixed(3)} g ≥ 0,10 g e falda a ${gw.toFixed(1)} m ≤ 15 m: nessuno dei criteri di esclusione
+      a<sub>max</sub> = ${fmt(amax,3)} g ≥ 0,10 g e falda a ${fmt(gw,1)} m ≤ 15 m: nessuno dei criteri di esclusione
       1 e 2 è soddisfatto. Con terreno prevalentemente <b>sabbioso sciolto</b> sotto falda ricorrono le condizioni tipiche
       di suscettibilità del §7.11.3.4.3: va <b>calcolato il coefficiente di sicurezza alla liquefazione</b> alle profondità
       dei terreni liquefacibili (metodo storico-empirico tipo Seed &amp; Idriss / Idriss &amp; Boulanger su base CPT/SPT),
@@ -1981,7 +2117,7 @@ function renderLiquefaction(){
   } else {
     div.className = 'alert alert-warn';
     div.innerHTML = `<span class="alert-title">Verifica a liquefazione NON omissibile: approfondimento necessario</span>
-      a<sub>max</sub> = ${amax.toFixed(3)} g ≥ 0,10 g e falda a ${gw.toFixed(1)} m ≤ 15 m: i criteri di esclusione 1 e 2
+      a<sub>max</sub> = ${fmt(amax,3)} g ≥ 0,10 g e falda a ${fmt(gw,1)} m ≤ 15 m: i criteri di esclusione 1 e 2
       non sono soddisfatti. Il terreno indicato (${nomeTerreno}) non è tra i più suscettibili, ma l'esclusione va
       dimostrata con il criterio 3 ((N<sub>1</sub>)<sub>60</sub> &gt; 30 oppure q<sub>c1N</sub> &gt; 180) o con il
       criterio 4 (granulometria esterna ai fusi di Fig. 7.11.1). In assenza di indagini, si procede al calcolo di F<sub>S</sub>.`;
@@ -2422,7 +2558,7 @@ document.getElementById('siteName').addEventListener('input', ()=>{
   document.getElementById('rhSite').textContent =
     (document.getElementById('siteName').value || '').trim() || '(non specificato)';
 });
-document.getElementById('btnPrint').addEventListener('click', ()=>window.print());
+document.getElementById('btnPrint').addEventListener('click', stampaAllegato);
 
 // Barra dello stato limite: i pulsanti pilotano il <select id="lsSelect"> (fonte unica)
 document.querySelectorAll('#lsSeg button').forEach(b=>b.addEventListener('click', ()=>{
@@ -2455,21 +2591,136 @@ TAB_IDS.forEach((k,i)=>{
 });
 document.getElementById('topVersion').textContent = 'v' + APP_VERSION;
 
-// Ridisegna i grafici Chart.js alle dimensioni della vista di stampa prima
-// che il browser generi il PDF, altrimenti i canvas possono restare
-// congelati alla risoluzione dello schermo e apparire tagliati o sfocati.
-window.addEventListener('beforeprint', ()=>{
-  // in stampa compaiono tutte le schede: i grafici vanno ridimensionati
-  document.querySelectorAll('.tabpanel').forEach(p=>p.dataset.wasHidden = p.hidden ? '1' : '');
-  document.querySelectorAll('.tabpanel').forEach(p=>p.hidden = false);
-  [spectrumChart, designChart, famChart].forEach(c=>{ if(c) c.resize(); });
-  if(map) map.invalidateSize();
-});
-window.addEventListener('afterprint', ()=>{
-  document.querySelectorAll('.tabpanel').forEach(p=>{ if(p.dataset.wasHidden === '1') p.hidden = true; });
-  [spectrumChart, designChart, famChart].forEach(c=>{ if(c) c.resize(); });
-  if(map) map.invalidateSize();
-});
+/* ======================================================================
+   STAMPA A4 — allegato alla relazione
+   Il pulsante «Stampa / Salva PDF» prepara la pagina (dati del sito,
+   intestazione e piè di pagina, mappa e grafici alla larghezza A4), attende
+   il caricamento delle tessere della mappa e poi apre la stampa del browser.
+   Con Ctrl+P la preparazione avviene in beforeprint, senza attesa delle
+   tessere.
+====================================================================== */
+let statoStampa = null;   // vista della mappa e dei pannelli prima della stampa
+
+function testoCss(t){ return '"' + String(t).replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/\s+/g, ' ') + '"'; }
+
+function dataBreve(d){ return d.toLocaleDateString('it-IT', {day:'2-digit', month:'2-digit', year:'numeric'}); }
+
+/* Intestazione e piè di pagina: caselle a margine di @page (Chrome, Edge) */
+function stilePagina(){
+  const nome = (document.getElementById('siteName').value || '').trim() || 'Pericolosità sismica di base del sito';
+  const allegato = (document.getElementById('allegatoRif').value || '').trim();
+  const data = 'Data del calcolo: ' + (lastResults && lastResults.data ? dataBreve(lastResults.data) : dataBreve(new Date()));
+  let el = document.getElementById('stilePagina');
+  if(!el){ el = document.createElement('style'); el.id = 'stilePagina'; document.head.appendChild(el); }
+  const font = 'font-family:Arial, Helvetica, sans-serif; font-size:8pt; color:#333;';
+  el.textContent = `@page{
+    @top-left{content:${testoCss(nome)}; ${font} vertical-align:bottom; padding-bottom:2mm;}
+    @top-right{content:${testoCss(data)}; ${font} vertical-align:bottom; padding-bottom:2mm;}
+    @bottom-left{content:${testoCss('SismaSite v' + APP_VERSION + ' · NTC 2018')}; ${font} vertical-align:top; padding-top:2mm;}
+    @bottom-right{content:${testoCss((allegato ? allegato + ' – ' : '') + 'pag. ')} counter(page) " di " counter(pages); ${font} vertical-align:top; padding-top:2mm;}
+  }`;
+}
+
+/* Riga della tabella «Dati del sito» */
+function rigaDato(et, val){ return `<tr><td>${et}</td><td>${val}</td></tr>`; }
+
+function compilaStampa(){
+  stilePagina();
+  const allegato = (document.getElementById('allegatoRif').value || '').trim();
+  document.getElementById('stAllegato').textContent = allegato;
+  document.getElementById('stVersione').textContent = 'SismaSite v' + APP_VERSION + ' (' + APP_VERSION_DATE + ')';
+  const tb = document.getElementById('stDati');
+  if(!lastResults){ tb.innerHTML = rigaDato('Calcolo', 'non ancora eseguito'); return; }
+  const R = lastResults, nome = (document.getElementById('siteName').value || '').trim();
+  const sel = id => { const o = document.getElementById(id); return o.options[o.selectedIndex].text; };
+  const qIn = parseFloat(document.getElementById('qFactor').value);
+  const comune = document.getElementById('comuneChip').textContent;
+  const testo = id => escapeHtml(document.getElementById(id).textContent);
+  tb.innerHTML =
+    (nome ? rigaDato('Sito / commessa', escapeHtml(nome)) : '') +
+    (comune && comune !== '–' && comune !== '…' ? rigaDato('Comune e classificazione sismica', escapeHtml(comune)) : '') +
+    rigaDato('Coordinate WGS84', fmt(R.lat,5) + ' N, ' + fmt(R.lon,5) + ' E') +
+    rigaDato('Coordinate ED50 (datum del reticolo)', fmt(R.latEd,5) + ' N, ' + fmt(R.lonEd,5) + ' E') +
+    rigaDato('Vita nominale V<sub>N</sub> · classe d\'uso', fmt(R.VN,0) + ' anni · ' + escapeHtml(sel('cu'))) +
+    rigaDato('Periodo di riferimento V<sub>R</sub> = V<sub>N</sub>·C<sub>U</sub>', fmt(R.VR, R.VR % 1 ? 1 : 0) + ' anni') +
+    rigaDato('Categoria di sottosuolo', escapeHtml(sel('soilCat'))) +
+    rigaDato('Categoria topografica', escapeHtml(sel('topoCat'))) +
+    rigaDato('Smorzamento ξ · fattore q (SLV, SLC)', fmt(R.damping,1) + ' % · ' + (isFinite(qIn) ? fmt(qIn,1) : '–')) +
+    rigaDato('Fonte dei parametri di pericolosità', testo('rhSource')) +
+    rigaDato('Nodi del reticolo (ID, coordinate ED50, distanza)', testo('rhNodes')) +
+    rigaDato('Data del calcolo · versione', testo('rhDate') + ' · SismaSite v' + APP_VERSION);
+
+  // legenda e didascalia della mappa
+  const tr = MPS04_POE.find(x=>x[0]===hz.poe)[1];
+  const tit = document.getElementById('stLegendaTit'), img = document.getElementById('stLegendaImg');
+  if(hz.attivo){
+    tit.innerHTML = 'a<sub>g</sub> (g) · T<sub>R</sub> ' + tr + ' anni';
+    img.src = hzLegendaUrl(); img.alt = 'Legenda della carta di pericolosità MPS04'; img.style.display = '';
+  } else { tit.textContent = ''; img.removeAttribute('src'); img.style.display = 'none'; }
+  const base = basiMappa && map && map.hasLayer(basiMappa['Satellite (Esri)']) ? 'immagine satellitare © Esri e fornitori' : 'base © OpenStreetMap contributors';
+  document.getElementById('stDidascalia').innerHTML =
+    '<b>Figura 1</b> – Ubicazione del sito (segnaposto) e maglia del reticolo di riferimento utilizzata (tratteggio). ' +
+    (hz.attivo ? 'Sullo sfondo, carta di pericolosità INGV MPS04: a<sub>g</sub> su suolo rigido con probabilità di eccedenza del ' +
+      hz.poe + ' % in 50 anni (T<sub>R</sub> ' + tr + ' anni), ' + (hz.perc === 50 ? 'mediana' : hz.perc + '° percentile') +
+      ' (Meletti et al., 2006; CC BY 4.0). La carta ha valore di inquadramento: i parametri sono calcolati dal reticolo dell\'Allegato B. ' : '') +
+    'Cartografia: ' + base + '.';
+}
+
+function entraStampa(){
+  if(statoStampa) return;
+  compilaStampa();
+  statoStampa = { vista: map ? {c: map.getCenter(), z: map.getZoom()} : null,
+                  nascosti: [...document.querySelectorAll('.tabpanel')].filter(p=>p.hidden) };
+  document.body.classList.add('prep-stampa');
+  statoStampa.nascosti.forEach(p=>p.hidden = false);
+  [spectrumChart, designChart, famChart].forEach(c=>{ if(c){ c.options.devicePixelRatio = 3; c.resize(); } });
+  if(map){
+    map.invalidateSize({animate:false});
+    if(marker) map.setView(marker.getLatLng(), 11, {animate:false});
+  }
+}
+
+function esciStampa(){
+  if(!statoStampa) return;
+  document.body.classList.remove('prep-stampa');
+  statoStampa.nascosti.forEach(p=>p.hidden = true);
+  [spectrumChart, designChart, famChart].forEach(c=>{ if(c){ c.options.devicePixelRatio = undefined; c.resize(); } });
+  if(map){
+    map.invalidateSize({animate:false});
+    if(statoStampa.vista) map.setView(statoStampa.vista.c, statoStampa.vista.z, {animate:false});
+  }
+  statoStampa = null;
+}
+
+/* Attende le tessere della base e della carta di pericolosità (max ~4 s) */
+function attendiTessere(ms){
+  return new Promise(res=>{
+    if(!map) return res();
+    const strati = [];
+    map.eachLayer(l=>{ if(l instanceof L.TileLayer && l.isLoading && l.isLoading()) strati.push(l); });
+    if(!strati.length) return res();
+    let n = strati.length, fatto = false;
+    const fine = ()=>{ if(!fatto){ fatto = true; res(); } };
+    strati.forEach(l=>l.once('load', ()=>{ if(--n === 0) fine(); }));
+    setTimeout(fine, ms);
+  });
+}
+
+async function stampaAllegato(){
+  const btn = document.getElementById('btnPrint');
+  btn.disabled = true; const t = btn.textContent; btn.textContent = 'Preparazione della stampa…';
+  try{
+    entraStampa();
+    await new Promise(r=>setTimeout(r, 150));
+    await attendiTessere(4000);
+  } finally {
+    btn.disabled = false; btn.textContent = t;
+  }
+  window.print();
+}
+
+window.addEventListener('beforeprint', entraStampa);
+window.addEventListener('afterprint', esciStampa);
 
 // calcolo iniziale alla apertura pagina: prima attende il caricamento della griglia
 window.addEventListener('load', async ()=>{
