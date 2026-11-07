@@ -237,6 +237,8 @@
   .footer-note{text-align:center; color:var(--slate-600); font-size:12px; padding:8px 24px 40px; max-width:1100px; margin:0 auto; line-height:1.6;}
 
   .print-only{display:none;}
+  .velo-stampa{position:fixed; inset:0; z-index:5000; background:var(--bg); display:flex; align-items:center; justify-content:center; font-size:15px; color:var(--slate-600);}
+  .velo-stampa[hidden]{display:none;}
 
   /* ===== Stampa A4: allegato alla relazione =====
      Le regole di dimensione valgono anche durante la preparazione alla stampa
@@ -333,6 +335,8 @@
 </style>
 </head>
 <body>
+
+<div id="veloStampa" class="velo-stampa no-print" hidden><div>Preparazione della stampa…</div></div>
 
 <header class="topbar no-print">
   <div class="topbar-inner">
@@ -2683,14 +2687,19 @@ function entraStampa(){
                   nascosti: [...document.querySelectorAll('.tabpanel')].filter(p=>p.hidden) };
   document.body.classList.add('prep-stampa');
   statoStampa.nascosti.forEach(p=>p.hidden = false);
-  [spectrumChart, designChart, famChart].forEach(c=>{ if(c){ c.options.devicePixelRatio = 3; c.resize(); } });
+  [spectrumChart, designChart, famChart].forEach(c=>{ if(c){
+    // nasconde i suggerimenti rimasti aperti (es. dopo un tocco sul telefono)
+    c.setActiveElements([]); if(c.tooltip) c.tooltip.setActiveElements([], {x:0, y:0});
+    c.options.devicePixelRatio = 3; c.resize(); c.update('none'); } });
   if(map){
     map.invalidateSize({animate:false});
-    if(marker) map.setView(marker.getLatLng(), 11, {animate:false});
+    // zoom 10: a scale maggiori i punti della griglia MPS04 compaiono come quadrati separati
+    if(marker) map.setView(marker.getLatLng(), 10, {animate:false});
   }
 }
 
 function esciStampa(){
+  document.getElementById('veloStampa').hidden = true;
   if(!statoStampa) return;
   document.body.classList.remove('prep-stampa');
   statoStampa.nascosti.forEach(p=>p.hidden = true);
@@ -2719,6 +2728,7 @@ function attendiTessere(ms){
 async function stampaAllegato(){
   const btn = document.getElementById('btnPrint');
   btn.disabled = true; const t = btn.textContent; btn.textContent = 'Preparazione della stampa…';
+  document.getElementById('veloStampa').hidden = false;   // copre il ridisegno a larghezza A4
   try{
     entraStampa();
     await new Promise(r=>setTimeout(r, 150));
@@ -2727,9 +2737,12 @@ async function stampaAllegato(){
     btn.disabled = false; btn.textContent = t;
   }
   window.print();
+  setTimeout(()=>{ document.getElementById('veloStampa').hidden = true; }, 60000);
 }
 
 window.addEventListener('beforeprint', entraStampa);
+// se il browser non segnala la fine della stampa, il velo si chiude con un tocco o dopo un minuto
+document.getElementById('veloStampa').addEventListener('click', e=>{ e.currentTarget.hidden = true; });
 window.addEventListener('afterprint', esciStampa);
 
 // calcolo iniziale alla apertura pagina: prima attende il caricamento della griglia

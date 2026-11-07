@@ -8,6 +8,8 @@
 - Stile da relazione: Arial, testo giustificato, tabelle con bordi sottili e intestazioni colorate.
 - Nuova casella «Includi in stampa gli elenchi completi dei cataloghi» (disattivata in partenza): senza la spunta la sezione 4 riporta solo la sintesi di eventi strumentali, storia sismica e terremoti storici; le faglie ITHACA sono sempre elencate. Con la spunta gli elenchi sono stampati per intero in formato compatto.
 - Mappa in stampa a dimensione fissa (135 × 100 mm), centrata sul segnaposto.
+- Mappa in stampa a zoom 10, perché la carta MPS04 risulti continua (a zoom maggiori i punti della griglia compaiono come quadrati separati).
+- Durante la preparazione della stampa un velo copre il ridisegno temporaneo della pagina; i suggerimenti dei grafici rimasti aperti (es. dopo un tocco sul telefono) non vengono più stampati.
 - Il pulsante «Stampa / Salva PDF» ridisegna mappa e grafici alla larghezza della pagina A4 e attende il caricamento della mappa prima di aprire la stampa.
 
 **Formato dei numeri e grafici**
