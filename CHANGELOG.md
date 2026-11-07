@@ -5,7 +5,9 @@
 **Stampa A4 per la relazione**
 - Nuovo layout di stampa A4 pensato come allegato: frontespizio con titolo e riferimenti normativi, sezioni numerate (1. Dati del sito, 2. Parametri, 3. Spettri, 4. Inquadramento sismico, 5. Note metodologiche e fonti), tabella dei dati del sito, mappa centrata sul sito con legenda MPS04 a lato e didascalia (Figura 1).
 - Intestazione con sito/commessa e data del calcolo; piè di pagina con riferimento dell'allegato, «pag. x di y» e versione (Chrome/Edge). Nuovo campo «Riferimento dell'allegato» (predefinito «Allegato E1»).
-- Stile da relazione: Arial, testo giustificato, tabelle con bordi sottili e intestazioni colorate; elenchi dei cataloghi in formato compatto.
+- Stile da relazione: Arial, testo giustificato, tabelle con bordi sottili e intestazioni colorate.
+- Nuova casella «Includi in stampa gli elenchi completi dei cataloghi» (disattivata in partenza): senza la spunta la sezione 4 riporta solo la sintesi di eventi strumentali, storia sismica e terremoti storici; le faglie ITHACA sono sempre elencate. Con la spunta gli elenchi sono stampati per intero in formato compatto.
+- Mappa in stampa a dimensione fissa (135 × 100 mm), centrata sul segnaposto.
 - Il pulsante «Stampa / Salva PDF» ridisegna mappa e grafici alla larghezza della pagina A4 e attende il caricamento della mappa prima di aprire la stampa.
 
 **Formato dei numeri e grafici**
