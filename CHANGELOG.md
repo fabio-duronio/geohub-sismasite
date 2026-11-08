@@ -1,6 +1,12 @@
 # Changelog
 
-## Non rilasciato
+## 1.8.0 — 2026-11-09
+
+Correzione dello spettro verticale, allineamento normativo, stampa A4 per la relazione, riordino del repository. Cambiano due risultati: lo spettro verticale nel primo tratto (0 ≤ T < 0,05 s) e lo spettro di progetto allo SLC, ora elastico (q = 1,0). I parametri di pericolosità non cambiano.
+
+**Riordino del repository** (nessun effetto sui calcoli)
+- File dati in `dati/`, script di conversione in `strumenti/`, script di verifica in `verifiche/`; l'app legge i dati dalla nuova cartella.
+- README ridotto all'essenziale (cosa fa, come si usa, perimetro d'uso, licenza); metodo di calcolo, validazione e note per lo sviluppo spostati in `docs/`, senza modifiche al contenuto.
 
 **Allineamento normativo (NTC 2018)**
 - Spettro elastico verticale, primo tratto (0 ≤ T < T_B): nel termine correttivo della formula [3.2.8] compare F_0 e non F_v. Ora S_ve(0) = a_g·S_T·F_v/F_0; prima risultava pari ad a_g·S_T. A L'Aquila (SLV, B, T1, q = 1,5) S_dv(0) passa da 0,2607 a 0,1797 g; le altre ordinate non cambiano.

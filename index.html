@@ -1157,8 +1157,8 @@ function islandAt(lat, lon){
   return null;
 }
 
-const APP_VERSION = '1.7.0';
-const APP_VERSION_DATE = '2026-11-06';
+const APP_VERSION = '1.8.0';
+const APP_VERSION_DATE = '2026-11-09';
 
 let GRID = null;      // rappresentazione interna unificata: {meta, count, id[], lon[], lat[], ag[t][i], F0[t][i], Tc[t][i]}
 let gridLoadError = null;
@@ -1213,7 +1213,7 @@ function normalizeGrid(raw){
 async function loadGrid(){
   let sourceLabel = null;
   try{
-    const resp = await fetch('grid-data.json', {cache:'no-store'});
+    const resp = await fetch('dati/grid-data.json', {cache:'no-store'});
     if(!resp.ok) throw new Error('HTTP '+resp.status);
     const raw = await resp.json();
     GRID = normalizeGrid(raw);
@@ -1716,7 +1716,7 @@ function runCalculation(){
        quindi non è possibile calcolare i parametri di pericolosità sismica. Il reticolo di riserva interno contiene solo
        ${GRID ? GRID.count : 0} nodi dimostrativi e non è idoneo al calcolo.
        <br>Avvia un server locale nella cartella dell'app (es. <code>python3 -m http.server</code>) e apri la pagina da
-       <code>http://localhost:8000/</code>. Se la pagina è pubblicata online, verifica che <code>grid-data.json</code>
+       <code>http://localhost:8000/</code>. Se la pagina è pubblicata online, verifica che <code>dati/grid-data.json</code>
        sia presente e raggiungibile.</div>`;
     ['kpiS','kpiAmax','kpiKh','kpiKv','kpiTR','kpiAg','kpiF0','kpiTc0','kpiSs','kpiCc'].forEach(id=>{ const e=document.getElementById(id); if(e) e.textContent='–'; });
     ['hazardTableBody','ampliTableBody','liqResult','fase1TableBody'].forEach(id=>{ const e=document.getElementById(id); if(e) e.innerHTML=''; });
@@ -2292,7 +2292,7 @@ async function s2Aggiorna(){
   const {lat, lon} = inqSito;
   box.innerHTML = '<div class="hint">Individuazione del comune…</div>';
   try{
-    const [CC, CL] = await Promise.all([caricaJSON('comuni-data.json'), caricaJSON('classificazione-data.json')]);
+    const [CC, CL] = await Promise.all([caricaJSON('dati/comuni-data.json'), caricaJSON('dati/classificazione-data.json')]);
     if(!inqSito || inqSito.lat !== lat || inqSito.lon !== lon) return;
     const {dentro, vicini} = individuaComune(lat, lon, CC.comuni);
     let candidati = [];
@@ -2445,7 +2445,7 @@ const INT_DESCR = {   // codici non numerici, DBMI15 v4.0 (INGV, Tab. 3)
 let S4 = null;   // dati + indice osservazioni per località
 async function s4Dati(){
   if(S4) return S4;
-  const D = await caricaJSON('storica-data.json');
+  const D = await caricaJSON('dati/storica-data.json');
   const perLoc = Array.from({length: D.pl.id.length}, ()=>[]);
   D.obs.pl.forEach((p,k)=>perLoc[p].push(k));
   S4 = {D, perLoc};

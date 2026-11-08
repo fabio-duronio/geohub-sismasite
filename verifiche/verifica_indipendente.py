@@ -23,7 +23,7 @@ dai testi normativi. Siti delle isole (Tabella 2) esclusi dal confronto
 indipendente: sono già verificati in verifica_numeri.py (Cagliari).
 
 Requisiti: pip install playwright && python3 -m playwright install chromium
-Uso:       python3 verifica_indipendente.py [--n 40] [--verbose]
+Uso:       python3 verifiche/verifica_indipendente.py [--n 40] [--verbose]
 """
 import argparse
 import json
@@ -34,7 +34,7 @@ import sys
 
 from verifica_numeri import free_port, serve
 
-QUI = os.path.dirname(os.path.abspath(__file__))
+QUI = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))   # radice del repository
 TOLL_REL = 1e-4   # 0,01 %: le due implementazioni devono coincidere numericamente
 
 # ---------------------------------------------------------------- datum
@@ -177,7 +177,7 @@ def main():
         print("Playwright non installato: pip install playwright && python3 -m playwright install chromium")
         return 2
 
-    ret = Reticolo(os.path.join(QUI, "grid-data.json"))
+    ret = Reticolo(os.path.join(QUI, "dati", "grid-data.json"))
     siti = CITTA + siti_casuali(ret, args.n)
     port = free_port()
     httpd = serve(QUI, port)
