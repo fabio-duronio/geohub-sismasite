@@ -1,6 +1,8 @@
 # Changelog
 
-## Non rilasciato
+## 1.8.0 — 2026-11-09
+
+Correzione dello spettro verticale, allineamento normativo, stampa A4 per la relazione, riordino del repository. Cambia un valore calcolato: S_dv e S_ve nel primo tratto (0 ≤ T < 0,05 s) dello spettro verticale (vedi sotto).
 
 **Riordino del repository** (nessun effetto sui calcoli)
 - File dati in `dati/`, script di conversione in `strumenti/`, script di verifica in `verifiche/`; l'app legge i dati dalla nuova cartella.
