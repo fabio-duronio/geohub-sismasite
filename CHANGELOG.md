@@ -2,7 +2,7 @@
 
 ## 1.8.0 — 2026-11-09
 
-Correzione dello spettro verticale, allineamento normativo, stampa A4 per la relazione, riordino del repository. Cambia un valore calcolato: S_dv e S_ve nel primo tratto (0 ≤ T < 0,05 s) dello spettro verticale (vedi sotto).
+Correzione dello spettro verticale, allineamento normativo, stampa A4 per la relazione, riordino del repository. Cambiano due risultati: lo spettro verticale nel primo tratto (0 ≤ T < 0,05 s) e lo spettro di progetto allo SLC, ora elastico (q = 1,0). I parametri di pericolosità non cambiano.
 
 **Riordino del repository** (nessun effetto sui calcoli)
 - File dati in `dati/`, script di conversione in `strumenti/`, script di verifica in `verifiche/`; l'app legge i dati dalla nuova cartella.
