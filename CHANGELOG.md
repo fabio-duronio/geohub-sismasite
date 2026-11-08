@@ -2,6 +2,24 @@
 
 ## Non rilasciato
 
+**Allineamento normativo (NTC 2018)**
+- Spettro elastico verticale, primo tratto (0 ≤ T < T_B): nel termine correttivo della formula [3.2.8] compare F_0 e non F_v. Ora S_ve(0) = a_g·S_T·F_v/F_0; prima risultava pari ad a_g·S_T. A L'Aquila (SLV, B, T1, q = 1,5) S_dv(0) passa da 0,2607 a 0,1797 g; le altre ordinate non cambiano.
+- SLC: l'analisi lineare con spettro ridotto da q non è prevista (Tab. 7.3.I); lo spettro di progetto SLC è quello elastico (q = 1,0). Il campo q vale ora per il solo SLV.
+- Componente verticale: q_v = min(q; 1,5) per SLD e SLV (§7.3.1: 1,5 salvo analisi specifiche, 1,0 per i ponti), q_v = 1,0 per SLO e SLC. La nota dello spettro richiama la soglia a_g ≥ 0,15 g (§3.2.3.1, §7.2.2) e segnala quando il minimo 0,2·a_g supera lo spettro elastico verticale.
+- Categorie di sottosuolo e topografiche con le definizioni delle Tab. 3.2.II e 3.2.III (la E non è più descritta come «strato alluvionale»; T3 e T4 si distinguono per l'inclinazione), con note su risposta sismica locale e su S_T massimo in sommità/cresta.
+- T_R limitato all'intervallo 30–2475 anni: tabella e indicatore mostrano il valore adottato nel calcolo (con il teorico tra parentesi o in nota).
+- k_h, k_v: precisato che riguardano le verifiche pseudostatiche dei pendii agli SLU (Tab. 7.11.I) e non i muri di sostegno; per SLO e SLD è indicato anche il valore allo SLV.
+- Screening di liquefazione: a_max indicato come riferito allo SLV; messaggio specifico per i terreni a grana fine.
+
+**Grafici e testi**
+- Asse dei periodi in scala lineare reale (0–4 s) e linee senza smussatura: gli spigoli in T_B, T_C, T_D sono disegnati nei punti esatti.
+- Refusi: «Operatività», «stabilità».
+- Note metodologiche di stampa aggiornate di conseguenza.
+
+**Strumenti**
+- `convert_grid.py`: default di `build_columnar` a 4 decimali, come l'opzione da riga di comando.
+- `verifica_numeri.py`: S_dv(0), SLC, q verticale con q = 1,0, T_R limitato in tabella. `verifica_indipendente.py`: controllo indipendente dello spettro verticale [3.2.8].
+
 **Stampa A4 per la relazione**
 - Nuovo layout di stampa A4 pensato come allegato: frontespizio con titolo e riferimenti normativi, sezioni numerate (1. Dati del sito, 2. Parametri, 3. Spettri, 4. Inquadramento sismico, 5. Note metodologiche e fonti), tabella dei dati del sito, mappa centrata sul sito con legenda MPS04 a lato e didascalia (Figura 1).
 - Intestazione con sito/commessa e data del calcolo; piè di pagina con riferimento dell'allegato, «pag. x di y» e versione (Chrome/Edge). Nuovo campo «Riferimento dell'allegato» (predefinito «Allegato E1»).

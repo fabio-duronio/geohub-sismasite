@@ -49,6 +49,7 @@ RIFERIMENTI_SD = {
     "plateau": 0.4738,    # a_g*S*F0/q
     "sd1": 0.2233,        # S_d(1,0 s)
     "sdv_plateau": 0.2831,
+    "sdv0": 0.1797,       # S_dv(T=0) = a_g*S_T*F_v/F_0, formula [3.2.8] (F_0 a denominatore)
     "minimo": 0.05214,    # 0,2*a_g
 }
 
@@ -154,6 +155,7 @@ def main():
                 "         plateau: seDesignHorizontal(r.Tb + 1e-6, r, q),"
                 "         sd1: seDesignHorizontal(1.0, r, q),"
                 "         sdv_plateau: seDesignVertical(0.10, r, 1.5),"
+                "         sdv0: seDesignVertical(1e-9, r, 1.5),"
                 "         minimo: 0.2 * r.ag}; }"
             )
             print("Spettro di progetto S_d (L'Aquila, SLV, q=1,5):")
@@ -184,6 +186,27 @@ def main():
                 fallimenti.append(f"SLD: q mostrato = {q_sld!r} (atteso 1,5 con avviso)")
             else:
                 print("  [OK ] SLD limita q a 1,5 e lo segnala (q inserito 3,9)")
+            # SLC: analisi lineare con q non prevista (Tab. 7.3.I) -> spettro elastico
+            page.select_option("#lsSelect", "SLC")
+            page.wait_for_timeout(300)
+            page.evaluate("() => renderDesignPanel()")
+            q_slc = page.evaluate("() => document.getElementById('designQLabel').textContent").strip()
+            nota_slc = page.evaluate("() => document.getElementById('designNote').innerText")
+            if q_slc != "1,0" or "Tab. 7.3.I" not in nota_slc:
+                fallimenti.append(f"SLC: q mostrato = {q_slc!r} (atteso 1,0 con richiamo alla Tab. 7.3.I)")
+            else:
+                print("  [OK ] SLC restituisce lo spettro elastico, q = 1,0 (q inserito 3,9)")
+
+            # SLV con q = 1,0: anche la componente verticale non è ridotta
+            page.fill("#qFactor", "1.0")
+            page.select_option("#lsSelect", "SLV")
+            page.wait_for_timeout(300)
+            page.evaluate("() => renderDesignPanel()")
+            qv_slv = page.evaluate("() => document.querySelector('#designTableBody tr td:nth-child(3)').textContent").strip()
+            if qv_slv != "1,0":
+                fallimenti.append(f"SLV con q = 1,0: q verticale = {qv_slv!r}, atteso 1,0")
+            else:
+                print("  [OK ] SLV con q = 1,0: q verticale = 1,0")
             page.fill("#qFactor", "1.5")
 
             # V_R: nessun minimo di 35 anni (NTC 2018). V_N = 10, C_U = 0,7 -> V_R = 7, T_R(SLV) = 66,4 anni
@@ -195,6 +218,11 @@ def main():
                 fallimenti.append(f"V_R = 7 anni: T_R(SLV) = {tr_slv:.1f} (atteso 66,4, nessun minimo) o avviso mancante")
             else:
                 print("  [OK ] V_R senza minimo di 35 anni (NTC 2018), con nota esplicativa")
+            tr_slo_tab = page.evaluate("() => document.querySelector('#hazardTableBody tr td:nth-child(3)').textContent").strip()
+            if not tr_slo_tab.startswith("30"):
+                fallimenti.append(f"V_R = 7 anni: T_R(SLO) in tabella = {tr_slo_tab!r}, atteso il valore adottato 30")
+            else:
+                print(f"  [OK ] T_R(SLO) limitato mostrato in tabella: {tr_slo_tab}")
 
             if errori_js:
                 fallimenti.append(f"errori JavaScript: {errori_js[:3]}")

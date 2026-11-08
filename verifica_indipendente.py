@@ -238,6 +238,29 @@ def main():
             else:
                 print("[2] SLO: S_d = S_e anche dove S_e < 0,2·a_g (minimo non applicato)")
 
+            # --- 2b. spettro elastico verticale, formula [3.2.8] NTC 2018 (F_0 a denominatore nel primo tratto)
+            def sve_py(T, ag, F0, eta, St):
+                Fv = 1.35 * F0 * ag ** 0.5
+                TB, TC, TD = 0.05, 0.15, 1.0
+                if T < TB:
+                    return ag * St * eta * Fv * (T / TB + 1 / (eta * F0) * (1 - T / TB))
+                if T < TC:
+                    return ag * St * eta * Fv
+                if T < TD:
+                    return ag * St * eta * Fv * TC / T
+                return ag * St * eta * Fv * TC * TD / T ** 2
+            casi = [(0.261, 2.364, 1.0, 1.0), (0.12, 2.5, 0.8819, 1.2), (0.05, 2.6, 1.0, 1.4), (0.35, 2.4, 1 / 1.5, 1.0)]
+            Tv = [0.0, 0.025, 0.05, 0.10, 0.15, 0.50, 1.0, 2.0, 4.0]
+            sc_v = 0.0
+            for ag, F0, eta, St in casi:
+                app = page.evaluate(f"() => {Tv}.map(T => seVertical(T, {ag}, {F0}, {eta}, {St}))")
+                for T, va in zip(Tv, app):
+                    vb = sve_py(T, ag, F0, eta, St)
+                    sc_v = max(sc_v, abs(va - vb))
+                    if abs(va - vb) > 1e-12:
+                        fall.append(f"S_ve(T={T}) ag={ag}: app={va:.6f} indip={vb:.6f}")
+            print(f"[2b] Spettro verticale [3.2.8]: {len(casi)} casi x {len(Tv)} periodi, scarto massimo {sc_v:.1e} g")
+
             # --- 3. T*_C minimo del reticolo non alterato dal clamp
             i_min = min(range(len(ret.id)), key=lambda i: ret.Tc[0][i])
             tc_app = page.evaluate(f"() => hazardAtTR({ret.lat[i_min]}, {ret.lon[i_min]}, 30).Tc0")

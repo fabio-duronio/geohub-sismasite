@@ -428,21 +428,23 @@
           <div class="field">
             <label for="soilCat">Categoria di sottosuolo</label>
             <select id="soilCat">
-              <option value="A">A — Ammassi rocciosi / suoli molto rigidi</option>
-              <option value="B" selected>B — Rocce tenere e depositi molto addensati</option>
-              <option value="C">C — Depositi mediamente addensati</option>
-              <option value="D">D — Depositi scarsamente addensati</option>
-              <option value="E">E — Strato alluvionale su substrato rigido</option>
+              <option value="A">A — Ammassi rocciosi o terreni molto rigidi (Vs,eq &gt; 800 m/s)</option>
+              <option value="B" selected>B — Rocce tenere e depositi molto addensati/consistenti (360–800 m/s)</option>
+              <option value="C">C — Depositi mediamente addensati/consistenti (180–360 m/s, H &gt; 30 m)</option>
+              <option value="D">D — Depositi scarsamente addensati/consistenti (100–180 m/s, H &gt; 30 m)</option>
+              <option value="E">E — Terreni di tipo C o D con substrato entro 30 m (H ≤ 30 m)</option>
             </select>
+            <div class="hint" style="margin-top:4px;">NTC 2018, §3.2.2 e Tab. 3.2.II. Per stratigrafie non riconducibili alle categorie della tabella l'approccio semplificato non è ammesso: è richiesta un'analisi specifica di risposta sismica locale (§3.2.2).</div>
           </div>
           <div class="field">
             <label for="topoCat">Categoria topografica</label>
             <select id="topoCat">
-              <option value="T1" selected>T1 — Superficie pianeggiante (i &lt; 15°)</option>
-              <option value="T2">T2 — Pendio (i &gt; 15°)</option>
-              <option value="T3">T3 — Rilievo con larghezza in cresta modesta</option>
-              <option value="T4">T4 — Rilievo con larghezza in cresta molto modesta</option>
+              <option value="T1" selected>T1 — Superficie pianeggiante, pendii e rilievi isolati (i ≤ 15°)</option>
+              <option value="T2">T2 — Pendii con inclinazione media i &gt; 15°</option>
+              <option value="T3">T3 — Rilievi con larghezza in cresta molto minore che alla base (15° ≤ i ≤ 30°)</option>
+              <option value="T4">T4 — Rilievi con larghezza in cresta molto minore che alla base (i &gt; 30°)</option>
             </select>
+            <div class="hint" style="margin-top:4px;">NTC 2018, Tab. 3.2.III: configurazioni prevalentemente bidimensionali di altezza maggiore di 30 m (§3.2.2). S<sub>T</sub> (Tab. 3.2.V) è il valore massimo, in sommità del pendio o in cresta del rilievo; decresce linearmente con l'altezza fino a 1,0 alla base (§3.2.3.2.1).</div>
           </div>
           <div class="field-row">
             <div class="field">
@@ -450,11 +452,11 @@
               <input type="number" id="damping" value="5" min="1" max="30" step="0.5">
             </div>
             <div class="field">
-              <label for="qFactor">Fattore q (SLV, SLC)</label>
+              <label for="qFactor">Fattore q (SLV)</label>
               <input type="number" id="qFactor" value="1.5" min="1" max="6" step="0.1">
             </div>
           </div>
-          <div class="hint" style="margin-top:-4px;">q per SLV e SLC (Tab. 7.3.I: dissipativo q ≥ 1,5, non dissipativo q ≤ 1,5). Applicato automaticamente: SLO q = 1,0 · SLD q = min(q; 1,5).</div>
+          <div class="hint" style="margin-top:-4px;">q per lo SLV (Tab. 7.3.I: dissipativo q ≥ 1,5; non dissipativo 1,0 ≤ q ≤ 1,5). Applicato automaticamente: SLO q = 1,0 · SLD q = min(q; 1,5) · SLC q = 1,0 (spettro elastico).</div>
         </div>
       </div>
 
@@ -595,7 +597,7 @@
 
         <div>
           <h3 class="sub-title">Screening pendii e liquefazione</h3>
-          <div class="hint" style="margin:0 0 10px;">I coefficienti k<sub>h</sub>, k<sub>v</sub> (β<sub>s</sub> da NTC 2018, Tab. 7.11.I) e lo screening di liquefazione sono destinati a essere trasferiti in future app GeoHub dedicate (in progetto).</div>
+          <div class="hint" style="margin:0 0 10px;">k<sub>h</sub> = β<sub>s</sub>·a<sub>max</sub>/g e k<sub>v</sub> = ±0,5·k<sub>h</sub>, con β<sub>s</sub> da NTC 2018, Tab. 7.11.I (§7.11.3.5.2): coefficienti per le verifiche pseudostatiche di stabilità dei pendii agli stati limite ultimi. Non valgono per i muri di sostegno, per i quali il §7.11.6.2.1 fissa coefficienti propri. I coefficienti e lo screening di liquefazione sono destinati a future app GeoHub dedicate (in progetto).</div>
           <table class="data-table">
             <tr><td>Categoria topografica</td><td id="outTopo">–</td></tr>
             <tr><td>Coefficiente sismico orizzontale k<sub>h</sub></td><td id="outKh2">–</td></tr>
@@ -729,10 +731,10 @@
       <li><b>Periodo di ritorno.</b> T<sub>R</sub> = −V<sub>R</sub> / ln(1 − P<sub>VR</sub>), con V<sub>R</sub> = V<sub>N</sub>·C<sub>U</sub> (NTC 2018, §2.4.3) e P<sub>VR</sub> pari a 81 %, 63 %, 10 % e 5 % per SLO, SLD, SLV e SLC (NTC 2018, Tab. 3.2.I). T<sub>R</sub> è limitato all'intervallo tabulato 30–2475 anni (Allegato A al D.M. 14/01/2008).</li>
       <li><b>Coordinate.</b> Le coordinate del sito (WGS84) sono convertite nel datum ED50 del reticolo di riferimento con la trasformazione di Molodensky ridotta (parametri EPSG:1133), con accuratezza dell'ordine di alcuni metri.</li>
       <li><b>Parametri di pericolosità.</b> a<sub>g</sub>, F<sub>0</sub> e T*<sub>C</sub> sono ricavati dal reticolo dell'Allegato B al D.M. 14/01/2008 secondo l'Allegato A: interpolazione logaritmica in T<sub>R</sub> per i 4 vertici della maglia che contiene il sito, quindi media pesata con l'inverso delle distanze. Per le isole escluse dal reticolo si adottano i valori costanti della Tabella 2 dell'Allegato B.</li>
-      <li><b>Amplificazione.</b> S<sub>S</sub> e C<sub>C</sub> da NTC 2018, Tab. 3.2.IV; S<sub>T</sub> da Tab. 3.2.V; T<sub>C</sub> = C<sub>C</sub>·T*<sub>C</sub>, T<sub>B</sub> = T<sub>C</sub>/3, T<sub>D</sub> = 4·a<sub>g</sub>/g + 1,6 s; η = √(10/(5 + ξ)) ≥ 0,55.</li>
-      <li><b>Spettri elastici.</b> Componente orizzontale secondo il §3.2.3.2.1; componente verticale secondo il §3.2.3.2.2 (F<sub>v</sub> = 1,35·F<sub>0</sub>·(a<sub>g</sub>/g)<sup>0,5</sup>, S<sub>S</sub> = 1, T<sub>B</sub> = 0,05 s, T<sub>C</sub> = 0,15 s, T<sub>D</sub> = 1,0 s). Gli spettri per i 9 periodi di ritorno del reticolo sono riferiti a sottosuolo di categoria A, superficie T1 e ξ = 5 %.</li>
-      <li><b>Spettri di progetto.</b> Per lo SLO lo spettro di progetto coincide con quello elastico (§3.2.3.4). Per SLD, SLV e SLC si sostituisce η con 1/q (§3.2.3.5), con il minimo S<sub>d</sub>(T) ≥ 0,2·a<sub>g</sub> per q &gt; 1; per lo SLD q è limitato a 1,5 (Tab. 7.3.I); per la componente verticale si adotta q = 1,5 (1,0 per lo SLO).</li>
-      <li><b>Coefficienti sismici.</b> a<sub>max</sub> = S<sub>S</sub>·S<sub>T</sub>·a<sub>g</sub>; k<sub>h</sub> = β<sub>s</sub>·a<sub>max</sub>/g e k<sub>v</sub> = ±0,5·k<sub>h</sub>, con β<sub>s</sub> da NTC 2018, Tab. 7.11.I (§7.11.3.5.2). Per a<sub>g</sub> &gt; 0,4 g la tabella non definisce β<sub>s</sub> e i coefficienti non sono calcolati.</li>
+      <li><b>Amplificazione.</b> S<sub>S</sub> e C<sub>C</sub> da NTC 2018, Tab. 3.2.IV; S<sub>T</sub> da Tab. 3.2.V, assunto pari al valore massimo, in sommità del pendio o in cresta del rilievo (configurazioni prevalentemente bidimensionali di altezza maggiore di 30 m, §3.2.2; decremento lineare fino a 1,0 alla base, §3.2.3.2.1); T<sub>C</sub> = C<sub>C</sub>·T*<sub>C</sub>, T<sub>B</sub> = T<sub>C</sub>/3, T<sub>D</sub> = 4·a<sub>g</sub>/g + 1,6 s; η = √(10/(5 + ξ)) ≥ 0,55.</li>
+      <li><b>Spettri elastici.</b> Componente orizzontale secondo il §3.2.3.2.1, formula [3.2.2]; componente verticale secondo il §3.2.3.2.2, formule [3.2.8] e [3.2.9] (F<sub>v</sub> = 1,35·F<sub>0</sub>·(a<sub>g</sub>/g)<sup>0,5</sup>, S<sub>S</sub> = 1, T<sub>B</sub> = 0,05 s, T<sub>C</sub> = 0,15 s, T<sub>D</sub> = 1,0 s; nel primo tratto compare 1/(η·F<sub>0</sub>), per cui S<sub>ve</sub>(0) = a<sub>g</sub>·S<sub>T</sub>·F<sub>v</sub>/F<sub>0</sub>). Gli spettri per i 9 periodi di ritorno del reticolo sono riferiti a sottosuolo di categoria A, superficie T1 e ξ = 5 %.</li>
+      <li><b>Spettri di progetto.</b> Per lo SLO lo spettro di progetto coincide con quello elastico (§3.2.3.4). Per SLD e SLV si sostituisce η con 1/q (§3.2.3.5), con il minimo S<sub>d</sub>(T) ≥ 0,2·a<sub>g</sub> per q &gt; 1; per lo SLD q è limitato a 1,5. Per lo SLC l'analisi lineare con q non è prevista (Tab. 7.3.I): è riportato lo spettro elastico (q = 1,0). Per la componente verticale q = 1,5 salvo analisi specifiche (§7.3.1; q = 1,0 per i ponti), non superiore al q orizzontale adottato; la componente verticale va considerata nei casi del §7.2.2 e per a<sub>g</sub> ≥ 0,15 g (§3.2.3.1).</li>
+      <li><b>Coefficienti sismici.</b> a<sub>max</sub> = S<sub>S</sub>·S<sub>T</sub>·a<sub>g</sub>; k<sub>h</sub> = β<sub>s</sub>·a<sub>max</sub>/g e k<sub>v</sub> = ±0,5·k<sub>h</sub>, con β<sub>s</sub> da NTC 2018, Tab. 7.11.I (§7.11.3.5.2), per le verifiche pseudostatiche di stabilità dei pendii agli stati limite ultimi; non si applicano ai muri di sostegno (§7.11.6.2.1). Per a<sub>g</sub> &gt; 0,4 g la tabella non definisce β<sub>s</sub> e i coefficienti non sono calcolati.</li>
     </ol>
 
     <h3>Riferimenti normativi</h3>
@@ -1461,7 +1463,7 @@ function hazardAtTR(lat, lon, TR, latW, lonW){
       F0 : logInterp(isl.tab.F0[i], isl.tab.F0[i+1], TR1, TR2, TRc),
       Tc0: logInterp(isl.tab.Tc[i], isl.tab.Tc[i+1], TR1, TR2, TRc),
       fonte:'Allegato B, Tabella 2 (isole) — ' + isl.nome,
-      fuoriReticolo:false, trClampato
+      fuoriReticolo:false, trClampato, TRadottato:TRc
     };
   }
 
@@ -1491,7 +1493,7 @@ function hazardAtTR(lat, lon, TR, latW, lonW){
     metodoNodi: selectNodes(lat, lon).metodo,
     fuoriReticolo: dmin > 15,
     distanzaNodo: dmin,
-    trClampato
+    trClampato, TRadottato:TRc
   };
 }
 
@@ -1499,7 +1501,7 @@ function hazardAtTR(lat, lon, TR, latW, lonW){
    3. TEMPI DI RITORNO E COEFFICIENTI NTC 2018
 ====================================================================== */
 const LIMIT_STATES = [
-  {code:'SLO', label:'SLO — Operativita\'', pvr:0.81},
+  {code:'SLO', label:'SLO — Operatività', pvr:0.81},
   {code:'SLD', label:'SLD — Danno', pvr:0.63},
   {code:'SLV', label:'SLV — Salvaguardia vita', pvr:0.10},
   {code:'SLC', label:'SLC — Collasso', pvr:0.05},
@@ -1543,12 +1545,16 @@ function seHorizontal(T, ag, S, F0, Tb, Tc, Td, eta){
    ATTENZIONE: per la componente verticale Ss = 1,0 per qualunque categoria di
    sottosuolo, mentre St resta quello della Tab. 3.2.V (condizioni topografiche).
    La versione precedente passava S = Ss,orizz * St (o S=1), sovrastimando lo
-   spettro verticale dal +20% al +50%. */
+   spettro verticale dal +20% al +50%.
+   Primo tratto (0 ≤ T < T_B), formula [3.2.8] delle NTC 2018: nel termine
+   1/(η·F_0)·(1 − T/T_B) a denominatore compare F_0 (non F_v), per cui
+   S_ve(0) = a_g·S_T·F_v/F_0. Fino alla v1.7.0 era usato F_v, che dava
+   S_ve(0) = a_g·S_T, cioè l'accelerazione verticale di picco pari all'orizzontale. */
 function seVertical(T, ag, F0, eta, St){
   const Fv = 1.35*F0*Math.pow(ag,0.5);
   const S = (St===undefined ? 1.0 : St);   // Ss = 1,0 ; St da Tab. 3.2.V
   const TbV=0.05, TcV=0.15, TdV=1.0;
-  if(T < TbV) return ag*S*eta*Fv*(T/TbV + (1/(eta*Fv))*(1-T/TbV));
+  if(T < TbV) return ag*S*eta*Fv*(T/TbV + (1/(eta*F0))*(1-T/TbV));
   if(T < TcV) return ag*S*eta*Fv;
   if(T < TdV) return ag*S*eta*Fv*(TcV/T);
   return ag*S*eta*Fv*(TcV*TdV/(T*T));
@@ -1576,13 +1582,23 @@ const Q_VERTICALE = 1.5;   // componente verticale: q = 1,5 in assenza di analis
 /* SLD (§7.3, Tab. 7.3.I): nell'analisi lineare lo spettro allo SLD può essere
    ridotto al più con q = 1,5. Un q da SLV (es. 3,9) non va mai applicato allo
    SLD: si limita il valore e lo si segnala. */
+/* SLC (Tab. 7.3.I): l'analisi lineare con spettro ridotto da q non è prevista
+   (colonne dell'analisi lineare «---»): allo SLC si restituisce lo spettro
+   elastico, q = 1,0, per entrambe le componenti. */
 const Q_MAX_SLD = 1.5;
 function qAdottato(codeQ, qInput){
-  if(codeQ === 'SLO') return 1.0;
+  if(codeQ === 'SLO' || codeQ === 'SLC') return 1.0;
   if(codeQ === 'SLD') return Math.min(qInput, Q_MAX_SLD);
   return qInput;
 }
-function qVerticaleAdottato(codeQ){ return codeQ === 'SLO' ? 1.0 : Q_VERTICALE; }
+/* Componente verticale (§7.3.1): q = 1,5 salvo analisi specifiche (ponti: q = 1).
+   Scelta cautelativa dell'app: q verticale non superiore al q orizzontale
+   adottato, così con q = 1,0 (es. ponti, strutture non dissipative) neppure la
+   componente verticale viene ridotta. */
+function qVerticaleAdottato(codeQ, qOrizz){
+  if(codeQ === 'SLO' || codeQ === 'SLC') return 1.0;
+  return Math.min(isFinite(qOrizz) ? qOrizz : Q_VERTICALE, Q_VERTICALE);
+}
 
 /* Minimo S_d(T) ≥ 0,2·a_g (§3.2.3.5): vale per gli spettri di progetto ridotti
    con il fattore q. Con q = 1 (sempre per lo SLO, §3.2.3.4) lo spettro di
@@ -1612,14 +1628,21 @@ function seDesignVertical(T, r, q){
 function chartDisponibile(){ return typeof Chart !== 'undefined'; }
 // valori degli assi con la virgola decimale
 if(chartDisponibile()) Chart.defaults.locale = 'it-IT';
-// Asse dei periodi (passo 0,02 s): etichette e griglia ogni 0,5 s
+// Asse dei periodi in scala lineare reale, 0–4 s, etichette ogni 0,5 s
 function assePeriodo(){
-  const ogni = 25;
-  return { title:{display:true, text:'Periodo T (s)'},
-           ticks:{ autoSkip:false, maxRotation:0,
-                   callback(v, i){ return i % ogni === 0 ? this.getLabelForValue(v).replace(/0$/, '') : ''; } },
-           grid:{ color:(c)=> (c.index % ogni === 0) ? 'rgba(0,0,0,0.1)' : 'transparent' } };
+  return { type:'linear', min:0, max:4.0, title:{display:true, text:'Periodo T (s)'},
+           ticks:{ stepSize:0.5, maxRotation:0, callback:(v)=>Number(v).toFixed(1).replace('.', ',') } };
 }
+/* Periodi dei grafici: griglia regolare 0–4 s (passo 0,02 s) più i periodi
+   caratteristici esatti, così gli spigoli in T_B, T_C, T_D sono disegnati
+   esattamente (anche T_B = 0,05 s dello spettro verticale). */
+function periodiSpettro(extra){
+  const T = [];
+  for(let k=0; k<=200; k++) T.push(k*0.02);
+  (extra || []).forEach(t=>{ if(isFinite(t) && t >= 0 && t <= 4.0) T.push(t); });
+  return [...new Set(T.map(t=>Math.round(t*1e6)/1e6))].sort((a,b)=>a-b);
+}
+const punti = (T, Y)=>T.map((t,i)=>({x:t, y:Y[i]}));
 
 function mostraGraficoNonDisponibile(containerSelector, altezza){
   const canvas = document.querySelector(containerSelector);
@@ -1642,20 +1665,20 @@ function buildSpectrumChart(TArray, hSeries, vSeries, mode){
   const ctx = document.getElementById('spectrumChart').getContext('2d');
   const datasets = [];
   if(mode==='both' || mode==='h'){
-    datasets.push({label:'Se orizzontale (g)', data:hSeries, borderColor:'#2f7dd6', backgroundColor:'transparent', borderWidth:2, pointRadius:0, tension:0.15});
+    datasets.push({label:'Se orizzontale (g)', data:punti(TArray, hSeries), borderColor:'#2f7dd6', backgroundColor:'transparent', borderWidth:2, pointRadius:0, tension:0});
   }
   if(mode==='both' || mode==='v'){
-    datasets.push({label:'Sve verticale (g)', data:vSeries, borderColor:'#b5501a', backgroundColor:'transparent', borderWidth:2, pointRadius:0, tension:0.15});
+    datasets.push({label:'Sve verticale (g)', data:punti(TArray, vSeries), borderColor:'#b5501a', backgroundColor:'transparent', borderWidth:2, pointRadius:0, tension:0});
   }
   if(spectrumChart) spectrumChart.destroy();
   spectrumChart = new Chart(ctx, {
     type:'line',
-    data:{ labels:TArray.map(t=>fmt(t,2)), datasets },
+    data:{ datasets },
     options:{
       responsive:true, maintainAspectRatio:false,
       animation:{duration:250},
       interaction:{mode:'index', intersect:false},
-      plugins:{ legend:{display:false}, tooltip:{callbacks:{title:(items)=>'T = '+items[0].label+' s'}} },
+      plugins:{ legend:{display:false}, tooltip:{callbacks:{title:(items)=>'T = '+fmt(items[0].parsed.x,2)+' s'}} },
       scales:{
         x:assePeriodo(),
         y:{ title:{display:true, text:'Accelerazione spettrale S_e (g)'}, beginAtZero:true }
@@ -1757,7 +1780,7 @@ function runCalculation(){
 
     byLS[ls.code] = {TR, betaS:betam, betaFuoriTabella:(agg > 0.4), ag:agg, F0:hz.F0, Tc0:hz.Tc0, Ss, St, Cc, Tc, Tb, Td, S, amax, kh, kv, eta,
                      fonte:hz.fonte, metodoNodi:hz.metodoNodi, fuoriReticolo:hz.fuoriReticolo,
-                     distanzaNodo:hz.distanzaNodo, trClampato:hz.trClampato, TRrichiesto:TR};
+                     distanzaNodo:hz.distanzaNodo, trClampato:hz.trClampato, TRrichiesto:TR, TRadottato:hz.TRadottato};
   });
 
   lastResults = {lat, lon, latEd:ed.lat, lonEd:ed.lon, VR, VN, CU, soilCat, topoCat, damping, eta, byLS, data:new Date()};
@@ -1849,7 +1872,7 @@ function renderHazardTable(){
     const r = lastResults.byLS[ls.code];
     const tr = document.createElement('tr');
     if(ls.code==='SLV') tr.classList.add('hl');
-    tr.innerHTML = `<td>${ls.label}</td><td>${(ls.pvr*100).toFixed(0)}%</td><td>${r.TR.toFixed(0)}</td><td>${fmt(r.ag,3)}</td><td>${fmt(r.F0,3)}</td><td>${fmt(r.Tc0,3)}</td>`;
+    tr.innerHTML = `<td>${ls.label}</td><td>${(ls.pvr*100).toFixed(0)}%</td><td>${r.trClampato ? r.TRadottato.toFixed(0) + ' <small style="color:var(--slate-500);">(teor. ' + r.TR.toFixed(0) + ')</small>' : r.TR.toFixed(0)}</td><td>${fmt(r.ag,3)}</td><td>${fmt(r.F0,3)}</td><td>${fmt(r.Tc0,3)}</td>`;
     tbody.appendChild(tr);
   });
 }
@@ -1872,19 +1895,19 @@ function renderFase1(){
   L.fase1 = righe;
 
   if(!chartDisponibile()){ mostraGraficoNonDisponibile('#famChart', 260); return; }
-  const T = []; for(let t=0; t<=4.0001; t+=0.02) T.push(t);
+  const T = periodiSpettro([].concat(...righe.map(x=>[x.Tc0/3, x.Tc0, 4*x.ag + 1.6])));
   const datasets = righe.map((x,i)=>{
     const Tc = x.Tc0, Tb = Tc/3, Td = 4*x.ag + 1.6;   // suolo A: C_C = 1, S = 1
-    return {label:'T_R ' + x.TR + ' anni', data:T.map(t=>seHorizontal(t, x.ag, 1, x.F0, Tb, Tc, Td, 1)),
+    return {label:'T_R ' + x.TR + ' anni', data:T.map(t=>({x:t, y:seHorizontal(t, x.ag, 1, x.F0, Tb, Tc, Td, 1)})),
             borderColor:FAM_COLORI[i], backgroundColor:'transparent', borderWidth: x.TR===475 ? 2.6 : 1.8, pointRadius:0, tension:0};
   });
   if(famChart) famChart.destroy();
   famChart = new Chart(document.getElementById('famChart').getContext('2d'), {
     type:'line',
-    data:{ labels:T.map(t=>fmt(t,2)), datasets },
+    data:{ datasets },
     options:{ responsive:true, maintainAspectRatio:false, animation:{duration:250},
       interaction:{mode:'index', intersect:false},
-      plugins:{ legend:{display:false}, tooltip:{callbacks:{title:(it)=>'T = '+it[0].label+' s'}} },
+      plugins:{ legend:{display:false}, tooltip:{callbacks:{title:(it)=>'T = '+fmt(it[0].parsed.x,2)+' s'}} },
       scales:{ x:assePeriodo(),
                y:{ title:{display:true, text:'S_e (g) · suolo A, T1'}, beginAtZero:true } } }
   });
@@ -1897,7 +1920,11 @@ function renderSelectedLS(){
   const code = document.getElementById('lsSelect').value;
   const r = lastResults.byLS[code];
 
-  document.getElementById('kpiTR').textContent = r.TR.toFixed(0);
+  const kTR = document.getElementById('kpiTR');
+  if(r.trClampato){
+    kTR.textContent = r.TRadottato.toFixed(0) + '*';
+    kTR.title = 'Periodo di ritorno teorico ' + r.TR.toFixed(0) + ' anni, limitato all\'intervallo tabulato 30–2475 anni (Allegato A)';
+  } else { kTR.textContent = r.TR.toFixed(0); kTR.removeAttribute('title'); }
   document.getElementById('kpiAg').textContent = fmt(r.ag, 3);
   document.getElementById('kpiF0').textContent = fmt(r.F0, 3);
   document.getElementById('kpiTc0').textContent = fmt(r.Tc0, 3);
@@ -1925,20 +1952,15 @@ function renderSelectedLS(){
   `;
 
   document.getElementById('outTopo').textContent = lastResults.topoCat;
-  document.getElementById('outKh2').textContent = fmt(r.kh,3);
+  const khSLV = lastResults.byLS['SLV'].kh;
+  document.getElementById('outKh2').innerHTML = fmt(r.kh,3) + ((code === 'SLO' || code === 'SLD')
+    ? ` <small style="color:var(--slate-500);">(Tab. 7.11.I riferita agli SLU; allo SLV k<sub>h</sub> = ${fmt(khSLV,3)})</small>` : '');
   document.getElementById('outKv2').textContent = isFinite(r.kv) ? '±' + fmt(r.kv,3) : '–';
 
   // costruzione spettro
-  const Tmax = 4.0;
-  const step = 0.02;
-  const TArray = [];
-  const hSeries = [];
-  const vSeries = [];
-  for(let T=0; T<=Tmax+1e-9; T+=step){
-    TArray.push(T);
-    hSeries.push(seHorizontal(T, r.ag, r.S, r.F0, r.Tb, r.Tc, r.Td, r.eta));
-    vSeries.push(seVertical(T, r.ag, r.F0, r.eta, r.St));
-  }
+  const TArray = periodiSpettro([r.Tb, r.Tc, r.Td, 0.05, 0.15, 1.0]);
+  const hSeries = TArray.map(T=>seHorizontal(T, r.ag, r.S, r.F0, r.Tb, r.Tc, r.Td, r.eta));
+  const vSeries = TArray.map(T=>seVertical(T, r.ag, r.F0, r.eta, r.St));
   const mode = document.getElementById('spectrumMode').value;
   buildSpectrumChart(TArray, hSeries, vSeries, mode);
   renderDesignPanel();
@@ -1958,33 +1980,29 @@ function renderDesignPanel(){
   if(!isFinite(qIn) || qIn < 1) qIn = 1.0;
   if(qIn > 6) qIn = 6;
   const q  = qAdottato(code, qIn);
-  const qv = qVerticaleAdottato(code);
+  const qv = qVerticaleAdottato(code, q);
 
   document.getElementById('designQLabel').textContent = q.toFixed(1).replace('.', ',');
 
   // --- serie di dati ---
-  const Tmax = 4.0, step = 0.02;
-  const TArray = [], seH = [], sdH = [], seV = [], sdV = [];
-  for(let T=0; T<=Tmax+1e-9; T+=step){
-    TArray.push(T);
-    seH.push(seHorizontal(T, r.ag, r.S, r.F0, r.Tb, r.Tc, r.Td, r.eta));
-    sdH.push(seDesignHorizontal(T, r, q));
-    seV.push(seVertical(T, r.ag, r.F0, r.eta, r.St));
-    sdV.push(seDesignVertical(T, r, qv));
-  }
+  const TArray = periodiSpettro([r.Tb, r.Tc, r.Td, 0.05, 0.15, 1.0]);
+  const seH = TArray.map(T=>seHorizontal(T, r.ag, r.S, r.F0, r.Tb, r.Tc, r.Td, r.eta));
+  const sdH = TArray.map(T=>seDesignHorizontal(T, r, q));
+  const seV = TArray.map(T=>seVertical(T, r.ag, r.F0, r.eta, r.St));
+  const sdV = TArray.map(T=>seDesignVertical(T, r, qv));
 
   const mode = document.getElementById('designMode').value;
   const datasets = [];
   if(mode==='both' || mode==='h'){
-    datasets.push({label:'S_e orizzontale (elastico)', data:seH, borderColor:'#9ec2e8',
+    datasets.push({label:'S_e orizzontale (elastico)', data:punti(TArray, seH), borderColor:'#9ec2e8',
                    borderDash:[5,4], backgroundColor:'transparent', borderWidth:1.5, pointRadius:0});
-    datasets.push({label:'S_d orizzontale (progetto)', data:sdH, borderColor:'#1f5fab',
+    datasets.push({label:'S_d orizzontale (progetto)', data:punti(TArray, sdH), borderColor:'#1f5fab',
                    backgroundColor:'transparent', borderWidth:2.4, pointRadius:0});
   }
   if(mode==='both' || mode==='v'){
-    datasets.push({label:'S_ve verticale (elastico)', data:seV, borderColor:'#e0b393',
+    datasets.push({label:'S_ve verticale (elastico)', data:punti(TArray, seV), borderColor:'#e0b393',
                    borderDash:[5,4], backgroundColor:'transparent', borderWidth:1.5, pointRadius:0});
-    datasets.push({label:'S_dv verticale (progetto)', data:sdV, borderColor:'#b5501a',
+    datasets.push({label:'S_dv verticale (progetto)', data:punti(TArray, sdV), borderColor:'#b5501a',
                    backgroundColor:'transparent', borderWidth:2.4, pointRadius:0});
   }
 
@@ -1994,12 +2012,12 @@ function renderDesignPanel(){
   if(!ctx){ renderDesignTablesOnly(r, q, qv, code, qIn); return; }
   designChart = new Chart(ctx, {
     type:'line',
-    data:{ labels:TArray.map(t=>fmt(t,2)), datasets },
+    data:{ datasets },
     options:{
       responsive:true, maintainAspectRatio:false, animation:{duration:200},
       interaction:{mode:'index', intersect:false},
       plugins:{ legend:{display:false},
-                tooltip:{callbacks:{ title:(items)=>'T = '+items[0].label+' s',
+                tooltip:{callbacks:{ title:(items)=>'T = '+fmt(items[0].parsed.x,2)+' s',
                                      label:(it)=>`${it.dataset.label}: ${fmt(it.parsed.y,4)} g` }} },
       scales:{
         x:assePeriodo(),
@@ -2045,16 +2063,20 @@ function renderDesignTablesOnly(r, q, qv, code, qIn){
   `;
 
   // --- nota metodologica ---
-  let nota;
+  const v1 = (x)=>x.toFixed(1).replace('.', ',');
+  let nota = '';
   if(code === 'SLO'){
     nota = `<b>SLO (§3.2.3.4):</b> lo spettro di progetto coincide con quello elastico, per entrambe le componenti
             (q = 1,0 indipendentemente dal valore inserito).`;
+  } else if(code === 'SLC'){
+    nota = `<b>SLC (Tab. 7.3.I):</b> l'analisi lineare con spettro ridotto dal fattore q non è prevista allo SLC.
+            È restituito lo spettro elastico, con q = 1,0 per entrambe le componenti (per esempio come riferimento per le
+            analisi non lineari, §7.3.4).`;
   } else {
-    nota = '';
     if(code === 'SLD' && qIn > Q_MAX_SLD + 1e-9){
       nota = `<div class="alert alert-warn" style="margin:0 0 8px;"><span class="alert-title">q limitato a 1,5 per lo SLD</span>
-              Il valore inserito (q = ${qIn.toFixed(1).replace('.', ',')}) supera il limite per lo stato limite di danno
-              (§7.3, Tab. 7.3.I): lo spettro SLD è calcolato con <b>q = 1,5</b>. Il valore inserito resta applicato a SLV e SLC.</div>`;
+              Il valore inserito (q = ${v1(qIn)}) supera il limite per lo stato limite di danno
+              (§7.3, Tab. 7.3.I): lo spettro SLD è calcolato con <b>q = 1,5</b>. Il valore inserito resta applicato allo SLV.</div>`;
     }
     nota += `<b>${code} (§3.2.3.5):</b> le ordinate si ottengono sostituendo η con 1/q nelle formule [3.2.2] e [3.2.8]
             (analisi lineare). Nel primo tratto la riduzione non è una semplice divisione per q, perché η compare anche
@@ -2063,9 +2085,24 @@ function renderDesignTablesOnly(r, q, qv, code, qIn){
   nota += (minimoSdAttivo(q) || minimoSdAttivo(qv))
     ? ` Per gli spettri ridotti con q > 1 è assunto il minimo <b>S<sub>d</sub>(T) ≥ 0,2·a<sub>g</sub></b> (§3.2.3.5).`
     : ` Con q = 1 lo spettro di progetto coincide con l'elastico: il minimo 0,2·a<sub>g</sub> del §3.2.3.5 non si applica.`;
-  nota += ` Per la componente
-            verticale si adotta <b>q = ${qv.toFixed(1).replace('.', ',')}</b> (${code==='SLO' ? 'pari a 1,0 perché per SLO lo spettro di progetto è quello elastico anche per la componente verticale' : 'valore assunto in assenza di analisi specifiche'}).
-            La scelta e la giustificazione di q (Tab. 7.3.I e 7.3.II — q = q₀·K<sub>R</sub>, con K<sub>R</sub> = 0,8 per
+  if(code === 'SLD' || code === 'SLV'){
+    nota += ` Per la componente verticale si adotta <b>q = ${v1(qv)}</b> (§7.3.1: q = 1,5 salvo analisi specifiche,
+            q = 1,0 per i ponti); l'app non adotta per la verticale un q superiore a quello orizzontale.`;
+  }
+  // soglia di applicabilità della componente verticale
+  nota += ` <b>Componente verticale</b> (§3.2.3.1 e §7.2.2): da considerare nei casi indicati al Cap. 7 e per a<sub>g</sub> ≥ 0,15 g;
+            allo ${code} a<sub>g</sub> = ${fmt(r.ag,3)} g ${r.ag >= 0.15 ? '≥' : '&lt;'} 0,15 g.`;
+  // minimo 0,2·a_g oltre lo spettro elastico verticale
+  if(minimoSdAttivo(qv)){
+    let tx = null;
+    for(let T=0.02; T<=4.0+1e-9; T+=0.02){ if(seVertical(T, r.ag, r.F0, r.eta, r.St) < minD){ tx = T; break; } }
+    if(tx !== null){
+      nota += ` <b>Attenzione:</b> per T ≥ ${fmt(tx,2)} s il minimo 0,2·a<sub>g</sub> = ${fmt(minD,4)} g supera lo stesso spettro
+              elastico verticale S<sub>ve</sub>(T): applicato alla lettera, il §3.2.3.5 dà in quel tratto ordinate di progetto
+              maggiori di quelle elastiche.`;
+    }
+  }
+  nota += ` La scelta e la giustificazione di q (Tab. 7.3.I e 7.3.II — q = q₀·K<sub>R</sub>, con K<sub>R</sub> = 0,8 per
             costruzioni non regolari in altezza) e l'impiego dello spettro nelle verifiche restano a carico del progettista.`;
   document.getElementById('designNote').innerHTML = nota;
 }
@@ -2082,7 +2119,7 @@ function renderLiquefaction(){
     const div = document.createElement('div');
     div.className = 'alert alert-warn';
     div.innerHTML = `<span class="alert-title">Amplificazione topografica attiva (${topoCat})</span>
-      Sito su pendio/rilievo: S<sub>T</sub> = ${fmt(computeSt(topoCat),2)}. Verificare la stabilita' del pendio in condizioni sismiche (analisi pseudostatica con k<sub>h</sub>, k<sub>v</sub> calcolati, o analisi agli spostamenti secondo Newmark se richiesto).`;
+      Sito su pendio/rilievo: S<sub>T</sub> = ${fmt(computeSt(topoCat),2)}. Verificare la stabilità del pendio in condizioni sismiche (analisi pseudostatica con k<sub>h</sub>, k<sub>v</sub> calcolati, o analisi agli spostamenti secondo Newmark se richiesto).`;
     box.appendChild(div);
   }
 
@@ -2109,28 +2146,35 @@ function renderLiquefaction(){
   if(omissibileAcc){
     div.className = 'alert alert-ok';
     div.innerHTML = `<span class="alert-title">Verifica a liquefazione omissibile — criterio 1, §7.11.3.4.2</span>
-      a<sub>max</sub> in campo libero = <b>${fmt(amax,3)} g &lt; 0,10 g</b>: la verifica a liquefazione può essere omessa
+      a<sub>max</sub> (SLV) in campo libero = <b>${fmt(amax,3)} g &lt; 0,10 g</b>: la verifica a liquefazione può essere omessa
       (NTC 2018, §7.11.3.4.2, condizione 1). Resta comunque da valutare la stabilità del sito nei confronti di altri
       fenomeni (cedimenti, amplificazione locale).`;
   } else if(omissibileFalda){
     div.className = 'alert alert-ok';
     div.innerHTML = `<span class="alert-title">Verifica a liquefazione omissibile — criterio 2, §7.11.3.4.2</span>
-      a<sub>max</sub> = ${fmt(amax,3)} g e falda a <b>${fmt(gw,1)} m &gt; 15 m</b> dal piano campagna:
+      a<sub>max</sub> (SLV) = ${fmt(amax,3)} g e falda a <b>${fmt(gw,1)} m &gt; 15 m</b> dal piano campagna:
       la verifica può essere omessa (NTC 2018, §7.11.3.4.2, condizione 2), <b>a condizione che</b> il piano campagna
       sia sub-orizzontale e le strutture abbiano fondazioni superficiali. Se queste ipotesi non valgono, la verifica è
       comunque necessaria.`;
   } else if(sabbiaSciolta){
     div.className = 'alert alert-danger';
     div.innerHTML = `<span class="alert-title">Verifica a liquefazione NON omissibile: necessario il calcolo di F<sub>S</sub></span>
-      a<sub>max</sub> = ${fmt(amax,3)} g ≥ 0,10 g e falda a ${fmt(gw,1)} m ≤ 15 m: nessuno dei criteri di esclusione
+      a<sub>max</sub> (SLV) = ${fmt(amax,3)} g ≥ 0,10 g e falda a ${fmt(gw,1)} m ≤ 15 m: nessuno dei criteri di esclusione
       1 e 2 è soddisfatto. Con terreno prevalentemente <b>sabbioso sciolto</b> sotto falda ricorrono le condizioni tipiche
       di suscettibilità del §7.11.3.4.3: va <b>calcolato il coefficiente di sicurezza alla liquefazione</b> alle profondità
       dei terreni liquefacibili (metodo storico-empirico tipo Seed &amp; Idriss / Idriss &amp; Boulanger su base CPT/SPT),
       oppure va dimostrata l'esclusione con i criteri 3 o 4.`;
+  } else if(soilType === 'argilla'){
+    div.className = 'alert alert-warn';
+    div.innerHTML = `<span class="alert-title">Verifica a liquefazione NON omissibile: approfondimento necessario</span>
+      a<sub>max</sub> (SLV) = ${fmt(amax,3)} g ≥ 0,10 g e falda a ${fmt(gw,1)} m ≤ 15 m: i criteri di esclusione 1 e 2
+      non sono soddisfatti. Per terreni prevalentemente a grana fine va accertata, con le indagini, l'assenza di livelli
+      sabbiosi o limoso-sabbiosi saturi intercalati e va caratterizzato il comportamento dei terreni fini (plasticità,
+      granulometria: criterio 4, fusi di Fig. 7.11.1). Se sono presenti livelli granulari saturi, la verifica si estende a questi.`;
   } else {
     div.className = 'alert alert-warn';
     div.innerHTML = `<span class="alert-title">Verifica a liquefazione NON omissibile: approfondimento necessario</span>
-      a<sub>max</sub> = ${fmt(amax,3)} g ≥ 0,10 g e falda a ${fmt(gw,1)} m ≤ 15 m: i criteri di esclusione 1 e 2
+      a<sub>max</sub> (SLV) = ${fmt(amax,3)} g ≥ 0,10 g e falda a ${fmt(gw,1)} m ≤ 15 m: i criteri di esclusione 1 e 2
       non sono soddisfatti. Il terreno indicato (${nomeTerreno}) non è tra i più suscettibili, ma l'esclusione va
       dimostrata con il criterio 3 ((N<sub>1</sub>)<sub>60</sub> &gt; 30 oppure q<sub>c1N</sub> &gt; 180) o con il
       criterio 4 (granulometria esterna ai fusi di Fig. 7.11.1). In assenza di indagini, si procede al calcolo di F<sub>S</sub>.`;
@@ -2658,7 +2702,7 @@ function compilaStampa(){
     rigaDato('Periodo di riferimento V<sub>R</sub> = V<sub>N</sub>·C<sub>U</sub>', fmt(R.VR, R.VR % 1 ? 1 : 0) + ' anni') +
     rigaDato('Categoria di sottosuolo', escapeHtml(sel('soilCat'))) +
     rigaDato('Categoria topografica', escapeHtml(sel('topoCat'))) +
-    rigaDato('Smorzamento ξ · fattore q (SLV, SLC)', fmt(R.damping,1) + ' % · ' + (isFinite(qIn) ? fmt(qIn,1) : '–')) +
+    rigaDato('Smorzamento ξ · fattore q (SLV)', fmt(R.damping,1) + ' % · ' + (isFinite(qIn) ? fmt(qIn,1) : '–')) +
     rigaDato('Fonte dei parametri di pericolosità', testo('rhSource')) +
     rigaDato('Nodi del reticolo (ID, coordinate ED50, distanza)', testo('rhNodes')) +
     rigaDato('Data del calcolo · versione', testo('rhDate') + ' · SismaSite v' + APP_VERSION);

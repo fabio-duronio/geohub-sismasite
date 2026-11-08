@@ -329,7 +329,7 @@ def detect_ag_unit_and_fix(parsed):
     return parsed
 
 
-def build_columnar(parsed, decimals_coord=4, decimals_val=3, source_label="reticolo importato"):
+def build_columnar(parsed, decimals_coord=4, decimals_val=4, source_label="reticolo importato"):
     n = parsed["n"]
     tr_values = parsed["tr_values"]
 
