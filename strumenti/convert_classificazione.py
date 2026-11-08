@@ -7,7 +7,7 @@ dal Dipartimento della Protezione Civile ("Classificazione sismica aggiornata a
 maggio 2025", CSV separato da ';') in un file JSON compatto per l'app.
 
 Uso:
-    python3 convert_classificazione.py <file.csv> [classificazione-data.json] [comuni-data.json]
+    python3 strumenti/convert_classificazione.py <file.csv> [classificazione-data.json] [comuni-data.json]
 
 Se si indica comuni-data.json (confini ISTAT, vedi convert_comuni.py), le chiavi
 vengono allineate ai codici ISTAT dei confini: i comuni il cui codice DPC non
@@ -31,6 +31,7 @@ Ministri, licenza CC BY 4.0 (note legali www.protezionecivile.gov.it).
 """
 import csv
 import json
+import os
 import re
 import sys
 from datetime import date
@@ -44,7 +45,7 @@ def main():
     if len(sys.argv) < 2:
         sys.exit(__doc__)
     src = sys.argv[1]
-    dst = sys.argv[2] if len(sys.argv) > 2 else 'classificazione-data.json'
+    dst = sys.argv[2] if len(sys.argv) > 2 else os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'dati', 'classificazione-data.json')
 
     with open(src, encoding='utf-8-sig', newline='') as f:
         rd = csv.DictReader(f, delimiter=';')

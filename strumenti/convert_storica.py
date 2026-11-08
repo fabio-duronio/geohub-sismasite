@@ -8,7 +8,7 @@ file JSON compatto per i moduli di sismicità storica:
   - terremoti storici con epicentro entro un raggio dal sito (CPTI15).
 
 Uso:
-    python3 convert_storica.py <CPTI15_v4.0.xlsx> <DBMI15_v4.0.xlsx> [storica-data.json]
+    python3 strumenti/convert_storica.py <CPTI15_v4.0.xlsx> <DBMI15_v4.0.xlsx> [storica-data.json]
 
 File scaricabili (previa accettazione dei termini d'uso) da:
     https://emidius.mi.ingv.it/CPTI15-DBMI15/
@@ -26,6 +26,7 @@ di download indicano CC BY 4.0): si adotta la più restrittiva, CC BY-SA 4.0.
 Citazioni obbligatorie in meta.citazioni.
 """
 import json
+import os
 import sys
 from datetime import date
 
@@ -49,7 +50,7 @@ def main():
     if len(sys.argv) < 3:
         sys.exit(__doc__)
     cpti, dbmi = sys.argv[1], sys.argv[2]
-    dst = sys.argv[3] if len(sys.argv) > 3 else 'storica-data.json'
+    dst = sys.argv[3] if len(sys.argv) > 3 else os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'dati', 'storica-data.json')
 
     # ---- CPTI15: terremoti ----
     eq_keys = ['id', 'y', 'mo', 'd', 'h', 'mi', 'area', 'lat', 'lon', 'io', 'mw', 'sect']

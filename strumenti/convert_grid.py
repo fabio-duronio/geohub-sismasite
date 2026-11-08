@@ -37,9 +37,9 @@ Per l'Excel, lo script individua automaticamente:
     per il reticolo di riferimento NTC.
 
 Uso:
-    python3 convert_grid.py spettri2008.xls grid-data.json
-    python3 convert_grid.py Grid.txt grid-data.json --decimals-val 3
-    python3 convert_grid.py reticolo.xlsx grid-data.json --sheet Foglio1 --header-row 1
+    python3 strumenti/convert_grid.py spettri2008.xls dati/grid-data.json
+    python3 strumenti/convert_grid.py Grid.txt dati/grid-data.json --decimals-val 3
+    python3 strumenti/convert_grid.py reticolo.xlsx dati/grid-data.json --sheet Foglio1 --header-row 1
 
 Output: un unico grid-data.json in formato colonnare (nessuna chiave ripetuta
 per nodo), pensato per restare nell'ordine di 2-3 MB anche con i 10.751 nodi

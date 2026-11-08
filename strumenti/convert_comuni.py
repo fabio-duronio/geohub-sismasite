@@ -8,7 +8,7 @@ Solo libreria standard Python (lettura .shp/.dbf, proiezione inversa UTM,
 semplificazione Douglas-Peucker).
 
 Uso:
-    python3 convert_comuni.py <Com01012026_g_WGS84.shp> [comuni-data.json] [tolleranza_m]
+    python3 strumenti/convert_comuni.py <Com01012026_g_WGS84.shp> [comuni-data.json] [tolleranza_m]
 
 Fonte: ISTAT, "Confini delle unità amministrative a fini statistici al 1°
 gennaio 2026", versione generalizzata —
@@ -21,6 +21,7 @@ Formato di uscita: per ogni comune [PRO_COM_T, nome, bbox, anelli]; ogni anello
 e successive come differenze (delta encoding).
 """
 import json
+import os
 import math
 import struct
 import sys
@@ -148,7 +149,7 @@ def main():
     if len(sys.argv) < 2:
         sys.exit(__doc__)
     shp = sys.argv[1]
-    dst = sys.argv[2] if len(sys.argv) > 2 else 'comuni-data.json'
+    dst = sys.argv[2] if len(sys.argv) > 2 else os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'dati', 'comuni-data.json')
     tol = float(sys.argv[3]) if len(sys.argv) > 3 else 20.0
     attr = leggi_dbf(shp[:-4] + '.dbf')
     geoms = leggi_shp(shp)

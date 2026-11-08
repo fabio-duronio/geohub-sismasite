@@ -14,8 +14,8 @@ Requisiti:
     pip install playwright && python3 -m playwright install chromium
 
 Uso:
-    python3 verifica_numeri.py            # esce con codice 0 se tutto passa
-    python3 verifica_numeri.py --verbose
+    python3 verifiche/verifica_numeri.py            # esce con codice 0 se tutto passa
+    python3 verifiche/verifica_numeri.py --verbose
 """
 import argparse
 import functools
@@ -83,7 +83,7 @@ def main():
         print("Playwright non installato. Esegui:\n  pip install playwright\n  python3 -m playwright install chromium")
         return 2
 
-    qui = os.path.dirname(os.path.abspath(__file__))
+    qui = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))   # radice del repository
     port = free_port()
     httpd = serve(qui, port)
     url = f"http://127.0.0.1:{port}/index.html"

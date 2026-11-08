@@ -13,7 +13,7 @@ Il PDF stampa a_g (g/10) con 3 decimali e F_0, T*_C con 2: lo scarto ammesso è
 mezza unità dell'ultima cifra stampata (0,005).
 
 Requisiti: pdftotext (poppler-utils).
-Uso:       python3 verifica_allegato_b.py Decreto_14-01-2008.pdf
+Uso:       python3 verifiche/verifica_allegato_b.py Decreto_14-01-2008.pdf
 """
 import json
 import os
@@ -21,7 +21,7 @@ import re
 import subprocess
 import sys
 
-QUI = os.path.dirname(os.path.abspath(__file__))
+QUI = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))   # radice del repository
 TOLL = 0.005 + 1e-9
 
 def testo_pdf(path):
@@ -55,7 +55,7 @@ def main():
 
     # --- Tabella 1 vs grid-data.json
     t1 = tabella1(righe)
-    g = json.load(open(os.path.join(QUI, "grid-data.json"), encoding="utf-8"))
+    g = json.load(open(os.path.join(QUI, "dati", "grid-data.json"), encoding="utf-8"))
     pos = {v: i for i, v in enumerate(g["id"])}
     if len(t1) != 10751 or set(t1) != set(pos):
         fall.append(f"Tabella 1: {len(t1)} nodi letti dal PDF, {len(set(t1) ^ set(pos))} ID non comuni con grid-data.json")

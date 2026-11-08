@@ -46,7 +46,7 @@ Licenze commerciali diverse dalla AGPL sono disponibili su richiesta
 all'autore. / Commercial licenses other than the AGPL are available from the
 author on request.
 
-I dati di pericolosità sismica (grid-data.json) derivano dagli Open Data del
+I dati di pericolosità sismica (dati/grid-data.json) derivano dagli Open Data del
 Ministero delle Infrastrutture e dei Trasporti (Allegato B al D.M. 14/01/2008)
 e restano soggetti alle condizioni della fonte originale.
 
@@ -54,19 +54,19 @@ e restano soggetti alle condizioni della fonte originale.
 DATI DI TERZI (dalla v1.5.0) — non coperti dalla licenza AGPL del codice
 -------------------------------------------------------------------------
 
-classificazione-data.json — elaborato da: Dipartimento della Protezione
+dati/classificazione-data.json — elaborato da: Dipartimento della Protezione
   Civile - Presidenza del Consiglio dei Ministri, "Classificazione sismica
   aggiornata a maggio 2025". Licenza CC BY 4.0. Modifiche: conversione in
   JSON; chiavi allineate ai codici ISTAT 2026 (377 comuni sardi abbinati per
   nome). https://rischi.protezionecivile.gov.it/it/sismico/attivita/classificazione-sismica/
 
-comuni-data.json — elaborato da: ISTAT, "Confini delle unità amministrative a
+dati/comuni-data.json — elaborato da: ISTAT, "Confini delle unità amministrative a
   fini statistici al 1° gennaio 2026" (versione generalizzata). Licenza
   CC BY 4.0. Modifiche: proiezione in coordinate geografiche WGS84,
   semplificazione (Douglas-Peucker, 20 m), conversione in JSON.
   https://www.istat.it/notizia/confini-delle-unita-amministrative-a-fini-statistici-al-1-gennaio-2018-2/
 
-storica-data.json — elaborato da (licenza CC BY-SA 4.0, come indicato nei
+dati/storica-data.json — elaborato da (licenza CC BY-SA 4.0, come indicato nei
   file sorgente; il file derivato è distribuito con la stessa licenza):
   Rovida A., Locati M., Camassi R., Lolli B., Gasperini P., Antonucci A.
   (eds), 2022. Italian Parametric Earthquake Catalogue (CPTI15), version 4.0.

@@ -11,10 +11,11 @@ convert_storica.py, con valori di riferimento verificati su fonti ufficiali:
   il 02/11/2026.
 
 Uso:
-    python3 verifica_dati.py [classificazione-data.json] [storica-data.json]
+    python3 verifiche/verifica_dati.py [classificazione-data.json] [storica-data.json]
 Esce con codice 1 se un controllo fallisce.
 """
 import json
+import os
 import sys
 
 errori = []
@@ -27,8 +28,9 @@ def check(cond, msg):
 
 
 def main():
-    fc = sys.argv[1] if len(sys.argv) > 1 else 'classificazione-data.json'
-    fs = sys.argv[2] if len(sys.argv) > 2 else 'storica-data.json'
+    DATI = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'dati')
+    fc = sys.argv[1] if len(sys.argv) > 1 else os.path.join(DATI, 'classificazione-data.json')
+    fs = sys.argv[2] if len(sys.argv) > 2 else os.path.join(DATI, 'storica-data.json')
 
     # ---------------- Classificazione ----------------
     C = json.load(open(fc, encoding='utf-8'))
