@@ -7,6 +7,7 @@
   - «Esporta parametri»: dati del sito e, per ogni stato limite, T_R, a_g, F_0, T*_C, coefficienti, periodi, a_max, k_h, k_v, q;
   - «Esporta spettri»: punti degli spettri elastici e di progetto dei 4 stati limite, orizzontali e verticali (passo 0,02 s più i periodi caratteristici).
 - Stampa: intestazione «GeoHub-SismaSite – Pericolosità sismica di base» su ogni pagina e in apertura; sito/commessa e data in alto a destra; il numero dell'allegato è facoltativo e lo assegna l'utente (prima era preimpostato «Allegato E1»).
+- Stampa: le tessere della mappa sono stampate opache anche se la dissolvenza di comparsa non è terminata (prima: carta INGV appena visibile al primo tentativo e zone chiare nella base satellitare).
 - Stampa: la didascalia della Figura 1 spiega che i quadrati della carta INGV MPS04 sono i valori nei punti della griglia del modello; attesa del caricamento della mappa portata a 8 s.
 - Nota della componente verticale: aggiunta l'eccezione del §3.2.3.1 per le opere e i sistemi geotecnici del §7.11 (riferimenti §3.2.3.1, §7.11.6.2.1 e §3.2.3.2.1 controllati sul testo in G.U. n. 42 del 20/02/2018, S.O. n. 8).
 
