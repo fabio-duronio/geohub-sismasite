@@ -280,7 +280,7 @@
 
     /* titoli */
     .st-testata{border-bottom:1pt solid #1e4e8c; padding-bottom:3mm; margin-bottom:1mm;}
-    .st-allegato{font-size:9pt; font-weight:700; color:#1e4e8c; letter-spacing:.05em; text-transform:uppercase;}
+    .st-allegato{font-size:9.5pt; font-weight:700; color:#1e4e8c; letter-spacing:.02em;}
     .st-titolo{font-size:15pt; font-weight:700; margin:1.5mm 0 1mm; line-height:1.2;}
     .st-norma{font-size:8.5pt; color:#333;}
     .print-title{display:block; font-size:11pt; font-weight:700; color:#1e4e8c; margin:5mm 0 2.5mm;
@@ -361,7 +361,7 @@
 
   <!-- ================= SOLO STAMPA: frontespizio e dati del sito ================= -->
   <div class="print-only st-testata">
-    <div class="st-allegato" id="stAllegato">Allegato E1</div>
+    <div class="st-allegato" id="stAllegato">GeoHub-SismaSite – Pericolosità sismica di base</div>
     <h1 class="st-titolo">Pericolosità sismica di base e parametri sismici del sito</h1>
     <div class="st-norma">D.M. 17/01/2018 (NTC 2018) · Circolare 21/01/2019, n. 7 · Allegati A e B al D.M. 14/01/2008</div>
   </div>
@@ -398,8 +398,8 @@
             <input type="text" id="siteName" placeholder="es. Comune di …, località …, comm. 2026/xx">
           </div>
           <div class="field" style="margin:10px 0 0;">
-            <label for="allegatoRif">Riferimento dell'allegato (piè di pagina in stampa)</label>
-            <input type="text" id="allegatoRif" value="Allegato E1">
+            <label for="allegatoRif">Numero dell'allegato nella relazione (facoltativo, in stampa)</label>
+            <input type="text" id="allegatoRif" value="" placeholder="es. Allegato 3">
           </div>
           <div class="checkline" style="margin:10px 0 0;">
             <input type="checkbox" id="stampaElenchi">
@@ -757,7 +757,7 @@
       <li><b>Parametri di pericolosità.</b> a<sub>g</sub>, F<sub>0</sub> e T*<sub>C</sub> sono ricavati dal reticolo dell'Allegato B al D.M. 14/01/2008 secondo l'Allegato A: interpolazione logaritmica in T<sub>R</sub> per i 4 vertici della maglia che contiene il sito, quindi media pesata con l'inverso delle distanze. Per le isole escluse dal reticolo si adottano i valori costanti della Tabella 2 dell'Allegato B.</li>
       <li><b>Amplificazione.</b> S<sub>S</sub> e C<sub>C</sub> da NTC 2018, Tab. 3.2.IV; S<sub>T</sub> da Tab. 3.2.V, assunto pari al valore massimo, in sommità del pendio o in cresta del rilievo (configurazioni prevalentemente bidimensionali di altezza maggiore di 30 m, §3.2.2; decremento lineare fino a 1,0 alla base, §3.2.3.2.1); T<sub>C</sub> = C<sub>C</sub>·T*<sub>C</sub>, T<sub>B</sub> = T<sub>C</sub>/3, T<sub>D</sub> = 4·a<sub>g</sub>/g + 1,6 s; η = √(10/(5 + ξ)) ≥ 0,55.</li>
       <li><b>Spettri elastici.</b> Componente orizzontale secondo il §3.2.3.2.1, formula [3.2.2]; componente verticale secondo il §3.2.3.2.2, formule [3.2.8] e [3.2.9] (F<sub>v</sub> = 1,35·F<sub>0</sub>·(a<sub>g</sub>/g)<sup>0,5</sup>, S<sub>S</sub> = 1, T<sub>B</sub> = 0,05 s, T<sub>C</sub> = 0,15 s, T<sub>D</sub> = 1,0 s; nel primo tratto compare 1/(η·F<sub>0</sub>), per cui S<sub>ve</sub>(0) = a<sub>g</sub>·S<sub>T</sub>·F<sub>v</sub>/F<sub>0</sub>). Gli spettri per i 9 periodi di ritorno del reticolo sono riferiti a sottosuolo di categoria A, superficie T1 e ξ = 5 %.</li>
-      <li><b>Spettri di progetto.</b> Per lo SLO lo spettro di progetto coincide con quello elastico (§3.2.3.4). Per SLD e SLV si sostituisce η con 1/q (§3.2.3.5), con il minimo S<sub>d</sub>(T) ≥ 0,2·a<sub>g</sub> per q &gt; 1; per lo SLD q è limitato a 1,5. Per lo SLC l'analisi lineare con q non è prevista (Tab. 7.3.I): è riportato lo spettro elastico (q = 1,0). Per la componente verticale q = 1,5 salvo analisi specifiche (§7.3.1; q = 1,0 per i ponti), non superiore al q orizzontale adottato; la componente verticale va considerata nei casi del §7.2.2 e per a<sub>g</sub> ≥ 0,15 g (§3.2.3.1).</li>
+      <li><b>Spettri di progetto.</b> Per lo SLO lo spettro di progetto coincide con quello elastico (§3.2.3.4). Per SLD e SLV si sostituisce η con 1/q (§3.2.3.5), con il minimo S<sub>d</sub>(T) ≥ 0,2·a<sub>g</sub> per q &gt; 1; per lo SLD q è limitato a 1,5. Per lo SLC l'analisi lineare con q non è prevista (Tab. 7.3.I): è riportato lo spettro elastico (q = 1,0). Per la componente verticale q = 1,5 salvo analisi specifiche (§7.3.1; q = 1,0 per i ponti), non superiore al q orizzontale adottato; la componente verticale va considerata nei casi del §7.2.2 e per a<sub>g</sub> ≥ 0,15 g (§3.2.3.1), salvo quanto previsto al §7.11 per le opere e i sistemi geotecnici.</li>
       <li><b>Coefficienti sismici.</b> a<sub>max</sub> = S<sub>S</sub>·S<sub>T</sub>·a<sub>g</sub>; k<sub>h</sub> = β<sub>s</sub>·a<sub>max</sub>/g e k<sub>v</sub> = ±0,5·k<sub>h</sub>, con β<sub>s</sub> da NTC 2018, Tab. 7.11.I (§7.11.3.5.2), per le verifiche pseudostatiche di stabilità dei pendii agli stati limite ultimi; non si applicano ai muri di sostegno (§7.11.6.2.1). Per a<sub>g</sub> &gt; 0,4 g la tabella non definisce β<sub>s</sub> e i coefficienti non sono calcolati.</li>
     </ol>
 
@@ -2222,7 +2222,8 @@ function renderDesignTablesOnly(r, q, qv, code, qIn){
             q = 1,0 per i ponti); l'app non adotta per la verticale un q superiore a quello orizzontale.`;
   }
   // soglia di applicabilità della componente verticale
-  nota += ` <b>Componente verticale</b> (§3.2.3.1 e §7.2.2): da considerare nei casi indicati al Cap. 7 e per a<sub>g</sub> ≥ 0,15 g;
+  nota += ` <b>Componente verticale</b> (§3.2.3.1 e §7.2.2): da considerare nei casi indicati al Cap. 7 e per a<sub>g</sub> ≥ 0,15 g,
+            salvo quanto previsto al §7.11 per le opere e i sistemi geotecnici;
             allo ${code} a<sub>g</sub> = ${fmt(r.ag,3)} g ${r.ag >= 0.15 ? '≥' : '&lt;'} 0,15 g.`;
   // minimo 0,2·a_g oltre lo spettro elastico verticale
   if(minimoSdAttivo(qv)){
@@ -2323,7 +2324,7 @@ function renderLiquefaction(){
 }
 
 /* ======================================================================
-   10. INQUADRAMENTO SISMICO DEL SITO (dalla v1.5.0) — sezione E1
+   10. INQUADRAMENTO SISMICO DEL SITO (dalla v1.5.0)
    S2 comune e classificazione sismica (ISTAT 2026 + DPC maggio 2025)
    S3 eventi strumentali nel raggio (INGV, servizio FDSN, tempo reale)
    S4 storia sismica della località (DBMI15 v4.0) e terremoti storici
@@ -2788,6 +2789,7 @@ document.getElementById('topVersion').textContent = 'v' + APP_VERSION;
    Con Ctrl+P la preparazione avviene in beforeprint, senza attesa delle
    tessere.
 ====================================================================== */
+const WMS_PX_STAMPA = 100;   // risoluzione delle tessere MPS04 in stampa (vedi entraStampa)
 let statoStampa = null;   // vista della mappa e dei pannelli prima della stampa
 
 function testoCss(t){ return '"' + String(t).replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/\s+/g, ' ') + '"'; }
@@ -2795,17 +2797,19 @@ function testoCss(t){ return '"' + String(t).replace(/\\/g, '\\\\').replace(/"/g
 function dataBreve(d){ return d.toLocaleDateString('it-IT', {day:'2-digit', month:'2-digit', year:'numeric'}); }
 
 /* Intestazione e piè di pagina: caselle a margine di @page (Chrome, Edge) */
+const INTESTAZIONE_STAMPA = 'GeoHub-SismaSite – Pericolosità sismica di base';
 function stilePagina(){
-  const nome = (document.getElementById('siteName').value || '').trim() || 'Pericolosità sismica di base del sito';
+  const nome = (document.getElementById('siteName').value || '').trim();
   const allegato = (document.getElementById('allegatoRif').value || '').trim();
-  const data = 'Data del calcolo: ' + (lastResults && lastResults.data ? dataBreve(lastResults.data) : dataBreve(new Date()));
+  const data = (nome ? nome + ' · ' : '') + 'Data del calcolo: ' +
+               (lastResults && lastResults.data ? dataBreve(lastResults.data) : dataBreve(new Date()));
   let el = document.getElementById('stilePagina');
   if(!el){ el = document.createElement('style'); el.id = 'stilePagina'; document.head.appendChild(el); }
   const font = 'font-family:Arial, Helvetica, sans-serif; font-size:8pt; color:#333;';
   el.textContent = `@page{
-    @top-left{content:${testoCss(nome)}; ${font} vertical-align:bottom; padding-bottom:2mm;}
+    @top-left{content:${testoCss(INTESTAZIONE_STAMPA)}; ${font} vertical-align:bottom; padding-bottom:2mm;}
     @top-right{content:${testoCss(data)}; ${font} vertical-align:bottom; padding-bottom:2mm;}
-    @bottom-left{content:${testoCss('SismaSite v' + APP_VERSION + ' · NTC 2018')}; ${font} vertical-align:top; padding-top:2mm;}
+    @bottom-left{content:${testoCss('GeoHub-SismaSite v' + APP_VERSION + ' · NTC 2018')}; ${font} vertical-align:top; padding-top:2mm;}
     @bottom-right{content:${testoCss((allegato ? allegato + ' – ' : '') + 'pag. ')} counter(page) " di " counter(pages); ${font} vertical-align:top; padding-top:2mm;}
   }`;
 }
@@ -2816,7 +2820,7 @@ function rigaDato(et, val){ return `<tr><td>${et}</td><td>${val}</td></tr>`; }
 function compilaStampa(){
   stilePagina();
   const allegato = (document.getElementById('allegatoRif').value || '').trim();
-  document.getElementById('stAllegato').textContent = allegato;
+  document.getElementById('stAllegato').textContent = (allegato ? allegato + ' · ' : '') + INTESTAZIONE_STAMPA;
   document.getElementById('stVersione').textContent = 'SismaSite v' + APP_VERSION + ' (' + APP_VERSION_DATE + ')';
   const tb = document.getElementById('stDati');
   if(!lastResults){ tb.innerHTML = rigaDato('Calcolo', 'non ancora eseguito'); return; }
@@ -2869,8 +2873,17 @@ function entraStampa(){
     c.options.devicePixelRatio = 3; c.resize(); c.update('none'); } });
   if(map){
     map.invalidateSize({animate:false});
-    // zoom 10: a scale maggiori i punti della griglia MPS04 compaiono come quadrati separati
     if(marker) map.setView(marker.getLatLng(), 10, {animate:false});
+    /* Il servizio WMS MPS04 disegna ogni nodo della griglia come un quadratino di
+       dimensione fissa in pixel: a zoom 10 i quadratini coprono circa il 45 % del
+       passo e la carta appare «a scacchiera». In stampa si chiedono al servizio
+       immagini a risoluzione ridotta (100 px per tessera da 256) che il browser
+       ingrandisce: i quadratini diventano contigui senza cambiare scala della base. */
+    if(hz.layer && hz.layer.wmsParams){
+      statoStampa.wmsPx = hz.layer.wmsParams.width;
+      hz.layer.wmsParams.width = hz.layer.wmsParams.height = WMS_PX_STAMPA;
+      hz.layer.redraw();
+    }
   }
 }
 
@@ -2881,6 +2894,10 @@ function esciStampa(){
   statoStampa.nascosti.forEach(p=>p.hidden = true);
   [spectrumChart, designChart, famChart, sl4ChartH, sl4ChartV].forEach(c=>{ if(c){ c.options.devicePixelRatio = undefined; c.resize(); } });
   if(map){
+    if(hz.layer && hz.layer.wmsParams && statoStampa.wmsPx){
+      hz.layer.wmsParams.width = hz.layer.wmsParams.height = statoStampa.wmsPx;
+      hz.layer.redraw();
+    }
     map.invalidateSize({animate:false});
     if(statoStampa.vista) map.setView(statoStampa.vista.c, statoStampa.vista.z, {animate:false});
   }
