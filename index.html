@@ -257,6 +257,10 @@
   body.prep-stampa .grid-2{grid-template-columns:repeat(2,minmax(0,1fr)); gap:6mm;}
   body.prep-stampa .chart-wrap{height:64mm !important;}
   body.prep-stampa .kpi-mini{display:none;}
+  /* Leaflet fa comparire le tessere con una dissolvenza animata: se la stampa parte
+     prima della fine, le tessere restano semitrasparenti (zone chiare, carta INGV
+     appena visibile). In preparazione e in stampa le tessere caricate sono opache. */
+  body.prep-stampa .leaflet-tile-loaded{opacity:1 !important;}
 
   @page{size:A4 portrait; margin:20mm 18mm 17mm 18mm;}
   @media print{
@@ -317,6 +321,7 @@
     .st-dati td:first-child{width:55mm; background:#dce6f2; font-weight:700;}
 
     /* mappa con legenda a lato e didascalia */
+    .leaflet-tile-loaded{opacity:1 !important;}
     .map-card{display:grid; grid-template-columns:135mm 36mm; gap:0 3mm; break-inside:avoid; margin-top:4mm;}
     #map{width:135mm; height:100mm; min-height:0; outline:.5pt solid #777;}
     .st-legenda{font-size:7.5pt; line-height:1.25;}
@@ -2911,6 +2916,7 @@ async function stampaAllegato(){
     entraStampa();
     await new Promise(r=>setTimeout(r, 150));
     await attendiTessere(8000);
+    await new Promise(r=>setTimeout(r, 300));   // margine per il disegno delle ultime tessere
   } finally {
     btn.disabled = false; btn.textContent = t;
   }
