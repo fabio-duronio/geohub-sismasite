@@ -6,6 +6,9 @@
 - Esportazione CSV (separatore «;», virgola decimale, apertura diretta in Excel):
   - «Esporta parametri»: dati del sito e, per ogni stato limite, T_R, a_g, F_0, T*_C, coefficienti, periodi, a_max, k_h, k_v, q;
   - «Esporta spettri»: punti degli spettri elastici e di progetto dei 4 stati limite, orizzontali e verticali (passo 0,02 s più i periodi caratteristici).
+- Stampa: intestazione «GeoHub-SismaSite – Pericolosità sismica di base» su ogni pagina e in apertura; sito/commessa e data in alto a destra; il numero dell'allegato è facoltativo e lo assegna l'utente (prima era preimpostato «Allegato E1»).
+- Stampa: la carta MPS04 è richiesta al servizio INGV a risoluzione ridotta, così i quadratini dei nodi risultano contigui (prima, a zoom 10, effetto «a scacchiera»).
+- Nota della componente verticale: aggiunta l'eccezione del §3.2.3.1 per le opere e i sistemi geotecnici del §7.11 (riferimenti §3.2.3.1, §7.11.6.2.1 e §3.2.3.2.1 controllati sul testo in G.U. n. 42 del 20/02/2018, S.O. n. 8).
 
 ## 1.8.0 — 2026-11-09
 
