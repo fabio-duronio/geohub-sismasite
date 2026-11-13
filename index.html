@@ -198,6 +198,8 @@
   .table-scroll{overflow-x:auto;}
 
   .chart-toolbar{display:flex; flex-wrap:wrap; align-items:center; gap:8px 14px; padding:0 0 12px;}
+  .export-bar{display:flex; flex-wrap:wrap; align-items:center; gap:6px 12px; margin:0 0 14px;}
+  .export-bar .hint{margin:0;}
   .chart-toolbar select, .chart-toolbar input{min-width:0; max-width:100%; padding:6px 8px; border:1px solid #cdd3da; border-radius:6px; font:inherit; font-size:13px; background:#fff;}
   .chart-toolbar label{font-size:12.5px; color:var(--slate-600); font-weight:500;}
   .chart-wrap{height:340px; position:relative;}
@@ -556,6 +558,10 @@
     <!-- ---------- Parametri ---------- -->
     <div class="tabpanel" role="tabpanel" id="panel-parametri" aria-labelledby="tab-parametri">
       <h2 class="print-title">2. Parametri di pericolosità sismica e coefficienti</h2>
+      <div class="export-bar no-print">
+        <button type="button" class="btn" id="btnCsvParametri">Esporta parametri (CSV)</button>
+        <span class="hint">Dati del sito e parametri dei 4 stati limite, per Excel o per la relazione.</span>
+      </div>
       <div class="stack">
         <div>
           <h3 class="sub-title">Parametri di pericolosità sismica per gli stati limite</h3>
@@ -611,6 +617,10 @@
     <!-- ---------- Spettri ---------- -->
     <div class="tabpanel" role="tabpanel" id="panel-spettri" aria-labelledby="tab-spettri" hidden>
       <h2 class="print-title">3. Spettri di risposta</h2>
+      <div class="export-bar no-print">
+        <button type="button" class="btn" id="btnCsvSpettri">Esporta spettri (CSV)</button>
+        <span class="hint">Punti degli spettri elastici e di progetto dei 4 stati limite, orizzontali e verticali.</span>
+      </div>
       <div class="stack">
         <div class="grid-2">
           <div>
@@ -633,6 +643,20 @@
             <h3 class="sub-title">Spettri elastici per i 9 periodi di ritorno <small>· suolo A, T1, ξ = 5 %</small></h3>
             <div class="chart-wrap"><canvas id="famChart"></canvas></div>
             <div class="legend-note" id="famLegend"></div>
+          </div>
+        </div>
+
+        <div>
+          <h3 class="sub-title">Spettri elastici del sito per i 4 stati limite</h3>
+          <div class="grid-2">
+            <div>
+              <div class="chart-wrap"><canvas id="sl4ChartH"></canvas></div>
+              <div class="legend-note" id="sl4LegendH"></div>
+            </div>
+            <div>
+              <div class="chart-wrap"><canvas id="sl4ChartV"></canvas></div>
+              <div class="legend-note" id="sl4LegendV"></div>
+            </div>
           </div>
         </div>
 
@@ -1790,6 +1814,7 @@ function runCalculation(){
   updateReportHeader();
   renderHazardTable();
   renderFase1();
+  renderSL4();
   renderSelectedLS();
   disegnaNodi();
   renderLiquefaction();
@@ -1914,6 +1939,113 @@ function renderFase1(){
   document.getElementById('famLegend').innerHTML = righe.map((x,i)=>
     `<span><span class="legend-swatch" style="background:${FAM_COLORI[i]};"></span>${x.TR}</span>`).join('') + '<span>anni</span>';
 }
+
+/* ======================================================================
+   SPETTRI ELASTICI DEL SITO PER I 4 STATI LIMITE (orizzontale e verticale)
+====================================================================== */
+const SL_COLORI = {SLO:'#7fb3d5', SLD:'#2f7dd6', SLV:'#e2681f', SLC:'#9b2d20'};
+let sl4ChartH = null, sl4ChartV = null;
+function renderSL4(){
+  if(!lastResults) return;
+  const B = lastResults.byLS, cod = LIMIT_STATES.map(l=>l.code);
+  const legenda = cod.map(c=>`<span><span class="legend-swatch" style="background:${SL_COLORI[c]};"></span>${c}</span>`).join('');
+  document.getElementById('sl4LegendH').innerHTML = legenda + '<span>· componente orizzontale</span>';
+  document.getElementById('sl4LegendV').innerHTML = legenda + '<span>· componente verticale</span>';
+  if(!chartDisponibile()){ mostraGraficoNonDisponibile('#sl4ChartH', 260); mostraGraficoNonDisponibile('#sl4ChartV', 260); return; }
+  const T = periodiSpettro([].concat(...cod.map(c=>[B[c].Tb, B[c].Tc, B[c].Td]), [0.05, 0.15, 1.0]));
+  const opzioni = (titoloY)=>({ responsive:true, maintainAspectRatio:false, animation:{duration:250},
+    interaction:{mode:'index', intersect:false},
+    plugins:{ legend:{display:false}, tooltip:{callbacks:{title:(it)=>'T = '+fmt(it[0].parsed.x,2)+' s',
+              label:(it)=>`${it.dataset.label}: ${fmt(it.parsed.y,4)} g`}} },
+    scales:{ x:assePeriodo(), y:{ title:{display:true, text:titoloY}, beginAtZero:true } } });
+  const serie = (fn)=>cod.map(c=>({label:c, data:T.map(t=>({x:t, y:fn(t, B[c])})), borderColor:SL_COLORI[c],
+    backgroundColor:'transparent', borderWidth: c==='SLV' ? 2.6 : 1.8, pointRadius:0, tension:0}));
+  if(sl4ChartH) sl4ChartH.destroy();
+  if(sl4ChartV) sl4ChartV.destroy();
+  sl4ChartH = new Chart(document.getElementById('sl4ChartH').getContext('2d'), {type:'line',
+    data:{datasets:serie((t,r)=>seHorizontal(t, r.ag, r.S, r.F0, r.Tb, r.Tc, r.Td, r.eta))},
+    options:opzioni('S_e orizzontale (g)')});
+  sl4ChartV = new Chart(document.getElementById('sl4ChartV').getContext('2d'), {type:'line',
+    data:{datasets:serie((t,r)=>seVertical(t, r.ag, r.F0, r.eta, r.St))},
+    options:opzioni('S_ve verticale (g)')});
+}
+
+/* ======================================================================
+   ESPORTAZIONE CSV (separatore ;  virgola decimale, UTF-8: si apre in Excel)
+====================================================================== */
+function csvCampo(v){
+  const t = String(v === undefined || v === null ? '' : v);
+  return /[;"\n\r]/.test(t) ? '"' + t.replace(/"/g, '""') + '"' : t;
+}
+function csvRiga(arr){ return arr.map(csvCampo).join(';'); }
+function scaricaCsv(nome, righe){
+  const testo = '﻿' + righe.map(csvRiga).join('\r\n') + '\r\n';
+  const blob = new Blob([testo], {type:'text/csv;charset=utf-8'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = nome;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(a.href), 1000);
+}
+function nomeCsv(tipo){
+  const R = lastResults;
+  return `SismaSite_${tipo}_${R.lat.toFixed(4)}_${R.lon.toFixed(4)}.csv`.replace(/-/g, 'm');
+}
+function qDiProgetto(code){
+  let qIn = parseFloat(document.getElementById('qFactor').value);   // stesse regole di renderDesignPanel
+  if(!isFinite(qIn) || qIn < 1) qIn = 1.0;
+  if(qIn > 6) qIn = 6;
+  const q = qAdottato(code, qIn);
+  return {q, qv: qVerticaleAdottato(code, q)};
+}
+function esportaParametriCsv(){
+  if(!lastResults) return;
+  const R = lastResults, sel = id => { const o = document.getElementById(id); return o.options[o.selectedIndex].text; };
+  const testo = id => document.getElementById(id).textContent.trim();
+  const qIn = parseFloat(document.getElementById('qFactor').value);
+  const righe = [
+    ['SismaSite v' + APP_VERSION + ' — parametri sismici del sito (NTC 2018)'],
+    ['Sito / commessa', (document.getElementById('siteName').value || '').trim()],
+    ['Comune e classificazione sismica', testo('comuneChip')],
+    ['Latitudine WGS84 (°)', fmt(R.lat,6)], ['Longitudine WGS84 (°)', fmt(R.lon,6)],
+    ['Latitudine ED50 (°)', fmt(R.latEd,6)], ['Longitudine ED50 (°)', fmt(R.lonEd,6)],
+    ['Vita nominale V_N (anni)', fmt(R.VN,0)], ['Classe d\'uso', sel('cu')], ['V_R (anni)', fmt(R.VR,1)],
+    ['Categoria di sottosuolo', sel('soilCat')], ['Categoria topografica', sel('topoCat')],
+    ['Smorzamento ξ (%)', fmt(R.damping,1)], ['Fattore q (SLV)', isFinite(qIn) ? fmt(qIn,2) : ''],
+    ['Fonte dei parametri', testo('rhSource')], ['Nodi del reticolo', testo('rhNodes')],
+    ['Data del calcolo', testo('rhDate')],
+    [],
+    ['Stato limite','P_VR (%)','T_R teorico (anni)','T_R adottato (anni)','a_g (g)','F_0','T*_C (s)','S_S','C_C','S_T','S',
+     'T_B (s)','T_C (s)','T_D (s)','η','a_max (g)','β_s','k_h','k_v','q orizzontale','q verticale']
+  ];
+  LIMIT_STATES.forEach(ls=>{
+    const r = R.byLS[ls.code], qq = qDiProgetto(ls.code);
+    righe.push([ls.code, fmt(ls.pvr*100,0), fmt(r.TR,1), fmt(r.TRadottato,0), fmt(r.ag,4), fmt(r.F0,3), fmt(r.Tc0,3),
+      fmt(r.Ss,3), fmt(r.Cc,3), fmt(r.St,2), fmt(r.S,3), fmt(r.Tb,3), fmt(r.Tc,3), fmt(r.Td,3), fmt(r.eta,3),
+      fmt(r.amax,4), r.betaFuoriTabella ? '' : fmt(r.betaS,2), r.betaFuoriTabella ? '' : fmt(r.kh,4),
+      r.betaFuoriTabella ? '' : fmt(r.kv,4), fmt(qq.q,2), fmt(qq.qv,2)]);
+  });
+  scaricaCsv(nomeCsv('parametri'), righe);
+}
+function esportaSpettriCsv(){
+  if(!lastResults) return;
+  const B = lastResults.byLS, cod = LIMIT_STATES.map(l=>l.code);
+  const Q = {}; cod.forEach(c=>Q[c] = qDiProgetto(c));
+  const T = periodiSpettro([].concat(...cod.map(c=>[B[c].Tb, B[c].Tc, B[c].Td]), [0.05, 0.15, 1.0]));
+  const intest = ['T (s)'].concat(
+    cod.map(c=>'Se ' + c + ' (g)'), cod.map(c=>'Sve ' + c + ' (g)'),
+    cod.map(c=>'Sd ' + c + ' q=' + fmt(Q[c].q,2) + ' (g)'), cod.map(c=>'Sdv ' + c + ' q=' + fmt(Q[c].qv,2) + ' (g)'));
+  const righe = [intest];
+  T.forEach(t=>{
+    righe.push([fmt(t,4)].concat(
+      cod.map(c=>fmt(seHorizontal(t, B[c].ag, B[c].S, B[c].F0, B[c].Tb, B[c].Tc, B[c].Td, B[c].eta),5)),
+      cod.map(c=>fmt(seVertical(t, B[c].ag, B[c].F0, B[c].eta, B[c].St),5)),
+      cod.map(c=>fmt(seDesignHorizontal(t, B[c], Q[c].q),5)),
+      cod.map(c=>fmt(seDesignVertical(t, B[c], Q[c].qv),5))));
+  });
+  scaricaCsv(nomeCsv('spettri'), righe);
+}
+document.getElementById('btnCsvParametri').addEventListener('click', esportaParametriCsv);
+document.getElementById('btnCsvSpettri').addEventListener('click', esportaSpettriCsv);
 
 function renderSelectedLS(){
   if(!lastResults) return;   // cambio di stato limite prima del primo calcolo
@@ -2634,7 +2766,7 @@ function mostraScheda(id, focus){
     pnl.hidden = !on;
     if(on && focus) t.focus();
   });
-  if(id === 'spettri'){ [spectrumChart, designChart, famChart].forEach(c=>{ if(c) c.resize(); }); }
+  if(id === 'spettri'){ [spectrumChart, designChart, famChart, sl4ChartH, sl4ChartV].forEach(c=>{ if(c) c.resize(); }); }
 }
 TAB_IDS.forEach((k,i)=>{
   const t = document.getElementById('tab-'+k);
@@ -2731,7 +2863,7 @@ function entraStampa(){
                   nascosti: [...document.querySelectorAll('.tabpanel')].filter(p=>p.hidden) };
   document.body.classList.add('prep-stampa');
   statoStampa.nascosti.forEach(p=>p.hidden = false);
-  [spectrumChart, designChart, famChart].forEach(c=>{ if(c){
+  [spectrumChart, designChart, famChart, sl4ChartH, sl4ChartV].forEach(c=>{ if(c){
     // nasconde i suggerimenti rimasti aperti (es. dopo un tocco sul telefono)
     c.setActiveElements([]); if(c.tooltip) c.tooltip.setActiveElements([], {x:0, y:0});
     c.options.devicePixelRatio = 3; c.resize(); c.update('none'); } });
@@ -2747,7 +2879,7 @@ function esciStampa(){
   if(!statoStampa) return;
   document.body.classList.remove('prep-stampa');
   statoStampa.nascosti.forEach(p=>p.hidden = true);
-  [spectrumChart, designChart, famChart].forEach(c=>{ if(c){ c.options.devicePixelRatio = undefined; c.resize(); } });
+  [spectrumChart, designChart, famChart, sl4ChartH, sl4ChartV].forEach(c=>{ if(c){ c.options.devicePixelRatio = undefined; c.resize(); } });
   if(map){
     map.invalidateSize({animate:false});
     if(statoStampa.vista) map.setView(statoStampa.vista.c, statoStampa.vista.z, {animate:false});

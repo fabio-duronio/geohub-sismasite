@@ -11,11 +11,12 @@ Applicazione web per geologi e ingegneri: dato un punto sulla mappa restituisce 
 ## Cosa fa
 
 - **Pericolosità di base**: `a_g`, `F_0`, `T*_C` per SLO, SLD, SLV, SLC dal reticolo ufficiale a 10.751 nodi (Allegato B; Tabella 2 per le isole), con conversione automatica delle coordinate WGS84 → ED50 e indicazione dei nodi usati.
-- **Amplificazione e spettri**: `S_S`, `C_C`, `S_T`, `T_B`, `T_C`, `T_D`; spettri elastici orizzontale e verticale; spettri di progetto con fattore `q` scelto dal progettista; spettri per i 9 periodi di ritorno del reticolo.
+- **Amplificazione e spettri**: `S_S`, `C_C`, `S_T`, `T_B`, `T_C`, `T_D`; spettri elastici orizzontale e verticale, anche per i 4 stati limite a confronto; spettri di progetto con fattore `q` scelto dal progettista; spettri per i 9 periodi di ritorno del reticolo.
 - **Coefficienti sismici** `k_h`, `k_v` per le verifiche pseudostatiche dei pendii e **screening di liquefazione** (criteri di esclusione 1 e 2).
 - **Inquadramento sismico**: comune e classificazione (ISTAT, DPC), eventi strumentali INGV, storia sismica (DBMI15) e terremoti storici (CPTI15), faglie capaci (ISPRA ITHACA).
 - **Mappa** con la carta di pericolosità INGV MPS04.
 - **Stampa A4 come allegato alla relazione**, con intestazione, numerazione delle pagine, note metodologiche e fonti.
+- **Esportazione CSV** dei parametri e dei punti degli spettri, per Excel o per il software di calcolo strutturale.
 
 ## Come si usa
 
