@@ -2789,7 +2789,6 @@ document.getElementById('topVersion').textContent = 'v' + APP_VERSION;
    Con Ctrl+P la preparazione avviene in beforeprint, senza attesa delle
    tessere.
 ====================================================================== */
-const WMS_PX_STAMPA = 100;   // risoluzione delle tessere MPS04 in stampa (vedi entraStampa)
 let statoStampa = null;   // vista della mappa e dei pannelli prima della stampa
 
 function testoCss(t){ return '"' + String(t).replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/\s+/g, ' ') + '"'; }
@@ -2855,7 +2854,7 @@ function compilaStampa(){
     '<b>Figura 1</b> – Ubicazione del sito (segnaposto) e maglia del reticolo di riferimento utilizzata (tratteggio). ' +
     (hz.attivo ? 'Sullo sfondo, carta di pericolosità INGV MPS04: a<sub>g</sub> su suolo rigido con probabilità di eccedenza del ' +
       hz.poe + ' % in 50 anni (T<sub>R</sub> ' + tr + ' anni), ' + (hz.perc === 50 ? 'mediana' : hz.perc + '° percentile') +
-      ' (Meletti et al., 2006; CC BY 4.0). La carta ha valore di inquadramento: i parametri sono calcolati dal reticolo dell\'Allegato B. ' : '') +
+      ' (Meletti et al., 2006; CC BY 4.0). I quadrati colorati rappresentano i valori nei punti della griglia di calcolo del modello. La carta ha valore di inquadramento: i parametri sono calcolati dal reticolo dell\'Allegato B. ' : '') +
     'Cartografia: ' + base + '.';
 }
 
@@ -2874,16 +2873,6 @@ function entraStampa(){
   if(map){
     map.invalidateSize({animate:false});
     if(marker) map.setView(marker.getLatLng(), 10, {animate:false});
-    /* Il servizio WMS MPS04 disegna ogni nodo della griglia come un quadratino di
-       dimensione fissa in pixel: a zoom 10 i quadratini coprono circa il 45 % del
-       passo e la carta appare «a scacchiera». In stampa si chiedono al servizio
-       immagini a risoluzione ridotta (100 px per tessera da 256) che il browser
-       ingrandisce: i quadratini diventano contigui senza cambiare scala della base. */
-    if(hz.layer && hz.layer.wmsParams){
-      statoStampa.wmsPx = hz.layer.wmsParams.width;
-      hz.layer.wmsParams.width = hz.layer.wmsParams.height = WMS_PX_STAMPA;
-      hz.layer.redraw();
-    }
   }
 }
 
@@ -2894,17 +2883,13 @@ function esciStampa(){
   statoStampa.nascosti.forEach(p=>p.hidden = true);
   [spectrumChart, designChart, famChart, sl4ChartH, sl4ChartV].forEach(c=>{ if(c){ c.options.devicePixelRatio = undefined; c.resize(); } });
   if(map){
-    if(hz.layer && hz.layer.wmsParams && statoStampa.wmsPx){
-      hz.layer.wmsParams.width = hz.layer.wmsParams.height = statoStampa.wmsPx;
-      hz.layer.redraw();
-    }
     map.invalidateSize({animate:false});
     if(statoStampa.vista) map.setView(statoStampa.vista.c, statoStampa.vista.z, {animate:false});
   }
   statoStampa = null;
 }
 
-/* Attende le tessere della base e della carta di pericolosità (max ~4 s) */
+/* Attende le tessere della base e della carta di pericolosità (max ~8 s) */
 function attendiTessere(ms){
   return new Promise(res=>{
     if(!map) return res();
@@ -2925,7 +2910,7 @@ async function stampaAllegato(){
   try{
     entraStampa();
     await new Promise(r=>setTimeout(r, 150));
-    await attendiTessere(4000);
+    await attendiTessere(8000);
   } finally {
     btn.disabled = false; btn.textContent = t;
   }
