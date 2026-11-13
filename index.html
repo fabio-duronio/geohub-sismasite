@@ -241,6 +241,8 @@
   .print-only{display:none;}
   .velo-stampa{position:fixed; inset:0; z-index:5000; background:var(--bg); display:flex; align-items:center; justify-content:center; font-size:15px; color:var(--slate-600);}
   .velo-stampa[hidden]{display:none;}
+  .velo-box{text-align:center; display:flex; flex-direction:column; align-items:center; gap:10px; padding:0 16px;}
+  .velo-dett{font-size:13px; color:var(--slate-500);}
 
   /* ===== Stampa A4: allegato alla relazione =====
      Le regole di dimensione valgono anche durante la preparazione alla stampa
@@ -343,7 +345,7 @@
 </head>
 <body>
 
-<div id="veloStampa" class="velo-stampa no-print" hidden><div>Preparazione della stampa…</div></div>
+<div id="veloStampa" class="velo-stampa no-print" hidden><div class="velo-box"><div id="veloTesto">Preparazione della stampa…</div><div id="veloDett" class="velo-dett"></div><button type="button" class="btn" id="veloSalta" hidden>Stampa senza attendere</button></div></div>
 
 <header class="topbar no-print">
   <div class="topbar-inner">
@@ -2894,20 +2896,38 @@ function esciStampa(){
   statoStampa = null;
 }
 
-/* Attende le tessere della base e della carta di pericolosità (max ~8 s) */
+/* Attende le tessere della base e della carta di pericolosità (max 60 s) */
 function attendiTessere(ms){
+  /* Conta le tessere visibili di ogni livello (base e carta INGV) e attende che
+     siano tutte arrivate (anche con errore). Il servizio INGV può impiegare
+     molti secondi: il velo mostra l'avanzamento e permette di stampare subito. */
   return new Promise(res=>{
     if(!map) return res();
-    const strati = [];
-    map.eachLayer(l=>{ if(l instanceof L.TileLayer && l.isLoading && l.isLoading()) strati.push(l); });
-    if(!strati.length) return res();
-    let n = strati.length, fatto = false;
-    const fine = ()=>{ if(!fatto){ fatto = true; res(); } };
-    strati.forEach(l=>l.once('load', ()=>{ if(--n === 0) fine(); }));
-    setTimeout(fine, ms);
+    const testo = document.getElementById('veloTesto'), dett = document.getElementById('veloDett');
+    const salta = document.getElementById('veloSalta');
+    const t0 = Date.now(); let fatto = false;
+    const fine = ()=>{ if(fatto) return; fatto = true; clearInterval(timer); salta.hidden = true; dett.textContent = ''; res(); };
+    salta.onclick = fine;
+    const conta = (l)=>{ let n = 0, ok = 0;
+      Object.values(l._tiles || {}).forEach(t=>{ if(t.current){ n++; if(t.loaded) ok++; } }); return [ok, n]; };
+    const controlla = ()=>{
+      let tutte = true; const righe = [];
+      map.eachLayer(l=>{
+        if(!(l instanceof L.TileLayer)) return;
+        const [ok, n] = conta(l);
+        if(ok < n || (l.isLoading && l.isLoading())) tutte = false;
+        righe.push((l === hz.layer ? 'Carta di pericolosità INGV' : 'Base cartografica') + ': ' + ok + ' di ' + n);
+      });
+      const sec = Math.round((Date.now() - t0)/1000);
+      testo.textContent = 'Caricamento della mappa per la stampa…';
+      dett.textContent = righe.join(' · ') + (sec >= 2 ? ' · ' + sec + ' s' : '');
+      if(sec >= 3) salta.hidden = false;   // dopo qualche secondo si può stampare senza attendere
+      if(tutte || Date.now() - t0 > ms) fine();
+    };
+    const timer = setInterval(controlla, 250);
+    controlla();
   });
 }
-
 async function stampaAllegato(){
   const btn = document.getElementById('btnPrint');
   btn.disabled = true; const t = btn.textContent; btn.textContent = 'Preparazione della stampa…';
@@ -2915,8 +2935,9 @@ async function stampaAllegato(){
   try{
     entraStampa();
     await new Promise(r=>setTimeout(r, 150));
-    await attendiTessere(8000);
+    await attendiTessere(60000);
     await new Promise(r=>setTimeout(r, 300));   // margine per il disegno delle ultime tessere
+    document.getElementById('veloTesto').textContent = 'Preparazione della stampa…';
   } finally {
     btn.disabled = false; btn.textContent = t;
   }
