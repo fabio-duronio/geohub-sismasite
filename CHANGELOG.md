@@ -1,5 +1,12 @@
 # Changelog
 
+## Non rilasciato
+
+- Nuovo grafico «Spettri elastici del sito per i 4 stati limite», componente orizzontale e verticale, nella scheda Spettri e in stampa.
+- Esportazione CSV (separatore «;», virgola decimale, apertura diretta in Excel):
+  - «Esporta parametri»: dati del sito e, per ogni stato limite, T_R, a_g, F_0, T*_C, coefficienti, periodi, a_max, k_h, k_v, q;
+  - «Esporta spettri»: punti degli spettri elastici e di progetto dei 4 stati limite, orizzontali e verticali (passo 0,02 s più i periodi caratteristici).
+
 ## 1.8.0 — 2026-11-09
 
 Correzione dello spettro verticale, allineamento normativo, stampa A4 per la relazione, riordino del repository. Cambiano due risultati: lo spettro verticale nel primo tratto (0 ≤ T < 0,05 s) e lo spettro di progetto allo SLC, ora elastico (q = 1,0). I parametri di pericolosità non cambiano.
