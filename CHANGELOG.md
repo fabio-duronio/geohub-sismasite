@@ -1,15 +1,21 @@
 # Changelog
 
-## Non rilasciato
+## 1.9.0 — 2026-11-14
 
+Spettri dei 4 stati limite a confronto, esportazione CSV, stampa più affidabile. Nessun risultato di calcolo cambia.
+
+**Spettri ed esportazione**
 - Nuovo grafico «Spettri elastici del sito per i 4 stati limite», componente orizzontale e verticale, nella scheda Spettri e in stampa.
 - Esportazione CSV (separatore «;», virgola decimale, apertura diretta in Excel):
   - «Esporta parametri»: dati del sito e, per ogni stato limite, T_R, a_g, F_0, T*_C, coefficienti, periodi, a_max, k_h, k_v, q;
   - «Esporta spettri»: punti degli spettri elastici e di progetto dei 4 stati limite, orizzontali e verticali (passo 0,02 s più i periodi caratteristici).
-- Stampa: intestazione «GeoHub-SismaSite – Pericolosità sismica di base» su ogni pagina e in apertura; sito/commessa e data in alto a destra; il numero dell'allegato è facoltativo e lo assegna l'utente (prima era preimpostato «Allegato E1»).
-- Stampa: prima di aprire la stampa l'app attende tutte le tessere della mappa e della carta INGV (fino a 60 s), mostrando l'avanzamento; dopo qualche secondo si può scegliere «Stampa senza attendere».
-- Stampa: le tessere della mappa sono stampate opache anche se la dissolvenza di comparsa non è terminata (prima: carta INGV appena visibile al primo tentativo e zone chiare nella base satellitare).
-- Stampa: la didascalia della Figura 1 spiega che i quadrati della carta INGV MPS04 sono i valori nei punti della griglia del modello; attesa del caricamento della mappa portata a 8 s.
+
+**Stampa**
+- Intestazione «GeoHub-SismaSite – Pericolosità sismica di base» su ogni pagina e in apertura; sito/commessa e data in alto a destra; il numero dell'allegato è facoltativo e lo assegna l'utente (prima era preimpostato «Allegato E1»).
+- Mappa: prima di aprire la stampa l'app attende tutte le tessere della base e della carta INGV (fino a 60 s), mostrando l'avanzamento; dopo qualche secondo si può scegliere «Stampa senza attendere». Le tessere sono stampate opache anche se la dissolvenza di comparsa non è terminata (prima: carta INGV assente o appena visibile al primo tentativo, zone chiare nella base satellitare).
+- Didascalia della Figura 1: i quadrati della carta INGV MPS04 sono i valori nei punti della griglia del modello.
+
+**Testi normativi**
 - Nota della componente verticale: aggiunta l'eccezione del §3.2.3.1 per le opere e i sistemi geotecnici del §7.11 (riferimenti §3.2.3.1, §7.11.6.2.1 e §3.2.3.2.1 controllati sul testo in G.U. n. 42 del 20/02/2018, S.O. n. 8).
 
 ## 1.8.0 — 2026-11-09
