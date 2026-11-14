@@ -25,6 +25,16 @@ Applicazione web per geologi e ingegneri: dato un punto sulla mappa restituisce 
 3. Premi **Calcola parametri sismici** e consulta le schede Parametri, Spettri, Inquadramento sismico.
 4. Per allegare i risultati alla relazione usa **Stampa / Salva PDF** (consigliati Chrome o Edge).
 
+## Esempio di controllo
+
+Per verificare subito i risultati: L'Aquila, lat **42,3499**, lon **13,3995** (WGS84), `V_N` = 50 anni, classe d'uso II, categoria **B**, topografia **T1**, ξ = 5 %, `q` = 1,5. Allo **SLV** (`T_R` = 475 anni) l'app restituisce:
+
+| a_g (g) | F_0 | T*_C (s) | S_S | a_max (g) | k_h | S_d plateau (g) | S_dv(0) (g) |
+|---|---|---|---|---|---|---|---|
+| 0,261 | 2,36 | 0,347 | 1,154 | 0,301 | 0,0842 | 0,4738 | 0,1797 |
+
+Gli stessi valori, con altre località, sono la base dei controlli automatici: vedi [Validazione](docs/validazione.md).
+
 ## Perimetro d'uso
 
 È uno strumento di supporto per il professionista: **non** sostituisce la relazione geologica e geotecnica, non esegue analisi di risposta sismica locale e non sceglie il fattore `q`. Le scelte di progetto e l'impiego dei risultati restano a carico del professionista. Dettagli in [Metodo e limiti](docs/metodo.md#limiti-e-perimetro-duso).

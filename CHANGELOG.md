@@ -1,5 +1,16 @@
 # Changelog
 
+## Non rilasciato
+
+Robustezza e documentazione. Nessun risultato di calcolo cambia.
+
+- Controllo dei dati inseriti: con coordinate, vita nominale o smorzamento non validi, o con un punto fuori dal territorio italiano (es. latitudine e longitudine invertite), il calcolo non viene eseguito e un avviso spiega il motivo; i risultati precedenti vengono azzerati.
+- Servizi INGV (eventi) e ISPRA (faglie): richiesta annullata dopo 15 s senza risposta, con avviso e invito a riprovare con «Aggiorna».
+- Testi provenienti da file dati e messaggi di errore sempre inseriti nella pagina come testo (prima alcuni non erano filtrati).
+- Avvio più rapido: la ricerca del passo di riga del reticolo usa celle di 0,2° (circa 10 ms invece di 140 ms), con lo stesso risultato.
+- Nome dei file CSV con le coordinate così come sono.
+- Documentazione: esempio di controllo nel README (L'Aquila, SLV); riquadro «Attenzione» in `docs/metodo.md`; nuovo `SECURITY.md` per le segnalazioni di sicurezza.
+
 ## 1.9.0 — 2026-11-14
 
 Spettri dei 4 stati limite a confronto, esportazione CSV, stampa più affidabile. Nessun risultato di calcolo cambia.
