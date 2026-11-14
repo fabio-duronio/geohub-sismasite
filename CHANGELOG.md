@@ -1,6 +1,6 @@
 # Changelog
 
-## Non rilasciato
+## 1.9.1 — 2026-11-14
 
 Robustezza e documentazione. Nessun risultato di calcolo cambia.
 
