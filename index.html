@@ -889,7 +889,7 @@ function hzAggiorna(){
   const sel = document.getElementById('hzPoe'); if(sel) sel.value = String(hz.poe);
   const legBox = document.querySelector('.hz-leg'); if(legBox) legBox.style.display = hz.attivo ? '' : 'none';
   const leg = document.getElementById('hzLegendImg');
-  const tr = MPS04_POE.find(x=>x[0]===hz.poe)[1];
+  const tr = (MPS04_POE.find(x=>x[0]===hz.poe) || [10, 475])[1];
   if(leg){ leg.src = hzLegendaUrl(); leg.alt = 'Legenda della carta di a_g, T_R ' + tr + ' anni, percentile ' + hz.perc; }
   const lab = document.getElementById('hzLegendLabel');
   if(lab) lab.innerHTML = 'a<sub>g</sub> [g] · T<sub>R</sub> ' + tr + ' anni (' + hz.poe + ' % in 50 anni) · ' +
@@ -1278,7 +1278,7 @@ function updateGridStatusLabel(sourceLabel){
   const isFullGrid = n >= 1000; // il reticolo ufficiale ha 10.751 nodi; una griglia demo ne ha una decina
   if(isFullGrid){
     el.innerHTML = `Il reticolo attualmente caricato contiene <b>${n} nodi</b>` +
-      (sourceLabel ? ` (fonte dichiarata nel file: ${sourceLabel})` : '') + `.`;
+      (sourceLabel ? ` (fonte dichiarata nel file: ${escapeHtml(sourceLabel)})` : '') + `.`;
   } else {
     el.innerHTML = `<b>Il file grid-data.json attualmente caricato è un reticolo dimostrativo a soli ${n} nodi.</b> ` +
       `Per uso professionale, generare il reticolo ufficiale a 10.751 nodi (Allegato B, Open Data MIT/INGV) con lo script <code>convert_grid.py</code> incluso — vedi i commenti nello script per il formato del file di input.`;
@@ -1372,15 +1372,23 @@ function prepareGridIndex(G){
   G.idIndex = new Map();
   for(let i=0;i<G.count;i++) G.idIndex.set(G.id[i], i);
   // passo di riga = differenza di ID più frequente fra un nodo e il suo vicino
-  // più prossimo appartenente a un'altra riga (|ΔID| > 1), su un campione
+  // più prossimo appartenente a un'altra riga (|ΔID| > 1), su un campione.
+  // I nodi sono raggruppati in celle di 0,2° per cercare il vicino solo nelle
+  // celle adiacenti (prima: confronto con tutti i nodi, ~4 milioni di operazioni).
+  const CELLA = 0.2, celle = new Map(), chiave = (la, lo)=>Math.floor(la/CELLA) + ',' + Math.floor(lo/CELLA);
+  for(let j=0;j<G.count;j++){ const k = chiave(G.lat[j], G.lon[j]); if(!celle.has(k)) celle.set(k, []); celle.get(k).push(j); }
   const freq = new Map();
   const step = Math.max(1, Math.floor(G.count/400));
   for(let s=0; s<G.count; s+=step){
     let best=-1, dBest=Infinity;
-    for(let j=0;j<G.count;j++){
-      if(Math.abs(G.id[j]-G.id[s]) <= 1) continue;
-      const d = (G.lat[j]-G.lat[s])**2 + ((G.lon[j]-G.lon[s])*Math.cos(G.lat[s]*Math.PI/180))**2;
-      if(d < dBest){ dBest=d; best=j; }
+    const ci = Math.floor(G.lat[s]/CELLA), cj = Math.floor(G.lon[s]/CELLA);
+    for(let di=-1; di<=1; di++) for(let dj=-1; dj<=1; dj++){
+      const lista = celle.get((ci+di) + ',' + (cj+dj)); if(!lista) continue;
+      for(const j of lista){
+        if(Math.abs(G.id[j]-G.id[s]) <= 1) continue;
+        const d = (G.lat[j]-G.lat[s])**2 + ((G.lon[j]-G.lon[s])*Math.cos(G.lat[s]*Math.PI/180))**2;
+        if(d < dBest){ dBest=d; best=j; }
+      }
     }
     if(best>=0){ const k = Math.abs(G.id[best]-G.id[s]); freq.set(k, (freq.get(k)||0)+1); }
   }
@@ -1743,12 +1751,16 @@ function runCalculation(){
   if(gridLoadError || !GRID || GRID.count < 100){
     document.getElementById('warnBox').innerHTML =
       `<div class="alert alert-danger"><span class="alert-title">Calcolo non eseguito: reticolo di riferimento non caricato</span>
-       Il file <code>grid-data.json</code> non è stato caricato (${gridLoadError ? gridLoadError.message : 'griglia incompleta'}),
+       Il file <code>grid-data.json</code> non è stato caricato (${gridLoadError ? escapeHtml(gridLoadError.message) : 'griglia incompleta'}),
        quindi non è possibile calcolare i parametri di pericolosità sismica. Il reticolo di riserva interno contiene solo
        ${GRID ? GRID.count : 0} nodi dimostrativi e non è idoneo al calcolo.
        <br>Avvia un server locale nella cartella dell'app (es. <code>python3 -m http.server</code>) e apri la pagina da
        <code>http://localhost:8000/</code>. Se la pagina è pubblicata online, verifica che <code>dati/grid-data.json</code>
        sia presente e raggiungibile.</div>`;
+    svuotaRisultati();
+    return;
+  }
+  function svuotaRisultati(){
     ['kpiS','kpiAmax','kpiKh','kpiKv','kpiTR','kpiAg','kpiF0','kpiTc0','kpiSs','kpiCc'].forEach(id=>{ const e=document.getElementById(id); if(e) e.textContent='–'; });
     ['hazardTableBody','ampliTableBody','liqResult','fase1TableBody'].forEach(id=>{ const e=document.getElementById(id); if(e) e.innerHTML=''; });
     const rh=['rhSite','rhDate','rhVersion','rhCoords','rhSource','rhNodes'];
@@ -1765,6 +1777,26 @@ function runCalculation(){
   const CU = parseFloat(document.getElementById('cu').value);
   const damping = parseFloat(document.getElementById('damping').value);
   const eta = Math.max(0.55, Math.sqrt(10/(5+damping)));
+
+  // Controllo dei dati inseriti: senza valori validi non si calcola
+  const errori = [];
+  if(!isFinite(lat) || lat < -90 || lat > 90) errori.push('latitudine non valida (gradi decimali WGS84, es. 42,35)');
+  if(!isFinite(lon) || lon < -180 || lon > 180) errori.push('longitudine non valida (gradi decimali WGS84, es. 13,40)');
+  if(!isFinite(VN) || VN <= 0) errori.push('vita nominale V_N non valida');
+  if(!isFinite(damping) || damping <= 0) errori.push('smorzamento ξ non valido');
+  if(errori.length){
+    document.getElementById('warnBox').innerHTML = `<div class="alert alert-danger"><span class="alert-title">Calcolo non eseguito: dati non validi</span>` +
+      errori.map(escapeHtml).join('; ') + `.</div>`;
+    svuotaRisultati();
+    return;
+  }
+  if(lat < 35 || lat > 48 || lon < 6 || lon > 19.5){
+    document.getElementById('warnBox').innerHTML = `<div class="alert alert-danger"><span class="alert-title">Calcolo non eseguito: punto fuori dal territorio italiano</span>
+      Le coordinate (${fmt(lat,4)} N, ${fmt(lon,4)} E) sono esterne all'area coperta dal reticolo di riferimento (Allegato B al D.M. 14/01/2008).
+      Verificare di aver inserito latitudine e longitudine nei campi giusti, in gradi decimali WGS84.</div>`;
+    svuotaRisultati();
+    return;
+  }
 
   const VR = VN*CU;
   const St = computeSt(topoCat);
@@ -1875,7 +1907,7 @@ function renderWarnings(){
     msgs.push(`<b>Sito non contenuto in una maglia completa del reticolo</b> (bordo del reticolo o lacuna lungo la costa). L'interpolazione usa i <b>4 nodi più vicini</b> invece dei vertici di una maglia (Allegato A): verificare i valori, soprattutto in zone ad alto gradiente di pericolosità.`);
   }
   if(r.fonte && r.fonte.indexOf('Tabella 2') >= 0){
-    msgs.push(`<b>Valori da Allegato B – Tabella 2 (isole).</b> ${r.fonte}.`);
+    msgs.push(`<b>Valori da Allegato B – Tabella 2 (isole).</b> ${escapeHtml(r.fonte)}.`);
   }
   if(s2FuoriTerra){
     msgs.push(`<b>Il punto è in mare</b>: non ricade in alcun comune (confini ISTAT) né entro 2 km da un comune. ${r.fonte && r.fonte.indexOf('Tabella 2') >= 0 ? 'I valori costanti della Tabella 2 sono attribuiti per la sola appartenenza all\'area dell\'isola' : 'I valori sono interpolati dal reticolo'} e <b>non rappresentano un sito di progetto</b>: verificare le coordinate.`);
@@ -1995,7 +2027,7 @@ function scaricaCsv(nome, righe){
 }
 function nomeCsv(tipo){
   const R = lastResults;
-  return `SismaSite_${tipo}_${R.lat.toFixed(4)}_${R.lon.toFixed(4)}.csv`.replace(/-/g, 'm');
+  return `SismaSite_${tipo}_${R.lat.toFixed(4)}_${R.lon.toFixed(4)}.csv`;
 }
 function qDiProgetto(code){
   let qIn = parseFloat(document.getElementById('qFactor').value);   // stesse regole di renderDesignPanel
@@ -2339,6 +2371,16 @@ function renderLiquefaction(){
    S5 faglie attive e capaci (ISPRA ITHACA, tempo reale)
    I file dati sono caricati solo alla prima richiesta.
 ====================================================================== */
+/* Richiesta a un servizio esterno con tempo massimo: se il servizio non
+   risponde entro il limite la richiesta è annullata e la sezione lo segnala. */
+const TIMEOUT_SERVIZI_MS = 15000;
+async function fetchConTimeout(url, ms = TIMEOUT_SERVIZI_MS){
+  const ctrl = new AbortController();
+  const t = setTimeout(()=>ctrl.abort(), ms);
+  try{ return await fetch(url, {signal:ctrl.signal}); }
+  catch(e){ if(e.name === 'AbortError') throw new Error('nessuna risposta entro ' + Math.round(ms/1000) + ' s'); throw e; }
+  finally{ clearTimeout(t); }
+}
 function escapeHtml(s){
   return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
@@ -2493,7 +2535,7 @@ function s2Render(){
   if(chip) chip.textContent = nome + ' (' + prov + ') · ' + (principali.length === 1 ? 'zona ' + zona : 'zone ' + zona);
   html += `<table class="data-table">
     <tr><td>Comune</td><td><b>${escapeHtml(nome)}</b> (${escapeHtml(prov)}) – ${escapeHtml(st.CL.regioni[iReg])}</td></tr>
-    <tr><td>Codice ISTAT</td><td>${codice}${codDpc && codDpc !== codice ? ` <span class="hint">(nel file DPC: ${codDpc})</span>` : ''}</td></tr>
+    <tr><td>Codice ISTAT</td><td>${escapeHtml(codice)}${codDpc && codDpc !== codice ? ` <span class="hint">(nel file DPC: ${escapeHtml(codDpc)})</span>` : ''}</td></tr>
     <tr><td>Classificazione sismica (codice DPC)</td><td><b>${escapeHtml(zona)}</b> — ${descr}</td></tr>
   </table>`;
   if(st.candidati.length > 1 && st.dentro){
@@ -2536,13 +2578,13 @@ async function s3Aggiorna(){
   box.innerHTML = '<div class="hint">Interrogazione del servizio INGV…</div>';
   let testo = '';
   try{
-    const r = await fetch(url);
+    const r = await fetchConTimeout(url);
     if(r.status === 204) testo = '';
     else if(!r.ok) throw new Error('HTTP ' + r.status);
     else testo = await r.text();
   }catch(e){
     if(id !== s3Richiesta) return;
-    box.innerHTML = `<div class="alert alert-danger">Servizio INGV non raggiungibile (${escapeHtml(e.message)}). Riprovare più tardi.</div>`;
+    box.innerHTML = `<div class="alert alert-danger">Servizio INGV non raggiungibile (${escapeHtml(e.message)}). Riprovare più tardi con il pulsante «Aggiorna».</div>`;
     return;
   }
   if(id !== s3Richiesta) return;
@@ -2708,13 +2750,13 @@ async function s5Aggiorna(){
   box.innerHTML = '<div class="hint">Interrogazione del servizio ISPRA ITHACA…</div>';
   let j;
   try{
-    const r = await fetch(ITHACA_URL + '?' + params.toString());
+    const r = await fetchConTimeout(ITHACA_URL + '?' + params.toString());
     if(!r.ok) throw new Error('HTTP ' + r.status);
     j = await r.json();
     if(j.error) throw new Error(j.error.message || 'errore del servizio');
   }catch(e){
     if(id !== s5Richiesta) return;
-    box.innerHTML = `<div class="alert alert-danger">Servizio ISPRA ITHACA non raggiungibile (${escapeHtml(e.message)}). Riprovare più tardi.</div>`;
+    box.innerHTML = `<div class="alert alert-danger">Servizio ISPRA ITHACA non raggiungibile (${escapeHtml(e.message)}). Riprovare più tardi con il pulsante «Aggiorna».</div>`;
     return;
   }
   if(id !== s5Richiesta) return;
@@ -2850,7 +2892,7 @@ function compilaStampa(){
     rigaDato('Data del calcolo · versione', testo('rhDate') + ' · SismaSite v' + APP_VERSION);
 
   // legenda e didascalia della mappa
-  const tr = MPS04_POE.find(x=>x[0]===hz.poe)[1];
+  const tr = (MPS04_POE.find(x=>x[0]===hz.poe) || [10, 475])[1];
   const tit = document.getElementById('stLegendaTit'), img = document.getElementById('stLegendaImg');
   if(hz.attivo){
     tit.innerHTML = 'a<sub>g</sub> (g) · T<sub>R</sub> ' + tr + ' anni';

@@ -4,6 +4,11 @@ Descrizione della catena di calcolo di SismaSite e del suo perimetro d'uso. Rife
 
 [← Torna al README](../README.md)
 
+> **Attenzione**
+> - Il fattore di comportamento `q` **non è scelto dall'app**: è un dato di progetto che il progettista sceglie e giustifica (Tab. 7.3.I e §7.3).
+> - I risultati valgono solo per i punti coperti dal reticolo di riferimento (territorio nazionale; Sardegna e isole minori con la Tabella 2 dell'Allegato B). Coordinate esterne all'Italia non sono calcolate.
+> - Per punti in mare, al bordo del reticolo o lontani dal nodo più vicino l'app usa i nodi più vicini e lo segnala con un avviso: in questi casi i valori **non sono utilizzabili a fini normativi** senza una valutazione specifica.
+
 ## Catena di calcolo
 
 1. **Periodo di ritorno** — `T_R = −V_R / ln(1 − P_VR)`, con `V_R = V_N · C_U` (NTC 2018 §2.4.3, **senza valore minimo**: il limite `V_R ≥ 35` anni delle NTC 2008 è stato eliminato; per `V_R < 35` anni l'app mostra una nota) e `P_VR` = 81 %, 63 %, 10 %, 5 % rispettivamente per SLO, SLD, SLV, SLC (NTC 2018, Tab. 3.2.I). Il valore è limitato all'intervallo tabulato **30–2475 anni** (Allegato A, nota 1); quando il limite interviene l'app lo segnala.
