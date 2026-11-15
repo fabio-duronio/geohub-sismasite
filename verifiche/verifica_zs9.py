@@ -2,7 +2,7 @@
 """
 verifica_zs9.py — SismaSite (GeoHub)
 
-Verifica indipendente del modulo moduli/zs9.js (v1.1.0): stessa procedura
+Verifica indipendente del modulo moduli/zs9.js (v1.2.0): stessa procedura
 (Linee guida LQ v1.0, pag. 30–31) riscritta in Python con librerie diverse,
 e confronto dei risultati su località di controllo e punti casuali.
 
@@ -101,8 +101,8 @@ def valuta_py(lat, lon, D, poligoni):
     for z in D['zone']:
         r = dist_zona_km(lat, lon, z)
         ms = 1 + 3 * math.log10(r)
-        tab.append({'zona': z['id'], 'r_km': r, 'ms': ms, 'm': MW[z['id']], 'conta': ms < MW[z['id']]})
-    contano = [t['m'] for t in tab if t['conta']]
+        tab.append({'zona': z['id'], 'r_km': r, 'ms': ms, 'm': MW[z['id']], 'ammissibile': ms < MW[z['id']]})
+    contano = [t['m'] for t in tab if t['ammissibile']]
     return {'dentro': False, 'zona': None, 'mw': max(contano) if contano else None, 'tabella': tab}
 
 
@@ -125,7 +125,7 @@ def confronta(nome, py, js):
             q = tj[t['zona']]
             if abs(t['r_km'] - q['r_km']) > TOLL_KM:
                 return f'{nome}: zona {t["zona"]}, R Python {t["r_km"]:.4f} km, JS {q["r_km"]:.4f} km'
-            if t['conta'] != q['conta']:
+            if t['ammissibile'] != q['ammissibile']:
                 return f'{nome}: zona {t["zona"]}, esito Ms < M diverso'
     return None
 

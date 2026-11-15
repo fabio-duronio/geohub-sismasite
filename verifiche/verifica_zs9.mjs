@@ -1,5 +1,5 @@
 /* verifica_zs9.mjs — SismaSite (GeoHub)
-   Test automatici del modulo moduli/zs9.js (v1.1.0) con dati/zs9-data.json.
+   Test automatici del modulo moduli/zs9.js (v1.2.0) con dati/zs9-data.json.
 
    Uso:   node verifiche/verifica_zs9.mjs
    Esce con codice 1 se un controllo fallisce.
@@ -13,6 +13,8 @@
    4. Proprietà della procedura fuori zona: tabella di 36 righe ordinata,
       Ms_i = 1 + 3·log10(R_i), esito coerente con Ms_i < M_i.
    5. Distanza geodetica: valori di riferimento della formula di Vincenty.
+   6. Casi A–G della specifica «Gestione della magnitudo di riferimento Mw»
+      (15/11/2026, §10).
 */
 import { createRequire } from 'module';
 import { readFileSync } from 'fs';
@@ -51,7 +53,7 @@ ok(Object.values(ZS9.MW_MAX).every(m => m > 5), 'Tab. A1.1: tutte le Mw,max > 5'
   ok(z.length === 36 && z[0] === 901 && z[35] === 936, 'Fig. 19: fascia assegnata a tutte le 36 zone');
   const att = { 918: 0, 923: 0, 927: 0, 922: 1, 912: 3, 930: 3, 914: 5, 924: 5, 910: 8, 911: 8, 905: 10, 935: 10 };
   ok(Object.entries(att).every(([k, v]) => ZS9.BORDO_MORBIDO_KM[k] === v), 'Fig. 19: valori di controllo per 12 zone');
-  ok(ZS9.SOGLIA_DATUM_KM === 0.5, 'Soglia minima per il datum: 0,5 km');
+  ok(ZS9.SOGLIA_MINIMA_KM === 0.5, 'Soglia minima convenzionale dell\'avviso: 0,5 km');
 }
 
 /* ---------------- 2. Località di controllo ---------------- */
@@ -97,9 +99,10 @@ const misto = comuni.find(([, s]) => new Set([...s].map(z => ZS9.MW_MAX[z])).siz
   const [k, s] = misto; const [lo, la] = k.split(',').map(Number);
   const r = ZS9.valuta(la, lo, D);
   const zz = [...s]; const mMax = Math.max(...zz.map(z => ZS9.MW_MAX[z]));
-  ok(r.esito === 'dentro_zona' && zz.every(z => r.zone_contenenti.includes(z)) && r.mw === mMax &&
-     r.avvisi.some(a => a.codice === 'bordo_comune'),
-     `Sito su vertice comune alle zone ${zz.join('/')}: zone ${r.zone_contenenti.join('/')}, Mw ${r.mw} (la più alta) con avviso`);
+  ok(r.esito === 'confine_comune' && zz.every(z => r.zone_contenenti.includes(z)) && r.mw === mMax &&
+     r.avvisi.some(a => a.codice === 'confine_comune') && r.avvisi.some(a => a.codice === 'vicino_bordo') &&
+     zz.every(z => r.prossimita_bordo.some(p => p.zona === z && p.d_km < 0.001)),
+     `Caso B – sito su vertice comune alle zone ${zz.join('/')}: zone ${r.zone_contenenti.join('/')}, Mw ${r.mw} (la più alta), avviso di confine comune e avviso di prossimità`);
 }
 // punto medio di un lato esterno (non condiviso) della zona 923: sul bordo → interno
 {
@@ -165,8 +168,8 @@ function puntoEsterno(zona, rMin, rMax) {
      'Parigi: fuori dominio, nessuna Mw, nessun avviso di inversione');
   // Tunisi è dentro il riquadro di controllo (lo stesso del calcolo di SismaSite):
   // il modulo applica la procedura fuori zona; le zone sono troppo lontane → disaggregazione
-  ok(tunisi.esito === 'disaggregazione_richiesta' && tunisi.mw === null && tunisi.tabella.every(t => !t.conta),
-     'Tunisi (nel riquadro di controllo): nessuna zona conta, disaggregazione richiesta, nessuna Mw (R minima ' +
+  ok(tunisi.esito === 'disaggregazione_richiesta' && tunisi.mw === null && tunisi.tabella.every(t => !t.ammissibile),
+     'Tunisi (nel riquadro di controllo): nessuna zona ammissibile, disaggregazione richiesta, nessuna Mw (R minima ' +
      (tunisi.distanza_bordo_km ? tunisi.distanza_bordo_km.toFixed(0) : '–') + ' km)');
 }
 // dentro il riquadro ma lontano dalle zone (Mar Tirreno centrale): procedura fuori zona applicata
@@ -175,12 +178,13 @@ function puntoEsterno(zona, rMin, rMax) {
   ok(['fuori_zona', 'disaggregazione_richiesta'].includes(r.esito) && r.tabella.length === 36,
      'Mar Tirreno (40,0; 11,5): ' + r.esito + ', R minima ' + r.distanza_bordo_km.toFixed(1) + ' km, Mw ' + r.mw);
 }
-// nessuna zona conta → disaggregazione (punto costruito lontano: Sardegna occidentale)
+// nessuna zona ammissibile → disaggregazione (punto costruito lontano: Sardegna occidentale)
 {
   const r = ZS9.valuta(40.0, 8.5, D);
-  ok(r.esito === 'disaggregazione_richiesta' ? (r.mw === null && r.tabella.every(t => !t.conta) && r.avvisi.some(a => a.codice === 'disaggregazione'))
-                                             : r.tabella.some(t => t.conta),
-     'Sardegna (40,0; 8,5): ' + r.esito + ' (R minima ' + r.distanza_bordo_km.toFixed(1) + ' km)');
+  ok(r.esito === 'disaggregazione_richiesta' && r.mw === null && r.zone_mw.length === 0 &&
+     r.tabella.every(t => !t.ammissibile && !t.selezionata) &&
+     r.avvisi.some(a => a.codice === 'disaggregazione' && /non è stato possibile determinare una Mw zonale/.test(a.testo)),
+     'Caso D – Sardegna (40,0; 8,5): ' + r.esito + ', nessuna Mw, nessuna zona selezionata, segnalazione della disaggregazione' + ' (R minima ' + r.distanza_bordo_km.toFixed(1) + ' km)');
 }
 // coordinate non valide
 ok(ZS9.valuta(NaN, 13, D).esito === 'dati_non_validi', 'Latitudine NaN: dati non validi');
@@ -203,15 +207,68 @@ ok(/36 zone/.test(errore), 'File dati con 35 zone: errore esplicito');
     const r = ZS9.valuta(la, lo, D), t = r.tabella;
     for (let i = 0; i < t.length; i++) {
       if (!quasi(t[i].ms, 1 + 3 * Math.log10(t[i].r_km), 1e-12)) coerente = false;
-      if (t[i].conta !== (t[i].ms < t[i].m)) coerente = false;
+      if (t[i].ammissibile !== (t[i].ms < t[i].m)) coerente = false;
+      if (t[i].selezionata !== (t[i].ammissibile && t[i].m === r.mw)) coerente = false;
       if (t[i].m !== ZS9.MW_MAX[t[i].zona]) coerente = false;
       if (i && t[i].r_km < t[i - 1].r_km) coerente = false;
     }
     if (new Set(t.map(x => x.zona)).size !== 36) coerente = false;
-    if (r.mw !== Math.max(...t.filter(x => x.conta).map(x => x.m))) coerente = false;
+    if (r.mw !== Math.max(...t.filter(x => x.ammissibile).map(x => x.m))) coerente = false;
+    if (r.zone_mw.join() !== t.filter(x => x.selezionata).map(x => x.zona).join()) coerente = false;
     if (r.distanza_bordo_km !== t[0].r_km) coerente = false;
   }
-  ok(coerente, 'Fuori zona: 36 righe distinte, ordine per R, Ms = 1 + 3·log10 R, «conta» se Ms < M, Mw = massima M fra le zone che contano');
+  ok(coerente, 'Fuori zona: 36 righe distinte, ordine per R, Ms = 1 + 3·log10 R, «ammissibile» se Ms < M, Mw = massima M fra le sole zone ammissibili, zone selezionate coerenti');
+}
+
+/* ---------------- 6. Casi della specifica (§10) ---------------- */
+// Caso A – sito interno: zona e Mw da Tab. A1.1, nessuna tabella
+{
+  const r = ZS9.valuta(42.3498, 13.3995, D);
+  ok(r.esito === 'dentro_zona' && r.zona === 923 && r.mw === 7.06 && r.tabella === null && r.zone_mw.join() === '923',
+     'Caso A – L\'Aquila: zona 923 per appartenenza geometrica, Mw 7,06 (Tab. A1.1)');
+}
+// Caso B generalizzato – vertice comune a tre o più zone (se presente nei dati)
+{
+  const tre = comuni.find(([, s]) => s.size >= 3);
+  if (tre) {
+    const [k, s] = tre; const [lo, la] = k.split(',').map(Number); const r = ZS9.valuta(la, lo, D);
+    const zz = [...s];
+    ok(r.esito === 'confine_comune' && zz.every(z => r.zone_contenenti.includes(z)) && r.mw === Math.max(...zz.map(z => ZS9.MW_MAX[z])),
+       `Caso B (tre o più zone) – vertice comune a ${zz.join('/')}: Mw ${r.mw}, la più alta`);
+  } else ok(true, 'Caso B (tre o più zone): nessun vertice comune a tre zone nei dati');
+}
+// Caso C – disuguaglianza stretta
+ok(ZS9.zonaAmmissibile(6.37, 6.37) === false && ZS9.zonaAmmissibile(6.369999, 6.37) === true,
+   'Caso C – test Ms_i < M_i con disuguaglianza stretta (Ms = M → non ammissibile)');
+// Caso C – Mw dalle sole zone ammissibili: il massimo fra tutte le 36 zone sarebbe 7,29
+{
+  const r = ZS9.valuta(42.4618, 14.2161, D);
+  const tutte = Math.max(...r.tabella.map(t => t.m));
+  ok(r.mw === 7.06 && tutte === 7.29 && !r.tabella.find(t => t.m === 7.29).ammissibile,
+     'Caso C – Pescara: Mw 7,06 dalle zone ammissibili (la massima fra tutte le zone, 7,29, è esclusa dal test)');
+}
+// Caso E – avviso solo informativo: stessa Mw con e senza avviso, campi completi
+{
+  const a = ZS9.valuta(38.0, 15.35, D);
+  const p = a.prossimita_bordo[0];
+  ok(a.esito === 'dentro_zona' && a.zona === 929 && a.mw === 7.29 && p && p.zona === 932 &&
+     p.fascia_km === 5 && p.soglia_km === 5 && p.d_km < 5 && /soglia applicata 5 km/.test(a.avvisi.find(x => x.codice === 'vicino_bordo').testo),
+     'Caso E – sito nella zona 929 a ' + (p ? p.d_km.toFixed(2) : '?') + ' km dalla 932: avviso con zona, distanza, fascia 5 km e soglia applicata 5 km; zona e Mw invariate');
+  const b = ZS9.valuta(42.3550, 14.4030, D);   // Ortona: nessun confine entro soglia
+  ok(b.prossimita_bordo.length === 0 && !b.avvisi.some(x => x.codice === 'vicino_bordo'), 'Caso E – Ortona: nessun confine entro la soglia, nessun avviso');
+  const soglie = Object.keys(ZS9.BORDO_MORBIDO_KM).every(z => Math.max(ZS9.BORDO_MORBIDO_KM[z], 0.5) >= 0.5);
+  ok(soglie, 'Caso E – soglia = max(w_i; 0,5 km) per tutte le zone (fascia 0 → 0,5 km)');
+}
+// Caso F – zone 923 e 927
+ok(ZS9.MW_MAX[923] === 7.06 && ZS9.MW_MAX[927] === 7.06 && D.zone.some(z => z.id === 923) && D.zone.some(z => z.id === 927),
+   'Caso F – zone 923 e 927 presenti nei dati e nella tabella, Mw,max 7,06');
+// Caso G – datum non dichiarato: segnalato in ogni valutazione, senza dichiararlo WGS84
+{
+  const casi = [[42.3498, 13.3995], [42.4618, 14.2161], [40.0, 8.5]].map(([a, b]) => ZS9.valuta(a, b, D));
+  ok(casi.every(r => r.incertezze_dati.some(x => x.codice === 'datum_non_dichiarato' && /non è dichiarato/.test(x.testo) && /senza assumere che il datum originario sia WGS84/.test(x.testo))),
+     'Caso G – datum del file ZS9 non dichiarato: incertezza segnalata in ogni esito, nessuna assunzione di WGS84');
+  ok(!/0,5 km.*datum|datum.*0,5 km/.test(ZS9.TESTI.dato) && /non è una misura dell'incertezza del datum/.test(ZS9.TESTI.bordi),
+     'Caso G – la soglia di 0,5 km non è presentata come misura dell\'incertezza del datum');
 }
 
 /* ---------------- 5. Geodesia ---------------- */

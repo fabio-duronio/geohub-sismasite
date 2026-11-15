@@ -16,7 +16,7 @@ dati/               file dati letti dall'app
   storica-data.json           CPTI15 v4.0 + DBMI15 v4.0 (sismicità storica)
   zs9-data.json               zonazione sismogenetica ZS9 (INGV, 36 zone)
 moduli/             moduli di calcolo autonomi, senza interfaccia, riusabili in altre app GeoHub
-  zs9.js                      magnitudo di riferimento da ZS9 (Linee guida LQ v1.0), v1.1.0
+  zs9.js                      magnitudo di riferimento da ZS9 (Linee guida LQ v1.0), v1.2.0
 strumenti/          script che rigenerano i file in dati/ dalle fonti ufficiali
   convert_grid.py · convert_classificazione.py · convert_comuni.py · convert_storica.py · convert_zs9.py
 verifiche/          script di controllo (vedi docs/validazione.md)
@@ -91,4 +91,4 @@ Sorgente: `ZS9.ZIP` (shapefile del 06/05/2004) da <https://zonesismiche.mi.ingv.
 
 ## Modulo ZS9 in altre app
 
-`moduli/zs9.js` non dipende dall'interfaccia né dalla rete: si copia insieme a `dati/zs9-data.json` e si usa con `ZS9.valuta(lat, lon, dati)` (coordinate WGS84). Restituisce esito (`dentro_zona`, `fuori_zona`, `disaggregazione_richiesta`, `fuori_dominio`, `dati_non_validi`), zona, `mw`, zone da cui deriva, tabella completa per i siti esterni (`zona`, `r_km`, `ms`, `m`, `conta`), avvisi, testi del criterio e fonti. Le verifiche `verifiche/verifica_zs9.*` vanno copiate con il modulo.
+`moduli/zs9.js` non dipende dall'interfaccia né dalla rete: si copia insieme a `dati/zs9-data.json` e si usa con `ZS9.valuta(lat, lon, dati)` (coordinate WGS84). Restituisce esito (`dentro_zona`, `confine_comune`, `fuori_zona`, `disaggregazione_richiesta`, `fuori_dominio`, `dati_non_validi`), zona, `mw`, zone da cui deriva, tabella completa per i siti esterni (`zona`, `r_km`, `ms`, `m`, `ammissibile`, `selezionata`), prossimità ai confini (`zona`, `d_km`, `fascia_km`, `soglia_km`), incertezze dei dati geografici, avvisi, testi del criterio e fonti. Le verifiche `verifiche/verifica_zs9.*` vanno copiate con il modulo.

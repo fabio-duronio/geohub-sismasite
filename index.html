@@ -713,7 +713,7 @@
         </div>
 
         <div class="panel">
-          <div class="panel-header"><h2>Magnitudo di riferimento (zonazione ZS9)</h2></div>
+          <div class="panel-header"><h2>Magnitudo di riferimento M<sub>w</sub> – parametro informativo per le valutazioni di liquefazione</h2></div>
           <div class="panel-body" id="s6Body"><div class="hint">In attesa del calcolo…</div></div>
         </div>
 
@@ -776,7 +776,7 @@
       <li><b>Spettri elastici.</b> Componente orizzontale secondo il §3.2.3.2.1, formula [3.2.2]; componente verticale secondo il §3.2.3.2.2, formule [3.2.8] e [3.2.9] (F<sub>v</sub> = 1,35·F<sub>0</sub>·(a<sub>g</sub>/g)<sup>0,5</sup>, S<sub>S</sub> = 1, T<sub>B</sub> = 0,05 s, T<sub>C</sub> = 0,15 s, T<sub>D</sub> = 1,0 s; nel primo tratto compare 1/(η·F<sub>0</sub>), per cui S<sub>ve</sub>(0) = a<sub>g</sub>·S<sub>T</sub>·F<sub>v</sub>/F<sub>0</sub>). Gli spettri per i 9 periodi di ritorno del reticolo sono riferiti a sottosuolo di categoria A, superficie T1 e ξ = 5 %.</li>
       <li><b>Spettri di progetto.</b> Per lo SLO lo spettro di progetto coincide con quello elastico (§3.2.3.4). Per SLD e SLV si sostituisce η con 1/q (§3.2.3.5), con il minimo S<sub>d</sub>(T) ≥ 0,2·a<sub>g</sub> per q &gt; 1; per lo SLD q è limitato a 1,5. Per lo SLC l'analisi lineare con q non è prevista (Tab. 7.3.I): è riportato lo spettro elastico (q = 1,0). Per la componente verticale q = 1,5 salvo analisi specifiche (§7.3.1; q = 1,0 per i ponti), non superiore al q orizzontale adottato; la componente verticale va considerata nei casi del §7.2.2 e per a<sub>g</sub> ≥ 0,15 g (§3.2.3.1), salvo quanto previsto al §7.11 per le opere e i sistemi geotecnici.</li>
       <li><b>Coefficienti sismici.</b> a<sub>max</sub> = S<sub>S</sub>·S<sub>T</sub>·a<sub>g</sub>; k<sub>h</sub> = β<sub>s</sub>·a<sub>max</sub>/g e k<sub>v</sub> = ±0,5·k<sub>h</sub>, con β<sub>s</sub> da NTC 2018, Tab. 7.11.I (§7.11.3.5.2), per le verifiche pseudostatiche di stabilità dei pendii agli stati limite ultimi; non si applicano ai muri di sostegno (§7.11.6.2.1). Per a<sub>g</sub> &gt; 0,4 g la tabella non definisce β<sub>s</sub> e i coefficienti non sono calcolati.</li>
-      <li><b>Magnitudo di riferimento (informativa).</b> Non entra nel calcolo dell'azione sismica. Procedura delle Linee guida LQ v1.0 (pag. 30): per un sito interno a una zona della zonazione sismogenetica ZS9, M<sub>w</sub> = M<sub>w,max</sub> della zona (Tab. A1.1, pag. 31); per un sito esterno, distanza minima R<sub>i</sub> dal bordo di ciascuna delle 36 zone, calcolata sull'ellissoide WGS84, e M<sub>s,i</sub> = 1 + 3·log<sub>10</sub>R<sub>i</sub> (R<sub>i</sub> in km); M<sub>w</sub> proposta = massima M<sub>i</sub> fra le zone con M<sub>s,i</sub> &lt; M<sub>i</sub> (interpretazione della regola delle Linee guida, che non definisce le «zone circostanti»); se nessuna zona soddisfa la condizione serve la disaggregazione, non calcolata. Il file ZS9 non dichiara il datum: scarto atteso dell'ordine di 100 m, trascurabile alla scala delle zone. Un avviso segnala i siti più vicini a un bordo della fascia di incertezza del confine assegnata dall'INGV a ciascuna zona («bordi morbidi» di 0–10 km, App. 2 a ZS9, pag. 31–32 e Fig. 19), con un minimo di 0,5 km; l'avviso non cambia la M<sub>w</sub> proposta.</li>
+      <li><b>Magnitudo di riferimento M<sub>w</sub> (parametro informativo per le valutazioni di liquefazione).</b> Non entra nel calcolo dell'azione sismica (NTC 2018, §3.2). <i>Prescrizioni delle Linee guida LQ v1.0 (pag. 30–31):</i> sito interno a una zona della zonazione ZS9 (appartenenza geometrica al poligono) → M<sub>w</sub> = M<sub>w,max</sub> della zona (Tab. A1.1); sito esterno → distanze minime R<sub>i</sub> dalle zone e M<sub>s,i</sub> = 1 + 3·log<sub>10</sub>R<sub>i</sub> (R<sub>i</sub> in km), con disaggregazione se nessuna zona soddisfa M<sub>s,i</sub> &lt; M<sub>i</sub>. <i>Criteri applicativi di GeoHub:</i> R<sub>i</sub> per tutte le 36 zone, come distanza minima dal poligono sull'ellissoide WGS84; M<sub>w</sub> = massima M<sub>i</sub> fra le sole zone con M<sub>s,i</sub> &lt; M<sub>i</sub> (decisione del 12/11/2026, interpretazione operativa delle Linee guida); nessuna M<sub>w</sub> se nessuna zona è ammissibile; sul confine comune di più zone la M<sub>w,max</sub> più alta (scelta prudenziale); avviso informativo se la distanza da un confine è minore di max(w<sub>i</sub>; 0,5 km), con w<sub>i</sub> fascia di incertezza dei confini dell'INGV (App. 2 a ZS9, Fig. 19) e 0,5 km soglia minima convenzionale e cautelativa. Il file ZS9 non dichiara il datum: le coordinate sono usate senza trasformazione e l'incertezza di posizione è segnalata.</li>
     </ol>
 
     <h3>Riferimenti normativi</h3>
@@ -1202,7 +1202,7 @@ function islandAt(lat, lon){
   return null;
 }
 
-const APP_VERSION = '1.10.0';
+const APP_VERSION = '1.10.1';
 const APP_VERSION_DATE = '2026-11-15';
 
 let GRID = null;      // rappresentazione interna unificata: {meta, count, id[], lon[], lat[], ag[t][i], F0[t][i], Tc[t][i]}
@@ -2602,47 +2602,51 @@ async function s6Aggiorna(){
 function s6Render(){
   const box = document.getElementById('s6Body');
   const r = zs9Esito;
-  let html = `<div class="alert alert-info" style="margin-top:0;"><span class="alert-title">Valore informativo</span>
-    La magnitudo di riferimento non entra nel calcolo dell'azione sismica secondo le NTC 2018 svolto da questa applicazione
-    (parametri di pericolosità, spettri, coefficienti). È riportata come dato d'ingresso per altre verifiche, ad esempio
-    quelle di stabilità nei confronti della liquefazione con metodi semplificati; la scelta resta del professionista.</div>`;
-  const avvisi = r.avvisi.map(a=>`<div class="alert alert-warn">${escapeHtml(a.testo)}</div>`).join('');
+  let html = `<div class="alert alert-info" style="margin-top:0;"><span class="alert-title">Parametro informativo</span>
+    ${escapeHtml(r.testi.natura)} La scelta del valore da usare resta del professionista.</div>`;
+  const avvisi = r.avvisi.filter(a=>a.codice !== 'vicino_bordo').map(a=>`<div class="alert alert-warn">${escapeHtml(a.testo)}</div>`).join('');
 
   if(r.esito === 'fuori_dominio' || r.esito === 'dati_non_validi'){
     box.innerHTML = html + avvisi; return;
   }
   const zone = z => z.join(', ');
-  if(r.esito === 'dentro_zona'){
+  if(r.dentro){
+    const confine = r.zone_contenenti.length > 1;
     html += `<table class="data-table" style="margin-top:12px;">
-      <tr><td>Posizione del sito</td><td>interno alla zona <b>${r.zona}</b> (${escapeHtml(r.area_mw)})</td></tr>
-      <tr><td>Distanza dal bordo della zona</td><td>${num1(r.distanza_bordo_km, 2)} km</td></tr>
-      <tr><td>M<sub>w</sub> di riferimento = M<sub>w,max</sub> della zona</td><td><b>${mw2(r.mw)}</b></td></tr>
+      <tr><td>Posizione del sito</td><td>${confine
+        ? `sul confine comune delle zone <b>${zone(r.zone_contenenti)}</b>`
+        : `interno alla zona <b>${r.zona}</b> (${escapeHtml(r.area_mw)})`}</td></tr>
+      <tr><td>Distanza dal bordo della zona ${r.zona}</td><td>${num1(r.distanza_bordo_km, 2)} km</td></tr>
+      <tr><td>M<sub>w</sub> di riferimento ${confine ? '= massima M<sub>w,max</sub> fra le zone (criterio applicativo)' : '= M<sub>w,max</sub> della zona (Tab. A1.1)'}</td><td><b>${mw2(r.mw)}</b>${confine ? ' – zona ' + zone(r.zone_mw) : ''}</td></tr>
     </table>`;
   } else {
-    const righe = r.tabella.map(t=>{
-      const sorgente = r.zone_mw.indexOf(t.zona) >= 0;
-      return `<tr${sorgente ? ' class="zs9-mw"' : ''}><td>${t.zona}</td><td>${num1(t.r_km, 2)}</td><td>${mw2(t.ms)}</td><td>${mw2(t.m)}</td>
-        <td class="${t.conta ? 'zs9-conta' : 'zs9-esclusa'}">${t.conta ? 'conta (M<sub>s,i</sub> &lt; M<sub>i</sub>)' : 'esclusa'}</td></tr>`;
-    }).join('');
-    const n = r.tabella.filter(t=>t.conta).length;
+    const righe = r.tabella.map(t=>`<tr${t.selezionata ? ' class="zs9-mw"' : ''}><td>${t.zona}</td><td>${num1(t.r_km, 2)}</td><td>${mw2(t.ms)}</td><td>${mw2(t.m)}</td>
+        <td class="${t.ammissibile ? 'zs9-conta' : 'zs9-esclusa'}">${t.ammissibile ? 'Ammissibile' : 'Non ammissibile'}</td><td>${t.selezionata ? '<b>sì</b>' : '–'}</td></tr>`).join('');
+    const n = r.tabella.filter(t=>t.ammissibile).length;
     html += `<table class="data-table" style="margin-top:12px;">
       <tr><td>Posizione del sito</td><td>esterno alle zone ZS9; zona più vicina <b>${r.tabella[0].zona}</b> a ${num1(r.tabella[0].r_km, 2)} km</td></tr>
-      <tr><td>Zone che soddisfano M<sub>s,i</sub> &lt; M<sub>i</sub></td><td>${n} su 36</td></tr>
-      <tr><td>M<sub>w</sub> proposta</td><td>${r.mw === null
-        ? '<b>non determinata</b>: nessuna zona soddisfa la condizione, serve la disaggregazione della pericolosità (non calcolata)'
+      <tr><td>Zone ammissibili (M<sub>s,i</sub> &lt; M<sub>i</sub>)</td><td>${n} su 36</td></tr>
+      <tr><td>M<sub>w</sub> di riferimento proposta</td><td>${r.mw === null
+        ? '<b>non determinata</b>: nessuna zona ammissibile; la M<sub>w</sub> va determinata con la disaggregazione della pericolosità (non calcolata)'
         : `<b>${mw2(r.mw)}</b> – zone ${zone(r.zone_mw)} (${escapeHtml(r.area_mw)})`}</td></tr>
     </table>
-    <h3 class="sub-title" style="margin-top:14px;">Distanze dalle 36 zone <small>· R<sub>i</sub> dal bordo, sull'ellissoide WGS84; M<sub>s,i</sub> = 1 + 3·log<sub>10</sub>R<sub>i</sub></small></h3>
+    <h3 class="sub-title" style="margin-top:14px;">Dettaglio per le 36 zone <small>· R<sub>i</sub> distanza minima sito-zona sull'ellissoide WGS84; M<sub>s,i</sub> = 1 + 3·log<sub>10</sub>R<sub>i</sub>; M<sub>i</sub> = M<sub>w,max</sub> (Tab. A1.1)</small></h3>
     <div class="scroll-box"><table class="data-table zs9-tab">
-      <thead><tr><th>Zona</th><th>R<sub>i</sub> (km)</th><th>M<sub>s,i</sub></th><th>M<sub>i</sub> = M<sub>w,max</sub></th><th>Esito</th></tr></thead>
+      <thead><tr><th>Zona</th><th>R<sub>i</sub> (km)</th><th>M<sub>s,i</sub></th><th>M<sub>i</sub></th><th>Esito</th><th>Zona selezionata</th></tr></thead>
       <tbody>${righe}</tbody></table></div>`;
   }
   html += avvisi;
-  html += `<div class="disclaimer"><b>Criterio.</b> ${escapeHtml(r.dentro ? r.testi.dentro : r.testi.fuori)}<br>
-    <b>Dati.</b> ${escapeHtml(r.testi.dato)}<br>
-    <b>Incertezza dei confini.</b> ${escapeHtml(r.testi.bordi)}<br>
+  if(r.prossimita_bordo.length){
+    html += `<div class="alert alert-warn"><span class="alert-title">Prossimità al confine di zona (avviso informativo)</span>
+      <table class="data-table" style="margin:6px 0;"><thead><tr><th>Zona</th><th>Distanza dal confine (km)</th><th>Fascia INGV w<sub>i</sub> (km)</th><th>Soglia applicata (km)</th></tr></thead><tbody>` +
+      r.prossimita_bordo.map(p=>`<tr><td>${p.zona}</td><td>${num1(p.d_km, 2)}</td><td>${num1(p.fascia_km, 0)}</td><td>${num1(p.soglia_km, 1)}</td></tr>`).join('') +
+      `</tbody></table>Il confine è incerto (App. 2 a ZS9, Fig. 19) e va valutato dal geologo; la zona e la M<sub>w</sub> non cambiano.</div>`;
+  }
+  html += `<div class="disclaimer"><b>Criterio.</b> ${escapeHtml(r.dentro ? (r.zone_contenenti.length > 1 ? r.testi.confine : r.testi.dentro) : r.testi.fuori)}<br>
+    <b>Avviso di prossimità.</b> ${escapeHtml(r.testi.bordi)}<br>
+    <b>Incertezza dei dati geografici.</b> ${r.incertezze_dati.map(x=>escapeHtml(x.testo)).join(' ')}<br>
     <b>Criticità.</b> ${escapeHtml(r.testi.criticita)}<br>
-    <b>Fonti.</b> M<sub>w,max</sub>: ${escapeHtml(r.fonti.linee_guida)} Poligoni: ${escapeHtml(r.fonti.zs9)} Incertezza dei confini: ${escapeHtml(r.fonti.app2)}<br>
+    <b>Fonti.</b> ${escapeHtml(r.fonti.linee_guida)} ${escapeHtml(r.fonti.zs9)} ${escapeHtml(r.fonti.app2)} ${escapeHtml(r.fonti.cnr)} ${escapeHtml(r.fonti.ntc)}<br>
     Modulo ZS9 v${escapeHtml(r.versione)}.</div>`;
   box.innerHTML = html;
 }
