@@ -29,6 +29,7 @@
 <meta name="twitter:card" content="summary_large_image">
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<script src="moduli/zs9.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 
@@ -215,6 +216,10 @@
   .alert-danger{background:var(--danger-bg); border-color:#eabec3; color:var(--danger);}
   .alert-ok{background:var(--ok-bg); border-color:#bfe3cd; color:var(--ok);}
   .alert-title{font-weight:600; margin-bottom:3px; display:block;}
+  .alert-info{background:#eef4fb; border-color:#c5d8ef; color:#1e4e8c;}
+  table.zs9-tab td.zs9-conta{color:var(--ok); font-weight:600;}
+  table.zs9-tab td.zs9-esclusa{color:var(--slate-600);}
+  table.zs9-tab tr.zs9-mw td{background:#eef4fb;}
   #warnBox:empty{display:none;}
 
   .disclaimer{font-size:12px; color:var(--slate-600); background:#f6f7f9; border-radius:8px; padding:10px 12px; margin-top:10px; line-height:1.55;}
@@ -708,6 +713,11 @@
         </div>
 
         <div class="panel">
+          <div class="panel-header"><h2>Magnitudo di riferimento (zonazione ZS9)</h2></div>
+          <div class="panel-body" id="s6Body"><div class="hint">In attesa del calcolo…</div></div>
+        </div>
+
+        <div class="panel">
           <div class="panel-header"><h2>Eventi sismici strumentali nel raggio</h2></div>
           <div class="panel-body">
             <div class="chart-toolbar no-print">
@@ -766,6 +776,7 @@
       <li><b>Spettri elastici.</b> Componente orizzontale secondo il §3.2.3.2.1, formula [3.2.2]; componente verticale secondo il §3.2.3.2.2, formule [3.2.8] e [3.2.9] (F<sub>v</sub> = 1,35·F<sub>0</sub>·(a<sub>g</sub>/g)<sup>0,5</sup>, S<sub>S</sub> = 1, T<sub>B</sub> = 0,05 s, T<sub>C</sub> = 0,15 s, T<sub>D</sub> = 1,0 s; nel primo tratto compare 1/(η·F<sub>0</sub>), per cui S<sub>ve</sub>(0) = a<sub>g</sub>·S<sub>T</sub>·F<sub>v</sub>/F<sub>0</sub>). Gli spettri per i 9 periodi di ritorno del reticolo sono riferiti a sottosuolo di categoria A, superficie T1 e ξ = 5 %.</li>
       <li><b>Spettri di progetto.</b> Per lo SLO lo spettro di progetto coincide con quello elastico (§3.2.3.4). Per SLD e SLV si sostituisce η con 1/q (§3.2.3.5), con il minimo S<sub>d</sub>(T) ≥ 0,2·a<sub>g</sub> per q &gt; 1; per lo SLD q è limitato a 1,5. Per lo SLC l'analisi lineare con q non è prevista (Tab. 7.3.I): è riportato lo spettro elastico (q = 1,0). Per la componente verticale q = 1,5 salvo analisi specifiche (§7.3.1; q = 1,0 per i ponti), non superiore al q orizzontale adottato; la componente verticale va considerata nei casi del §7.2.2 e per a<sub>g</sub> ≥ 0,15 g (§3.2.3.1), salvo quanto previsto al §7.11 per le opere e i sistemi geotecnici.</li>
       <li><b>Coefficienti sismici.</b> a<sub>max</sub> = S<sub>S</sub>·S<sub>T</sub>·a<sub>g</sub>; k<sub>h</sub> = β<sub>s</sub>·a<sub>max</sub>/g e k<sub>v</sub> = ±0,5·k<sub>h</sub>, con β<sub>s</sub> da NTC 2018, Tab. 7.11.I (§7.11.3.5.2), per le verifiche pseudostatiche di stabilità dei pendii agli stati limite ultimi; non si applicano ai muri di sostegno (§7.11.6.2.1). Per a<sub>g</sub> &gt; 0,4 g la tabella non definisce β<sub>s</sub> e i coefficienti non sono calcolati.</li>
+      <li><b>Magnitudo di riferimento (informativa).</b> Non entra nel calcolo dell'azione sismica. Procedura delle Linee guida LQ v1.0 (pag. 30): per un sito interno a una zona della zonazione sismogenetica ZS9, M<sub>w</sub> = M<sub>w,max</sub> della zona (Tab. A1.1, pag. 31); per un sito esterno, distanza minima R<sub>i</sub> dal bordo di ciascuna delle 36 zone, calcolata sull'ellissoide WGS84, e M<sub>s,i</sub> = 1 + 3·log<sub>10</sub>R<sub>i</sub> (R<sub>i</sub> in km); M<sub>w</sub> proposta = massima M<sub>i</sub> fra le zone con M<sub>s,i</sub> &lt; M<sub>i</sub> (interpretazione della regola delle Linee guida, che non definisce le «zone circostanti»); se nessuna zona soddisfa la condizione serve la disaggregazione, non calcolata. Il file ZS9 non dichiara il datum: scarto atteso dell'ordine di 100 m, trascurabile alla scala delle zone. Un avviso segnala i siti più vicini a un bordo della fascia di incertezza del confine assegnata dall'INGV a ciascuna zona («bordi morbidi» di 0–10 km, App. 2 a ZS9, pag. 31–32 e Fig. 19), con un minimo di 0,5 km; l'avviso non cambia la M<sub>w</sub> proposta.</li>
     </ol>
 
     <h3>Riferimenti normativi</h3>
@@ -782,6 +793,7 @@
       <li>Comuni: ISTAT, Confini delle unità amministrative a fini statistici al 1° gennaio 2026 (versione generalizzata), CC BY 4.0. Classificazione sismica: Dipartimento della Protezione Civile, Classificazione sismica aggiornata a maggio 2025, CC BY 4.0.</li>
       <li>Eventi strumentali: INGV, servizio FDSN webservices.ingv.it (catalogo ISIDe), CC BY 4.0.</li>
       <li>Storia sismica: Rovida A., Locati M., Camassi R., Lolli B., Gasperini P., Antonucci A. (eds) (2022). Italian Parametric Earthquake Catalogue (CPTI15), version 4.0. INGV, doi:10.13127/CPTI/CPTI15.4 · Locati M. et al. (2022). Database Macrosismico Italiano (DBMI15), versione 4.0. INGV, doi:10.13127/DBMI/DBMI15.4 · CC BY-SA 4.0.</li>
+      <li>Zonazione sismogenetica: Meletti C., Galadini F., Valensise G., Stucchi M., Basili R., Barba S., Vannucci G., Boschi E. (2004). Zonazione sismogenetica ZS9 [Data set]. INGV, doi:10.13127/sh/zs9, CC BY 4.0. M<sub>w,max</sub> per zona: Commissione tecnica per la microzonazione sismica (2018), Microzonazione sismica. Linee guida per la gestione del territorio in aree interessate da liquefazioni (LQ), v1.0, Tab. A1.1, CC BY 4.0.</li>
       <li>Faglie attive e capaci: ITHACA Working Group (2019). ITHACA (ITaly HAzard from CApable faulting), versione dicembre 2019. ISPRA – Servizio Geologico d'Italia, CC BY 4.0.</li>
     </ul>
 
@@ -806,7 +818,7 @@
    restano quindi accessibili al resto del codice (es. map.invalidateSize()
    nel gestore di window 'load' più in basso).
 ====================================================================== */
-let map, marker, basiMappa = null;
+let map, marker, basiMappa = null, zs9Layer = null;
 
 document.addEventListener('DOMContentLoaded', function initMap(){
   if(typeof L === 'undefined'){
@@ -829,7 +841,9 @@ document.addEventListener('DOMContentLoaded', function initMap(){
   };
   basi['Stradale (OpenStreetMap)'].addTo(map);
   basiMappa = basi;
-  L.control.layers(basi, null, {position:'topleft', collapsed:true}).addTo(map);
+  zs9Layer = L.layerGroup();
+  L.control.layers(basi, {'Zone sismogenetiche ZS9 (INGV)': zs9Layer}, {position:'topleft', collapsed:true}).addTo(map);
+  map.on('overlayadd', e=>{ if(e.layer === zs9Layer) zs9Disegna(); });
   L.control.scale({imperial:false, position:'bottomleft'}).addTo(map);
 
   // pannello dedicato alla carta di pericolosità: resta sopra la base
@@ -1188,8 +1202,8 @@ function islandAt(lat, lon){
   return null;
 }
 
-const APP_VERSION = '1.9.1';
-const APP_VERSION_DATE = '2026-11-14';
+const APP_VERSION = '1.10.0';
+const APP_VERSION_DATE = '2026-11-15';
 
 let GRID = null;      // rappresentazione interna unificata: {meta, count, id[], lon[], lat[], ag[t][i], F0[t][i], Tc[t][i]}
 let gridLoadError = null;
@@ -2420,7 +2434,7 @@ let inqSito = null;    // {lat, lon} dell'ultimo calcolo
 let s2FuoriTerra = false;   // true se il punto non ricade in alcun comune né entro 2 km (mare)
 function aggiornaInquadramento(lat, lon){
   inqSito = {lat, lon};
-  s2Aggiorna(); s3Aggiorna(); s4Aggiorna(); s5Aggiorna();
+  s2Aggiorna(); s6Aggiorna(); s3Aggiorna(); s4Aggiorna(); s5Aggiorna();
 }
 
 /* ------------------------------------------------------------------
@@ -2557,6 +2571,108 @@ function s2Render(){
   if(lay){
     decodificaAnelli(cand.c).forEach(r=>L.polygon(r, {color:'#2f7dd6', weight:1.5, fill:false, dashArray:'4 4', interactive:false}).addTo(lay.comune));
   }
+}
+
+/* ------------------------------------------------------------------
+   S6 — Magnitudo di riferimento dalla zonazione ZS9 (modulo moduli/zs9.js)
+   Valore informativo: non entra nel calcolo dell'azione sismica NTC 2018.
+   Il calcolo è tutto nel modulo; qui solo caricamento dei dati e resa.
+------------------------------------------------------------------ */
+const ZS9_DATI = 'dati/zs9-data.json';
+let zs9Esito = null;
+const mw2 = x => num1(x, 2);
+
+async function s6Aggiorna(){
+  const box = document.getElementById('s6Body');
+  const {lat, lon} = inqSito;
+  zs9Esito = null;
+  box.innerHTML = '<div class="hint">Ricerca della zona sismogenetica…</div>';
+  try{
+    if(typeof ZS9 === 'undefined') throw new Error('modulo moduli/zs9.js non caricato');
+    const D = await caricaJSON(ZS9_DATI);
+    if(!inqSito || inqSito.lat !== lat || inqSito.lon !== lon) return;
+    zs9Esito = ZS9.valuta(lat, lon, D);
+    s6Render();
+    zs9Evidenzia();
+  }catch(e){
+    box.innerHTML = `<div class="alert alert-danger">Magnitudo di riferimento non disponibile (${escapeHtml(e.message)}).</div>`;
+  }
+}
+
+function s6Render(){
+  const box = document.getElementById('s6Body');
+  const r = zs9Esito;
+  let html = `<div class="alert alert-info" style="margin-top:0;"><span class="alert-title">Valore informativo</span>
+    La magnitudo di riferimento non entra nel calcolo dell'azione sismica secondo le NTC 2018 svolto da questa applicazione
+    (parametri di pericolosità, spettri, coefficienti). È riportata come dato d'ingresso per altre verifiche, ad esempio
+    quelle di stabilità nei confronti della liquefazione con metodi semplificati; la scelta resta del professionista.</div>`;
+  const avvisi = r.avvisi.map(a=>`<div class="alert alert-warn">${escapeHtml(a.testo)}</div>`).join('');
+
+  if(r.esito === 'fuori_dominio' || r.esito === 'dati_non_validi'){
+    box.innerHTML = html + avvisi; return;
+  }
+  const zone = z => z.join(', ');
+  if(r.esito === 'dentro_zona'){
+    html += `<table class="data-table" style="margin-top:12px;">
+      <tr><td>Posizione del sito</td><td>interno alla zona <b>${r.zona}</b> (${escapeHtml(r.area_mw)})</td></tr>
+      <tr><td>Distanza dal bordo della zona</td><td>${num1(r.distanza_bordo_km, 2)} km</td></tr>
+      <tr><td>M<sub>w</sub> di riferimento = M<sub>w,max</sub> della zona</td><td><b>${mw2(r.mw)}</b></td></tr>
+    </table>`;
+  } else {
+    const righe = r.tabella.map(t=>{
+      const sorgente = r.zone_mw.indexOf(t.zona) >= 0;
+      return `<tr${sorgente ? ' class="zs9-mw"' : ''}><td>${t.zona}</td><td>${num1(t.r_km, 2)}</td><td>${mw2(t.ms)}</td><td>${mw2(t.m)}</td>
+        <td class="${t.conta ? 'zs9-conta' : 'zs9-esclusa'}">${t.conta ? 'conta (M<sub>s,i</sub> &lt; M<sub>i</sub>)' : 'esclusa'}</td></tr>`;
+    }).join('');
+    const n = r.tabella.filter(t=>t.conta).length;
+    html += `<table class="data-table" style="margin-top:12px;">
+      <tr><td>Posizione del sito</td><td>esterno alle zone ZS9; zona più vicina <b>${r.tabella[0].zona}</b> a ${num1(r.tabella[0].r_km, 2)} km</td></tr>
+      <tr><td>Zone che soddisfano M<sub>s,i</sub> &lt; M<sub>i</sub></td><td>${n} su 36</td></tr>
+      <tr><td>M<sub>w</sub> proposta</td><td>${r.mw === null
+        ? '<b>non determinata</b>: nessuna zona soddisfa la condizione, serve la disaggregazione della pericolosità (non calcolata)'
+        : `<b>${mw2(r.mw)}</b> – zone ${zone(r.zone_mw)} (${escapeHtml(r.area_mw)})`}</td></tr>
+    </table>
+    <h3 class="sub-title" style="margin-top:14px;">Distanze dalle 36 zone <small>· R<sub>i</sub> dal bordo, sull'ellissoide WGS84; M<sub>s,i</sub> = 1 + 3·log<sub>10</sub>R<sub>i</sub></small></h3>
+    <div class="scroll-box"><table class="data-table zs9-tab">
+      <thead><tr><th>Zona</th><th>R<sub>i</sub> (km)</th><th>M<sub>s,i</sub></th><th>M<sub>i</sub> = M<sub>w,max</sub></th><th>Esito</th></tr></thead>
+      <tbody>${righe}</tbody></table></div>`;
+  }
+  html += avvisi;
+  html += `<div class="disclaimer"><b>Criterio.</b> ${escapeHtml(r.dentro ? r.testi.dentro : r.testi.fuori)}<br>
+    <b>Dati.</b> ${escapeHtml(r.testi.dato)}<br>
+    <b>Incertezza dei confini.</b> ${escapeHtml(r.testi.bordi)}<br>
+    <b>Criticità.</b> ${escapeHtml(r.testi.criticita)}<br>
+    <b>Fonti.</b> M<sub>w,max</sub>: ${escapeHtml(r.fonti.linee_guida)} Poligoni: ${escapeHtml(r.fonti.zs9)} Incertezza dei confini: ${escapeHtml(r.fonti.app2)}<br>
+    Modulo ZS9 v${escapeHtml(r.versione)}.</div>`;
+  box.innerHTML = html;
+}
+
+/* Livello della mappa: 36 poligoni ZS9, disegnati alla prima attivazione */
+let zs9Poligoni = null;
+async function zs9Disegna(){
+  if(zs9Poligoni || !zs9Layer) return;
+  try{
+    const D = await caricaJSON(ZS9_DATI);
+    if(zs9Poligoni) return;
+    zs9Poligoni = {};
+    D.zone.forEach(z=>{
+      const anelli = z.anelli.map(r=>{ const p = []; for(let i=0; i<r.length; i+=2) p.push([r[i+1], r[i]]); return p; });
+      const mw = typeof ZS9 !== 'undefined' ? ZS9.MW_MAX[z.id] : null;
+      zs9Poligoni[z.id] = L.polygon(anelli, {color:'#7a3fb0', weight:1.2, fillColor:'#7a3fb0', fillOpacity:0.06})
+        .bindTooltip('Zona ' + z.id + (mw ? ' · M<sub>w,max</sub> ' + mw2(mw) : ''), {sticky:true})
+        .addTo(zs9Layer);
+    });
+    zs9Evidenzia();
+  }catch(e){ console.error('ZS9: ' + e.message); }
+}
+/* Evidenzia le zone da cui deriva la Mw del sito */
+function zs9Evidenzia(){
+  if(!zs9Poligoni) return;
+  const sel = zs9Esito ? zs9Esito.zone_mw : [];
+  Object.entries(zs9Poligoni).forEach(([id, p])=>{
+    const on = sel.indexOf(Number(id)) >= 0;
+    p.setStyle({weight: on ? 2.5 : 1.2, fillOpacity: on ? 0.16 : 0.06});
+  });
 }
 
 /* ------------------------------------------------------------------
@@ -2904,6 +3020,7 @@ function compilaStampa(){
     (hz.attivo ? 'Sullo sfondo, carta di pericolosità INGV MPS04: a<sub>g</sub> su suolo rigido con probabilità di eccedenza del ' +
       hz.poe + ' % in 50 anni (T<sub>R</sub> ' + tr + ' anni), ' + (hz.perc === 50 ? 'mediana' : hz.perc + '° percentile') +
       ' (Meletti et al., 2006; CC BY 4.0). I quadrati colorati rappresentano i valori nei punti della griglia di calcolo del modello. La carta ha valore di inquadramento: i parametri sono calcolati dal reticolo dell\'Allegato B. ' : '') +
+    (zs9Layer && map && map.hasLayer(zs9Layer) ? 'In viola, zone sismogenetiche ZS9 (Meletti et al., 2004; CC BY 4.0). ' : '') +
     'Cartografia: ' + base + '.';
 }
 

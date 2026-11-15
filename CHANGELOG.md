@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.10.0 — 2026-11-15
+
+Magnitudo di riferimento dalla zonazione sismogenetica ZS9, a titolo informativo. Nessun risultato del calcolo NTC 2018 cambia.
+
+- Nuovo modulo autonomo `moduli/zs9.js` (zs9 v1.1.0, solo dati e calcolo, riusabile in altre app): sito interno a una zona → M_w = M_w,max della zona (Linee guida LQ v1.0, Tab. A1.1); sito esterno → distanze dal bordo delle 36 zone sull'ellissoide WGS84, M_s,i = 1 + 3·log₁₀R_i, M_w proposta = massima M_i fra le zone con M_s,i < M_i (interpretazione dichiarata della regola delle Linee guida, pag. 30); se nessuna zona conta, disaggregazione richiesta (non calcolata).
+- Nuovo file `dati/zs9-data.json` (36 poligoni dal file INGV ZS9.ZIP del 06/05/2004, CC BY 4.0) e script `strumenti/convert_zs9.py`.
+- Scheda Inquadramento: pannello «Magnitudo di riferimento (zonazione ZS9)» con zona o tabella completa R_i, M_s,i, M_i ed esito, criterio, datum non dichiarato del file, criticità dichiarate dalle Linee guida (pag. 31–32) e fonti; avviso per sito entro la fascia di incertezza del confine di una zona («bordi morbidi» di 0–10 km assegnati dall'INGV, App. 2 a ZS9, pag. 31–32 e Fig. 19; minimo 0,5 km per il datum non dichiarato), che non cambia la M_w; avvisi per sito sul bordo comune di due zone, fuori dall'Italia o con coordinate invertite. Il pannello e la stampa dichiarano che la magnitudo non entra nel calcolo dell'azione sismica.
+- Mappa: livello «Zone sismogenetiche ZS9 (INGV)» nel selettore dei livelli, con M_w,max a comparsa e le zone usate per il sito evidenziate.
+- Stampa: pannello nella sezione 4, voce nel metodo di calcolo e nelle fonti, didascalia della Figura 1 se il livello ZS9 è attivo.
+- Verifiche: `verifiche/verifica_zs9.mjs` (47 test) e `verifiche/verifica_zs9.py` (verifica indipendente con shapely e GeographicLib, 13 località e 150 punti casuali).
+
 ## 1.9.1 — 2026-11-14
 
 Robustezza e documentazione. Nessun risultato di calcolo cambia.

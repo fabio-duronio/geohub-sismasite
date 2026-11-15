@@ -9,6 +9,14 @@ La validazione si articola su tre livelli, distinti:
 - **Dati**: `dati/grid-data.json` è generato da `strumenti/convert_grid.py` a partire dal file ufficiale MIT (`spettri2008.xls`), con controllo di cardinalità (10.751 nodi), ID, coordinate, unità di `a_g` (g/10 → g) e valori estremi (`a_g` 0,009–0,625 g; `F_0` 2,20–3,25; `T*_C` 0,095–0,601 s).
 - **Testo ufficiale** (`verifiche/verifica_allegato_b.py`): confronto con le Tabelle 1 e 2 dell'Allegato B lette dal PDF del D.M. 14/01/2008 (G.U. 4/2/2008, S.O. n. 30). Esito: 10.751 nodi su 10.751 con ID identici, scarti entro l'arrotondamento della stampa (≤ 0,005 su `a_g` in g/10, `F_0`, `T*_C`; ≤ 0,0005° sulle coordinate); Tabella 2 delle isole identica nei 5 gruppi.
 - **Verifica indipendente** (`verifiche/verifica_indipendente.py`): ricalcola in Python puro, senza riusare codice dell'app, l'intera catena (datum, maglia, interpolazione, `S_S`, `C_C`, `S_T`, `T_B`, `T_C`, `T_D`, `a_max`, `β_s`, `k_h`) su 20 città e 40 siti casuali con categorie di sottosuolo, topografia e `V_R` diversi, e la confronta con l'app nel browser (tolleranza 0,01 %). Controlla inoltre lo spettro SLO, lo spettro elastico verticale [3.2.8] su più periodi, il `T*_C` minimo del reticolo, l'avviso per i punti in mare e l'assenza di overflow su mobile.
+- **Magnitudo di riferimento ZS9** (`verifiche/verifica_zs9.mjs`, `verifiche/verifica_zs9.py`): 47 test del modulo `moduli/zs9.js` (Tab. A1.1, fasce di incertezza dei confini della Fig. 19 di App. 2 e relativo avviso, 13 località di controllo, sito su vertice e lato di zona, bordo comune, latitudine e longitudine invertite, punti fuori dall'Italia, dati non validi, distanze di Vincenty) e una verifica indipendente in Python (shapely, GeographicLib tramite `pyproj`) sulle stesse località e su 150 punti casuali, con confronto delle distanze entro 5 m e dell'avviso sui bordi e, se si passa `ZS9.ZIP`, dei vertici con lo shapefile originale. Impronta SHA-256 di `dati/zs9-data.json` controllata da entrambi.
+
+  | Località | Esito | M_w |
+  |---|---|---|
+  | L'Aquila, Sulmona, Avezzano, Norcia | zona 923 | 7,06 |
+  | Teramo, Chieti | zona 918 | 6,37 |
+  | Mirandola, Vigarano Mainarda | zona 912 | 6,14 |
+  | Pescara (918 a 2,07 km), Francavilla al Mare (5,60), Ortona (11,43), Lanciano (4,94), Vasto (28,06) | fuori zona | 7,06 (zone 923, 927) |
 - **Non regressione** (`verifiche/verifica_numeri.py`): confronta l'app con la tabella di riferimento qui sotto (comprese le isole, Tabella 2).
 
 Valori di riferimento per il collaudo (**SLV**, categoria **B**, topografia **T1**, `V_N` = 50 anni, `C_U` = 1,0; `T_R` = 475 anni):
@@ -37,6 +45,9 @@ python3 verifiche/verifica_dati.py            # file dati (classificazione, stor
 python3 verifiche/verifica_numeri.py          # non regressione
 python3 verifiche/verifica_indipendente.py    # calcolo indipendente
 python3 verifiche/verifica_allegato_b.py Decreto_14-01-2008.pdf   # confronto con il PDF ufficiale
+node verifiche/verifica_zs9.mjs               # modulo ZS9 (Node.js)
+pip install pyproj shapely numpy pyshp
+python3 verifiche/verifica_zs9.py [ZS9.ZIP]   # verifica indipendente del modulo ZS9
 ```
 
 `verifiche/verifica_numeri.py` controlla i parametri di pericolosità per 7 località (compresa un'isola), il criterio di selezione dei nodi (vertici della maglia), lo spettro di progetto `S_d`, il comportamento di SLO, SLD (limite `q ≤ 1,5`) e SLC (spettro elastico), il `q` verticale con `q = 1,0`, il `T_R` limitato mostrato in tabella e l'assenza del minimo di `V_R`, ed esce con codice diverso da zero se qualcosa non torna: è utilizzabile come test di non regressione in CI.
