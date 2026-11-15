@@ -1,5 +1,19 @@
 # Changelog
 
+## 1.10.1 — 2026-11-15
+
+Magnitudo di riferimento: allineamento alla specifica «Gestione della magnitudo di riferimento Mw» del 15/11/2026. Nessun valore di M_w cambia per i siti interni né per quelli esterni; nessun risultato del calcolo NTC 2018 cambia.
+
+- Modulo `moduli/zs9.js` v1.2.0:
+  - testi che distinguono le prescrizioni delle Linee guida LQ (pag. 30–31, Tab. A1.1) dai criteri applicativi di GeoHub (Mw dalle sole zone ammissibili, decisione del 12/11; M_w,max più alta sul confine comune; soglia minima di 0,5 km);
+  - la soglia minima di 0,5 km dell'avviso di prossimità è dichiarata come soglia convenzionale e cautelativa, non come misura dell'incertezza del datum;
+  - il datum non dichiarato del file ZS9 è segnalato in ogni esito come incertezza dei dati geografici (campo `incertezze_dati`), senza assumere che sia WGS84;
+  - sito sul confine comune di due o più zone: esito `confine_comune`, zone che danno la M_w elencate, avviso di prossimità sempre calcolato (prima era omesso in questo caso);
+  - tabella dei siti esterni con i campi `ammissibile` e `selezionata`; dettaglio dell'avviso di prossimità (`prossimita_bordo`: zona, distanza, fascia INGV, soglia applicata);
+  - nessuna zona ammissibile: messaggio esplicito «non è stato possibile determinare una Mw zonale con la procedura implementata».
+- Pannello e stampa: titolo «Magnitudo di riferimento M_w – parametro informativo per le valutazioni di liquefazione» (cita MSF e NTC 2018 §3.2); colonne «Esito» (Ammissibile / Non ammissibile) e «Zona selezionata»; tabella dell'avviso di prossimità; fonti con il volume CNR 2024 (§3.1.1.2, Tab. 3.1, per confronto) e NTC 2018 §3.2.
+- Verifiche: `verifiche/verifica_zs9.mjs` con i casi A–G della specifica (57 test); verifica indipendente aggiornata.
+
 ## 1.10.0 — 2026-11-15
 
 Magnitudo di riferimento dalla zonazione sismogenetica ZS9, a titolo informativo. Nessun risultato del calcolo NTC 2018 cambia.
