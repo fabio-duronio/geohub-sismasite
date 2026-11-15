@@ -1,5 +1,5 @@
 /* verifica_zs9.mjs — SismaSite (GeoHub)
-   Test automatici del modulo moduli/zs9.js (v1.0.0) con dati/zs9-data.json.
+   Test automatici del modulo moduli/zs9.js (v1.1.0) con dati/zs9-data.json.
 
    Uso:   node verifiche/verifica_zs9.mjs
    Esce con codice 1 se un controllo fallisce.
@@ -44,6 +44,15 @@ ok(ZS9.MW_MAX[923] === 7.06 && ZS9.MW_MAX[927] === 7.06, 'Tab. A1.1: 923 e 927 =
 const attesiTab = { 922: 5.45, 936: 5.45, 928: 5.91, 912: 6.14, 918: 6.37, 919: 6.37, 910: 6.37, 905: 6.60, 930: 6.60, 924: 6.83, 931: 6.83, 929: 7.29, 935: 7.29 };
 ok(Object.entries(attesiTab).every(([z, m]) => ZS9.MW_MAX[z] === m), 'Tab. A1.1: valori di controllo per 13 zone');
 ok(Object.values(ZS9.MW_MAX).every(m => m > 5), 'Tab. A1.1: tutte le Mw,max > 5');
+
+/* ---------------- 1-bis. Bordi morbidi (App. 2 a ZS9, Fig. 19) ---------------- */
+{
+  const z = Object.keys(ZS9.BORDO_MORBIDO_KM).map(Number).sort((a, b) => a - b);
+  ok(z.length === 36 && z[0] === 901 && z[35] === 936, 'Fig. 19: fascia assegnata a tutte le 36 zone');
+  const att = { 918: 0, 923: 0, 927: 0, 922: 1, 912: 3, 930: 3, 914: 5, 924: 5, 910: 8, 911: 8, 905: 10, 935: 10 };
+  ok(Object.entries(att).every(([k, v]) => ZS9.BORDO_MORBIDO_KM[k] === v), 'Fig. 19: valori di controllo per 12 zone');
+  ok(ZS9.SOGLIA_DATUM_KM === 0.5, 'Soglia minima per il datum: 0,5 km');
+}
 
 /* ---------------- 2. Località di controllo ---------------- */
 /* Coordinate del centro abitato (WGS84, 4 decimali) */
@@ -117,6 +126,31 @@ const misto = comuni.find(([, s]) => new Set([...s].map(z => ZS9.MW_MAX[z])).siz
   }
   ok(p && p.esito === 'fuori_zona' && p.avvisi.some(x => x.codice === 'vicino_bordo'),
      'Sito esterno a meno di 0,5 km dalla zona 918: fuori zona con avviso «vicino al bordo»' + (p ? ` (R = ${p.distanza_bordo_km.toFixed(3)} km)` : ''));
+}
+// soglia per zona: sito esterno a circa 4 km da 935 (fascia 10 km) e da 912 (fascia 3 km)
+function puntoEsterno(zona, rMin, rMax) {
+  const zz = D.zone.find(q => q.id === zona).anelli[0];
+  let lo0 = Infinity, lo1 = -Infinity, la0 = Infinity, la1 = -Infinity;
+  for (let i = 0; i < zz.length; i += 2) { lo0 = Math.min(lo0, zz[i]); lo1 = Math.max(lo1, zz[i]); la0 = Math.min(la0, zz[i + 1]); la1 = Math.max(la1, zz[i + 1]); }
+  for (let la = la0 - 0.1; la <= la1 + 0.1; la += 0.01)
+    for (let lo = lo0 - 0.1; lo <= lo1 + 0.1; lo += 0.01) {
+      const r = ZS9.valuta(la, lo, D);
+      if (r.esito === 'dentro_zona' || !r.tabella) continue;
+      const t = r.tabella[0];
+      if (t.zona === zona && t.r_km > rMin && t.r_km < rMax && r.tabella[1].r_km > 12) return r;
+    }
+  return null;
+}
+{
+  const a = puntoEsterno(935, 3.5, 4.5), b = puntoEsterno(912, 3.5, 4.5);
+  ok(a && a.avvisi.some(x => x.codice === 'vicino_bordo' && /zona 935/.test(x.testo)),
+     'Sito esterno a ' + (a ? a.tabella[0].r_km.toFixed(2) : '?') + ' km dalla zona 935 (fascia 10 km): avviso');
+  ok(b && !b.avvisi.some(x => x.codice === 'vicino_bordo'),
+     'Sito esterno a ' + (b ? b.tabella[0].r_km.toFixed(2) : '?') + ' km dalla zona 912 (fascia 3 km): nessun avviso');
+  const pe = ZS9.valuta(42.4618, 14.2161, D);
+  ok(!pe.avvisi.some(x => x.codice === 'vicino_bordo'), 'Pescara a 2,07 km dalla zona 918 (fascia 0, soglia 0,5 km): nessun avviso');
+  ok(a && a.mw === ZS9.valuta(a.ingresso.lat, a.ingresso.lon, D).mw && a.esito === 'fuori_zona',
+     'L\'avviso non cambia esito né Mw');
 }
 // latitudine e longitudine invertite
 {

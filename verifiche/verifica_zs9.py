@@ -2,7 +2,7 @@
 """
 verifica_zs9.py — SismaSite (GeoHub)
 
-Verifica indipendente del modulo moduli/zs9.js (v1.0.0): stessa procedura
+Verifica indipendente del modulo moduli/zs9.js (v1.1.0): stessa procedura
 (Linee guida LQ v1.0, pag. 30–31) riscritta in Python con librerie diverse,
 e confronto dei risultati su località di controllo e punti casuali.
 
@@ -46,6 +46,10 @@ TAB = {5.45: [922, 936], 5.91: [928],
        6.37: [910, 918, 919], 6.60: [905, 906, 915, 930], 6.83: [924, 925, 931],
        7.06: [923, 927], 7.29: [929, 935]}
 MW = {z: m for m, zz in TAB.items() for z in zz}
+# App. 2 a ZS9 (INGV 2004), Fig. 19: «bordi morbidi» in km, letti sui colori della figura
+FIG19 = {0: [913, 915, 918, 919, 923, 927, 929], 1: [921, 922, 936], 3: [904, 912, 917, 926, 928, 930],
+         5: [901, 902, 903, 908, 909, 914, 916, 920, 924, 925, 931, 932, 933, 934], 8: [910, 911], 10: [905, 906, 907, 935]}
+BORDO = {z: k for k, zz in FIG19.items() for z in zz}
 
 LOC = [("L'Aquila", 42.3498, 13.3995), ('Sulmona', 42.0480, 13.9262), ('Avezzano', 42.0310, 13.4260),
        ('Norcia', 42.7925, 13.0930), ('Teramo', 42.6589, 13.7044), ('Chieti', 42.3510, 14.1675),
@@ -106,7 +110,7 @@ def valuta_js(punti):
     script = ("const Z=require(process.argv[1]),D=require(process.argv[2]);"
               "const P=JSON.parse(require('fs').readFileSync(0,'utf8'));"
               "process.stdout.write(JSON.stringify(P.map(([a,b])=>{const r=Z.valuta(a,b,D);"
-              "return {esito:r.esito,dentro:r.dentro,zona:r.zona,mw:r.mw,tabella:r.tabella};})));")
+              "return {esito:r.esito,dentro:r.dentro,zona:r.zona,mw:r.mw,tabella:r.tabella,avvisi:r.avvisi.map(a=>a.codice)};})));")
     out = subprocess.run(['node', '-e', script, MODULO, DATI], input=json.dumps(punti),
                          capture_output=True, text=True, check=True).stdout
     return json.loads(out)
@@ -133,6 +137,7 @@ def main():
     D = json.loads(raw)
     check(sorted(z['id'] for z in D['zone']) == list(range(901, 937)), 'dati: 36 zone 901–936')
     check(sorted(MW) == list(range(901, 937)), 'Tab. A1.1 (trascrizione indipendente): 36 zone')
+    check(sorted(BORDO) == list(range(901, 937)), 'Fig. 19 di App. 2 (trascrizione indipendente): 36 zone')
 
     poligoni = {}
     for z in D['zone']:
@@ -189,10 +194,13 @@ def main():
         if e:
             discord.append(e)
         if p['tabella']:
+            atteso = any(t['r_km'] < max(BORDO[t['zona']], 0.5) for t in p['tabella'])
+            if atteso != ('vicino_bordo' in j['avvisi']):
+                discord.append(f'({la:.4f}, {lo:.4f}): avviso sul bordo atteso {atteso}')
             n_fuori += 1
             tj = {t['zona']: t['r_km'] for t in j['tabella']}
             dmax = max(dmax, max(abs(t['r_km'] - tj[t['zona']]) for t in p['tabella']))
-    check(not discord, f'150 punti casuali ({n_fuori} esterni, {n_fuori * 36} distanze): esito, zona e Mw identici; '
+    check(not discord, f'150 punti casuali ({n_fuori} esterni, {n_fuori * 36} distanze): esito, zona, Mw e avviso sul bordo identici; '
                        f'scarto massimo sulle distanze {dmax * 1000:.2f} m' + ('' if not discord else ' — ' + discord[0]))
 
     print(f'\n{"Tutti i controlli superati." if not errori else str(len(errori)) + " controlli falliti."}')

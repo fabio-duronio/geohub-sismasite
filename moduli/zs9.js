@@ -1,5 +1,5 @@
 /* ==========================================================================
-   zs9.js — modulo ZS9 v1.0.0 (GeoHub)
+   zs9.js — modulo ZS9 v1.1.0 (GeoHub)
    Magnitudo di riferimento Mw dalla zonazione sismogenetica ZS9, secondo la
    procedura dell'App. A1 delle Linee guida LQ v1.0.
 
@@ -42,7 +42,14 @@
    - Il file ZS9 non dichiara il datum (manca il .prj): le coordinate WGS84
      del sito si confrontano direttamente con quelle del file. Lo scarto
      atteso è dell'ordine di 100 m, trascurabile alla scala delle zone ma
-     rilevante per i siti a meno di 0,5 km da un bordo (avviso).
+     rilevante per i siti a meno di 0,5 km da un bordo.
+   - Incertezza dei confini: Meletti C., Valensise G. (a cura di) (2004).
+     Zonazione sismogenetica ZS9 – App. 2 al Rapporto Conclusivo, INGV,
+     pag. 31–32 e Fig. 19 («bordi morbidi»: fascia di 0, 1, 3, 5, 8 o 10 km
+     che esprime l'incertezza nella delimitazione di ciascuna zona). Valori
+     letti sui colori della Fig. 19 (nessuna tabella nel testo). Avviso se il
+     sito dista dal bordo di una zona meno di max(fascia della zona; 0,5 km).
+     L'avviso non cambia la Mw proposta.
    ========================================================================== */
 (function (radice, fabbrica) {
   'use strict';
@@ -51,7 +58,7 @@
 })(typeof self !== 'undefined' ? self : this, function () {
   'use strict';
 
-  const VERSIONE = '1.0.0';
+  const VERSIONE = '1.1.0';
   const FORMATO_DATI = 'geohub-zs9/1';
 
   /* Tab. A1.1 delle Linee guida LQ v1.0, pag. 31: Mw,max per zona ZS9 */
@@ -68,20 +75,36 @@
   const MW_MAX = {}, AREA = {};
   TAB_A1_1.forEach(r => r.zone.forEach(z => { MW_MAX[z] = r.mw; AREA[z] = r.area; }));
 
+  /* App. 2 a ZS9 (INGV 2004), Fig. 19: larghezza dei «bordi morbidi» (km),
+     letta sui colori della figura */
+  const BORDI_MORBIDI = [
+    { km: 0, zone: [913, 915, 918, 919, 923, 927, 929] },
+    { km: 1, zone: [921, 922, 936] },
+    { km: 3, zone: [904, 912, 917, 926, 928, 930] },
+    { km: 5, zone: [901, 902, 903, 908, 909, 914, 916, 920, 924, 925, 931, 932, 933, 934] },
+    { km: 8, zone: [910, 911] },
+    { km: 10, zone: [905, 906, 907, 935] }
+  ];
+  const BORDO_MORBIDO_KM = {};
+  BORDI_MORBIDI.forEach(r => r.zone.forEach(z => { BORDO_MORBIDO_KM[z] = r.km; }));
+
   /* Soglie del modulo (scelte dichiarate, non normative) */
-  const SOGLIA_BORDO_KM = 0.5;    // avviso: sito vicino a un bordo di zona
+  const SOGLIA_DATUM_KM = 0.5;    // minimo dell'avviso: scarto del datum non dichiarato
+  const sogliaBordo = z => Math.max(BORDO_MORBIDO_KM[z], SOGLIA_DATUM_KM);
   const TOLL_BORDO_KM = 0.001;    // 1 m: punto sul bordo = interno alla zona
   /* Dominio: riquadro che contiene il territorio italiano e tutte le zone */
   const DOMINIO = { latMin: 35.0, latMax: 48.0, lonMin: 6.0, lonMax: 19.5 };
 
   const FONTI = {
     zs9: 'Meletti C., Galadini F., Valensise G., Stucchi M., Basili R., Barba S., Vannucci G., Boschi E. (2004). Zonazione sismogenetica ZS9 [Data set]. Istituto Nazionale di Geofisica e Vulcanologia (INGV). https://doi.org/10.13127/sh/zs9 – CC BY 4.0.',
+    app2: 'Meletti C., Valensise G. (a cura di) (2004). Zonazione sismogenetica ZS9 – App. 2 al Rapporto Conclusivo. Gruppo di Lavoro per la redazione della mappa di pericolosità sismica (OPCM 3274/2003), INGV. Pag. 31–32 e Fig. 19 (bordi morbidi).',
     linee_guida: 'Commissione tecnica per la microzonazione sismica (2018). Microzonazione sismica. Linee guida per la gestione del territorio in aree interessate da liquefazioni (LQ), versione 1.0. Dipartimento della Protezione Civile, Roma – CC BY 4.0. Tab. A1.1 (pag. 31); procedura ZS9 (pag. 30); criticità (pag. 31–32).'
   };
   const TESTI = {
     dato: 'Poligoni ZS9 dal file ufficiale INGV ZS9.ZIP del 06/05/2004 (shapefile senza file .prj: datum non dichiarato). Le coordinate WGS84 del sito sono confrontate direttamente con quelle del file: lo scarto atteso è dell\'ordine di 100 m, trascurabile alla scala delle zone.',
     dentro: 'Sito interno a una zona ZS9: Mw = Mw,max della zona (Linee guida LQ, pag. 30; Tab. A1.1, pag. 31).',
     fuori: 'Sito esterno alle zone ZS9: per ciascuna delle 36 zone distanza minima R_i del sito dal bordo, calcolata sull\'ellissoide WGS84 (Vincenty), e Ms_i = 1 + 3·log10(R_i) con R_i in km. Una zona conta se Ms_i < M_i (M_i = Mw,max della zona, Tab. A1.1); Mw proposta = massima M_i fra le zone che contano; se nessuna conta, si ricorre alla disaggregazione. Criterio: interpretazione della regola delle Linee guida LQ, pag. 30, che non definisce le «zone circostanti».',
+    bordi: 'Incertezza dei confini: l\'App. 2 a ZS9 (INGV 2004, pag. 31–32, Fig. 19) assegna a ogni zona una fascia di incertezza del confine («bordo morbido») di 0, 1, 3, 5, 8 o 10 km; valori letti sulla figura. Si avvisa quando il sito dista dal bordo di una zona meno della fascia della zona, e comunque meno di 0,5 km (scarto del datum). L\'avviso non cambia la Mw proposta.',
     criticita: 'Criticità dichiarate dalle Linee guida LQ (pag. 31–32): le zone ZS9 sono molto estese e in alcuni settori la Mw può essere sovrastimata; per i siti esterni alle zone (es. aree costiere) la disaggregazione può comportare una sottostima.'
   };
 
@@ -187,6 +210,20 @@
     return p;
   }
 
+  /* Avviso per i bordi entro la fascia di incertezza (App. 2, Fig. 19) */
+  const km = x => x.toFixed(2).replace('.', ',');
+  function avvisoBordi(distanze, avviso, dentro) {   // dentro: zona che contiene il sito, oppure false
+    const vicini = distanze.filter(d => d.r_km < sogliaBordo(d.zona)).sort((a, b) => a.r_km - b.r_km);
+    if (!vicini.length) return;
+    const elenco = vicini.map(d => 'zona ' + d.zona + ' a ' + km(d.r_km) + ' km (fascia ' +
+      String(BORDO_MORBIDO_KM[d.zona]).replace('.', ',') + ' km' +
+      (BORDO_MORBIDO_KM[d.zona] < SOGLIA_DATUM_KM ? ', minimo 0,5 km per il datum' : '') + ')').join('; ');
+    avviso('vicino_bordo', 'Sito entro la fascia di incertezza del confine di ' +
+      (vicini.length > 1 ? 'più zone' : 'una zona') + ' ZS9: ' + elenco + '. ' +
+      (dentro ? 'L\'attribuzione del sito alla zona ' + dentro : 'La posizione del sito all\'esterno delle zone') +
+      ' è quindi incerta (App. 2 a ZS9, INGV 2004, pag. 31–32 e Fig. 19) e va valutata dal geologo; la Mw proposta non cambia.');
+  }
+
   /* ---------------- Funzione principale ---------------- */
   function valuta(lat, lon, dati) {
     const r = {
@@ -241,9 +278,8 @@
       if (r.zone_contenenti.length > 1)
         avviso('bordo_comune', 'Il sito è sul bordo comune delle zone ' + r.zone_contenenti.join(' e ') +
           ': si adotta la Mw,max più alta (zona ' + r.zona + ').');
-      else if (r.distanza_bordo_km < SOGLIA_BORDO_KM)
-        avviso('vicino_bordo', 'Il sito dista meno di 0,5 km dal bordo della zona ' + r.zona +
-          ': l\'attribuzione risente del datum non dichiarato del file ZS9 (scarto atteso circa 100 m) e va verificata.');
+      else avvisoBordi([{ zona: r.zona, r_km: r.distanza_bordo_km }].concat(
+        vicine.map(v => ({ zona: v.z.id, r_km: v.d }))), avviso, r.zona);
       return r;
     }
 
@@ -253,9 +289,7 @@
       return { zona: v.z.id, r_km: v.d, ms, m, conta: ms < m };
     }).sort((a, b) => a.r_km - b.r_km || a.zona - b.zona);
     r.distanza_bordo_km = r.tabella[0].r_km;
-    if (r.distanza_bordo_km < SOGLIA_BORDO_KM)
-      avviso('vicino_bordo', 'Il sito dista meno di 0,5 km dal bordo della zona ' + r.tabella[0].zona +
-        ': l\'attribuzione al di fuori delle zone risente del datum non dichiarato del file ZS9 (scarto atteso circa 100 m) e va verificata.');
+    avvisoBordi(r.tabella, avviso, false);
     const contano = r.tabella.filter(t => t.conta);
     if (!contano.length) {
       r.esito = 'disaggregazione_richiesta';
@@ -271,7 +305,7 @@
   }
 
   return {
-    VERSIONE, FORMATO_DATI, TAB_A1_1, MW_MAX, FONTI, TESTI, SOGLIA_BORDO_KM, DOMINIO,
+    VERSIONE, FORMATO_DATI, TAB_A1_1, MW_MAX, BORDI_MORBIDI, BORDO_MORBIDO_KM, SOGLIA_DATUM_KM, FONTI, TESTI, DOMINIO,
     valuta,
     /* esposte per le verifiche */
     distanzaGeodetica, distanzaBordoKm, dentroZona
