@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.11.0 — 2026-11-20
+
+Periodo di riferimento: minimo di 35 anni per il calcolo dell'azione sismica. Cambiano i risultati solo per V_N·C_U < 35 anni (ad esempio V_N = 10 anni, oppure V_N = 50 anni in classe d'uso I); per tutti gli altri casi nessun valore cambia.
+
+- `V_R = V_N·C_U` (NTC 2018 §2.4.3) è conservato e mostrato; per il calcolo dei periodi di ritorno si usa `V_R,eff = max(V_R; 35 anni)`, come indicato dalla Circolare 7/2019, Tab. C2.4.I (V_R = 35 anni per V_N ≤ 10 anni, per tutte le classi d'uso). Gli input dell'utente non sono modificati.
+- Avviso nei risultati quando la correzione interviene, con V_R originario, V_R,eff e riferimento; riga «V_R,eff usato nel calcolo» nella stampa e nei dati esportati; aggiornati la nota sotto la classe d'uso, il metodo di calcolo e `docs/metodo.md`.
+- La nota precedente («le NTC 2018 non prevedono più il valore minimo») è sostituita: il criterio è stato deciso il 20/11/2026 dopo il confronto con Spettri-NTC ver. 1.0.3 (CSLP), che applica lo stesso minimo.
+- Verifica indipendente allineata (`verifiche/verifica_indipendente.py`).
+
 ## 1.10.1 — 2026-11-15
 
 Magnitudo di riferimento: allineamento alla specifica «Gestione della magnitudo di riferimento Mw» del 15/11/2026. Nessun valore di M_w cambia per i siti interni né per quelli esterni; nessun risultato del calcolo NTC 2018 cambia.

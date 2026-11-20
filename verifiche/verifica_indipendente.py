@@ -119,7 +119,7 @@ ST = {"T1": 1.0, "T2": 1.2, "T3": 1.2, "T4": 1.4}
 
 def ntc(ret, lat_wgs, lon_wgs, cat, topo, VN, CU):
     la, lo = wgs84_to_ed50(lat_wgs, lon_wgs)
-    VR = VN * CU
+    VR = max(VN * CU, 35.0)  # V_R,eff: Circolare 7/2019, Tab. C2.4.I
     res = {}
     for sl, p in PVR.items():
         TR = -VR / math.log(1 - p)

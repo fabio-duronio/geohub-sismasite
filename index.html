@@ -438,7 +438,7 @@
               </select>
             </div>
           </div>
-          <div class="hint" style="margin:-4px 0 12px;">V<sub>R</sub> = V<sub>N</sub>·C<sub>U</sub> (NTC 2018 §2.4.3), senza valore minimo: il limite V<sub>R</sub> ≥ 35 anni delle NTC 2008 non è più previsto.</div>
+          <div class="hint" style="margin:-4px 0 12px;">V<sub>R</sub> = V<sub>N</sub>·C<sub>U</sub> (NTC 2018 §2.4.3). Per il calcolo si usa V<sub>R,eff</sub> = max(V<sub>R</sub>; 35 anni) (Circolare 7/2019, Tab. C2.4.I); la correzione è segnalata nei risultati.</div>
           <div class="field">
             <label for="soilCat">Categoria di sottosuolo</label>
             <select id="soilCat">
@@ -769,7 +769,7 @@
 
     <h3>Metodo di calcolo</h3>
     <ol>
-      <li><b>Periodo di ritorno.</b> T<sub>R</sub> = −V<sub>R</sub> / ln(1 − P<sub>VR</sub>), con V<sub>R</sub> = V<sub>N</sub>·C<sub>U</sub> (NTC 2018, §2.4.3) e P<sub>VR</sub> pari a 81 %, 63 %, 10 % e 5 % per SLO, SLD, SLV e SLC (NTC 2018, Tab. 3.2.I). T<sub>R</sub> è limitato all'intervallo tabulato 30–2475 anni (Allegato A al D.M. 14/01/2008).</li>
+      <li><b>Periodo di ritorno.</b> T<sub>R</sub> = −V<sub>R,eff</sub> / ln(1 − P<sub>VR</sub>), con V<sub>R</sub> = V<sub>N</sub>·C<sub>U</sub> (NTC 2018, §2.4.3) e P<sub>VR</sub> pari a 81 %, 63 %, 10 % e 5 % per SLO, SLD, SLV e SLC (NTC 2018, Tab. 3.2.I). Nel calcolo si usa V<sub>R,eff</sub> = max(V<sub>R</sub>; 35 anni), secondo la Circolare 7/2019, Tab. C2.4.I (V<sub>R</sub> = 35 anni per V<sub>N</sub> ≤ 10 anni); quando la correzione interviene è segnalata e V<sub>R</sub> originario resta indicato. T<sub>R</sub> è limitato all'intervallo tabulato 30–2475 anni (Allegato A al D.M. 14/01/2008).</li>
       <li><b>Coordinate.</b> Le coordinate del sito (WGS84) sono convertite nel datum ED50 del reticolo di riferimento con la trasformazione di Molodensky ridotta (parametri EPSG:1133), con accuratezza dell'ordine di alcuni metri.</li>
       <li><b>Parametri di pericolosità.</b> a<sub>g</sub>, F<sub>0</sub> e T*<sub>C</sub> sono ricavati dal reticolo dell'Allegato B al D.M. 14/01/2008 secondo l'Allegato A: interpolazione logaritmica in T<sub>R</sub> per i 4 vertici della maglia che contiene il sito, quindi media pesata con l'inverso delle distanze. Per le isole escluse dal reticolo si adottano i valori costanti della Tabella 2 dell'Allegato B.</li>
       <li><b>Amplificazione.</b> S<sub>S</sub> e C<sub>C</sub> da NTC 2018, Tab. 3.2.IV; S<sub>T</sub> da Tab. 3.2.V, assunto pari al valore massimo, in sommità del pendio o in cresta del rilievo (configurazioni prevalentemente bidimensionali di altezza maggiore di 30 m, §3.2.2; decremento lineare fino a 1,0 alla base, §3.2.3.2.1); T<sub>C</sub> = C<sub>C</sub>·T*<sub>C</sub>, T<sub>B</sub> = T<sub>C</sub>/3, T<sub>D</sub> = 4·a<sub>g</sub>/g + 1,6 s; η = √(10/(5 + ξ)) ≥ 0,55.</li>
@@ -1202,7 +1202,7 @@ function islandAt(lat, lon){
   return null;
 }
 
-const APP_VERSION = '1.10.1';
+const APP_VERSION = '1.11.0';
 const APP_VERSION_DATE = '2026-11-15';
 
 let GRID = null;      // rappresentazione interna unificata: {meta, count, id[], lon[], lat[], ag[t][i], F0[t][i], Tc[t][i]}
@@ -1560,6 +1560,7 @@ const LIMIT_STATES = [
   {code:'SLC', label:'SLC — Collasso', pvr:0.05},
 ];
 
+const VR_MINIMO = 35; // anni — Circolare 7/2019, Tab. C2.4.I
 function trFromPvr(VR, PVR){
   return -VR / Math.log(1-PVR);
 }
@@ -1812,7 +1813,12 @@ function runCalculation(){
     return;
   }
 
+  // V_R come da NTC 2018 §2.4.3 (conservato e mostrato) e V_R,eff usato nel
+  // calcolo: minimo 35 anni della Circolare 7/2019, Tab. C2.4.I (V_N ≤ 10 anni
+  // → V_R = 35 anni per tutte le classi d'uso). Gli input non sono modificati.
   const VR = VN*CU;
+  const VReff = Math.max(VR, VR_MINIMO);
+  const vrCorretto = VReff > VR;
   const St = computeSt(topoCat);
   // Pericolosità calcolata sulle coordinate convertite nel datum del reticolo (ED50)
   const ed = wgs84ToEd50(lat, lon);
@@ -1820,7 +1826,7 @@ function runCalculation(){
 
   const byLS = {};
   LIMIT_STATES.forEach(ls=>{
-    const TR = trFromPvr(VR, ls.pvr);
+    const TR = trFromPvr(VReff, ls.pvr);
     const hz = hazardAtTR(ed.lat, ed.lon, TR, lat, lon);
     const agg = hz.ag; // in g
     const Ss = computeSs(soilCat, hz.F0, agg);
@@ -1860,7 +1866,7 @@ function runCalculation(){
                      distanzaNodo:hz.distanzaNodo, trClampato:hz.trClampato, TRrichiesto:TR, TRadottato:hz.TRadottato};
   });
 
-  lastResults = {lat, lon, latEd:ed.lat, lonEd:ed.lon, VR, VN, CU, soilCat, topoCat, damping, eta, byLS, data:new Date()};
+  lastResults = {lat, lon, latEd:ed.lat, lonEd:ed.lon, VR, VReff, vrCorretto, VN, CU, soilCat, topoCat, damping, eta, byLS, data:new Date()};
   document.getElementById('edChip').textContent = fmt(ed.lat,5) + ' · ' + fmt(ed.lon,5);
   document.getElementById('comuneChip').textContent = '…';
   renderWarnings();
@@ -1930,8 +1936,9 @@ function renderWarnings(){
   if(betaOut.length){
     msgs.push(`<b>a<sub>g</sub> fuori dal campo della Tab. 7.11.I.</b> Per ${betaOut.map(([k,x])=>k+' (a<sub>g</sub> = '+x.ag.toFixed(3).replace('.', ',')+' g)').join(', ')} a<sub>g</sub> supera 0,4 g, limite superiore della tabella (NTC 2018, §7.11.3.5.2): β<sub>s</sub> non è definito dalla norma e <b>k<sub>h</sub>, k<sub>v</sub> non sono calcolati</b>. Il coefficiente va giustificato dal progettista.`);
   }
-  if(lastResults.VR < 35){
-    msgs.push(`<b>V<sub>R</sub> = ${lastResults.VR.toFixed(1).replace('.', ',')} anni.</b> Le NTC 2018 (§2.4.3) non prevedono più il valore minimo V<sub>R</sub> = 35 anni delle NTC 2008: il periodo di riferimento è usato così come risulta da V<sub>N</sub>·C<sub>U</sub>. Se il committente o un capitolato richiedono il criterio delle NTC 2008, impostare V<sub>N</sub> in modo che V<sub>R</sub> = 35 anni.`);
+  if(lastResults.vrCorretto){
+    const f1 = x => (x % 1 ? x.toFixed(1) : x.toFixed(0)).replace('.', ',');
+    msgs.push(`<b>V<sub>R</sub> corretto a 35 anni.</b> Con i dati inseriti V<sub>R</sub> = V<sub>N</sub>·C<sub>U</sub> = ${f1(lastResults.VN)} × ${lastResults.CU.toFixed(1).replace('.', ',')} = ${f1(lastResults.VR)} anni, inferiore a 35 anni. Per il calcolo dell'azione sismica è usato V<sub>R,eff</sub> = max(V<sub>R</sub>; 35) = 35 anni, come indicato dalla Circolare 7/2019, Tab. C2.4.I (V<sub>R</sub> = 35 anni per V<sub>N</sub> ≤ 10 anni, per tutte le classi d'uso). Le NTC 2018 (§2.4.3) definiscono V<sub>R</sub> = V<sub>N</sub>·C<sub>U</sub> senza indicare un minimo. V<sub>N</sub> e la classe d'uso inseriti non sono modificati.`);
   }
   const trOut = Object.values(lastResults.byLS).filter(x=>x.trClampato);
   if(trOut.length){
@@ -2061,7 +2068,7 @@ function esportaParametriCsv(){
     ['Comune e classificazione sismica', testo('comuneChip')],
     ['Latitudine WGS84 (°)', fmt(R.lat,6)], ['Longitudine WGS84 (°)', fmt(R.lon,6)],
     ['Latitudine ED50 (°)', fmt(R.latEd,6)], ['Longitudine ED50 (°)', fmt(R.lonEd,6)],
-    ['Vita nominale V_N (anni)', fmt(R.VN,0)], ['Classe d\'uso', sel('cu')], ['V_R (anni)', fmt(R.VR,1)],
+    ['Vita nominale V_N (anni)', fmt(R.VN,0)], ['Classe d\'uso', sel('cu')], ['V_R = V_N·C_U (anni)', fmt(R.VR,1)], ['V_R,eff usato nel calcolo (anni)', fmt(R.VReff,1) + (R.vrCorretto ? ' (minimo 35 anni, Circolare 7/2019 Tab. C2.4.I)' : '')],
     ['Categoria di sottosuolo', sel('soilCat')], ['Categoria topografica', sel('topoCat')],
     ['Smorzamento ξ (%)', fmt(R.damping,1)], ['Fattore q (SLV)', isFinite(qIn) ? fmt(qIn,2) : ''],
     ['Fonte dei parametri', testo('rhSource')], ['Nodi del reticolo', testo('rhNodes')],
@@ -3004,6 +3011,7 @@ function compilaStampa(){
     rigaDato('Coordinate ED50 (datum del reticolo)', fmt(R.latEd,5) + ' N, ' + fmt(R.lonEd,5) + ' E') +
     rigaDato('Vita nominale V<sub>N</sub> · classe d\'uso', fmt(R.VN,0) + ' anni · ' + escapeHtml(sel('cu'))) +
     rigaDato('Periodo di riferimento V<sub>R</sub> = V<sub>N</sub>·C<sub>U</sub>', fmt(R.VR, R.VR % 1 ? 1 : 0) + ' anni') +
+    (R.vrCorretto ? rigaDato('V<sub>R,eff</sub> usato nel calcolo', fmt(R.VReff,0) + ' anni (minimo della Circolare 7/2019, Tab. C2.4.I)') : '') +
     rigaDato('Categoria di sottosuolo', escapeHtml(sel('soilCat'))) +
     rigaDato('Categoria topografica', escapeHtml(sel('topoCat'))) +
     rigaDato('Smorzamento ξ · fattore q (SLV)', fmt(R.damping,1) + ' % · ' + (isFinite(qIn) ? fmt(qIn,1) : '–')) +

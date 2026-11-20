@@ -209,15 +209,25 @@ def main():
                 print("  [OK ] SLV con q = 1,0: q verticale = 1,0")
             page.fill("#qFactor", "1.5")
 
-            # V_R: nessun minimo di 35 anni (NTC 2018). V_N = 10, C_U = 0,7 -> V_R = 7, T_R(SLV) = 66,4 anni
+            # V_R,eff = max(V_N·C_U; 35) (Circolare 7/2019, Tab. C2.4.I). V_N = 10, C_U = 0,7:
+            # V_R = 7 anni conservato, V_R,eff = 35 anni, T_R(SLV) = 332,2 anni, avviso di correzione
             page.fill("#vn", "10"); page.select_option("#cu", "0.7")
             page.click("#btnCalc"); page.wait_for_timeout(300)
             tr_slv = page.evaluate("() => lastResults.byLS.SLV.TR")
+            vr, vreff, corr = page.evaluate("() => [lastResults.VR, lastResults.VReff, lastResults.vrCorretto]")
             avviso = page.evaluate("() => document.getElementById('warnBox').innerText")
-            if abs(tr_slv - 66.4) > 0.2 or "35 anni" not in avviso:
-                fallimenti.append(f"V_R = 7 anni: T_R(SLV) = {tr_slv:.1f} (atteso 66,4, nessun minimo) o avviso mancante")
+            if abs(tr_slv - 332.2) > 0.2 or abs(vr - 7) > 1e-9 or vreff != 35 or not corr or "corretto a 35 anni" not in avviso:
+                fallimenti.append(f"V_R = 7 anni: T_R(SLV) = {tr_slv:.1f} (atteso 332,2), V_R = {vr}, V_R,eff = {vreff}, avviso {'presente' if 'corretto a 35 anni' in avviso else 'mancante'}")
             else:
-                print("  [OK ] V_R senza minimo di 35 anni (NTC 2018), con nota esplicativa")
+                print("  [OK ] V_R = 7 anni conservato, V_R,eff = 35 anni nel calcolo (Circolare Tab. C2.4.I), avviso presente")
+            page.fill("#vn", "50"); page.select_option("#cu", "1.0")
+            page.click("#btnCalc"); page.wait_for_timeout(300)
+            if page.evaluate("() => lastResults.vrCorretto") or "corretto a 35 anni" in page.evaluate("() => document.getElementById('warnBox').innerText"):
+                fallimenti.append("V_R = 50 anni: correzione o avviso V_R non attesi")
+            else:
+                print("  [OK ] V_R = 50 anni: nessuna correzione, nessun avviso")
+            page.fill("#vn", "10"); page.select_option("#cu", "0.7")
+            page.click("#btnCalc"); page.wait_for_timeout(300)
             tr_slo_tab = page.evaluate("() => document.querySelector('#hazardTableBody tr td:nth-child(3)').textContent").strip()
             if not tr_slo_tab.startswith("30"):
                 fallimenti.append(f"V_R = 7 anni: T_R(SLO) in tabella = {tr_slo_tab!r}, atteso il valore adottato 30")
