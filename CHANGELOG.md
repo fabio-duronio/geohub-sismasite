@@ -11,17 +11,17 @@ Periodo di riferimento: minimo di 35 anni per il calcolo dell'azione sismica. Ca
 
 ## 1.10.1 — 2026-11-15
 
-Magnitudo di riferimento: allineamento alla specifica «Gestione della magnitudo di riferimento Mw» del 15/11/2026. Nessun valore di M_w cambia per i siti interni né per quelli esterni; nessun risultato del calcolo NTC 2018 cambia.
+Magnitudo di riferimento: revisione dei testi e degli esiti del calcolo della magnitudo di riferimento. Nessun valore di M_w cambia per i siti interni né per quelli esterni; nessun risultato del calcolo NTC 2018 cambia.
 
 - Modulo `moduli/zs9.js` v1.2.0:
-  - testi che distinguono le prescrizioni delle Linee guida LQ (pag. 30–31, Tab. A1.1) dai criteri applicativi di GeoHub (Mw dalle sole zone ammissibili, decisione del 12/11; M_w,max più alta sul confine comune; soglia minima di 0,5 km);
+  - testi che distinguono le prescrizioni delle Linee guida LQ (pag. 30–31, Tab. A1.1) dai criteri applicativi di GeoHub (Mw dalle sole zone ammissibili; M_w,max più alta sul confine comune; soglia minima di 0,5 km);
   - la soglia minima di 0,5 km dell'avviso di prossimità è dichiarata come soglia convenzionale e cautelativa, non come misura dell'incertezza del datum;
   - il datum non dichiarato del file ZS9 è segnalato in ogni esito come incertezza dei dati geografici (campo `incertezze_dati`), senza assumere che sia WGS84;
   - sito sul confine comune di due o più zone: esito `confine_comune`, zone che danno la M_w elencate, avviso di prossimità sempre calcolato (prima era omesso in questo caso);
   - tabella dei siti esterni con i campi `ammissibile` e `selezionata`; dettaglio dell'avviso di prossimità (`prossimita_bordo`: zona, distanza, fascia INGV, soglia applicata);
   - nessuna zona ammissibile: messaggio esplicito «non è stato possibile determinare una Mw zonale con la procedura implementata».
 - Pannello e stampa: titolo «Magnitudo di riferimento M_w – parametro informativo per le valutazioni di liquefazione» (cita MSF e NTC 2018 §3.2); colonne «Esito» (Ammissibile / Non ammissibile) e «Zona selezionata»; tabella dell'avviso di prossimità; fonti con il volume CNR 2024 (§3.1.1.2, Tab. 3.1, per confronto) e NTC 2018 §3.2.
-- Verifiche: `verifiche/verifica_zs9.mjs` con i casi A–G della specifica (57 test); verifica indipendente aggiornata.
+- Verifiche: `verifiche/verifica_zs9.mjs` (57 test); verifica indipendente aggiornata.
 
 ## 1.10.0 — 2026-11-15
 
@@ -108,7 +108,7 @@ Correzione dello spettro verticale, allineamento normativo, stampa A4 per la rel
 **Documentazione**
 - README: P_VR degli stati limite riferita alla Tab. 3.2.I delle NTC 2018 (prima indicata per errore come Tab. 2.5.I).
 
-- Immagine di anteprima del link (`assets/og-image.png`) aggiornata con il nuovo indirizzo in minuscolo `fabio-duronio.github.io/geohub-sismasite` (il vecchio indirizzo non viene reindirizzato). Già attiva sul sito pubblicato; entrerà nella prossima release.
+- Immagine di anteprima del link (`assets/og-image.png`) aggiornata con il nuovo indirizzo in minuscolo `fabio-duronio.github.io/geohub-sismasite` (il vecchio indirizzo non viene reindirizzato).
 
 ## 1.7.0 — 2026-11-06
 
@@ -129,9 +129,6 @@ Nuova impaginazione e carta di pericolosità INGV. I parametri calcolati non cam
 - Legenda della carta in un riquadro proprio in basso a destra, richiudibile (sul telefono parte chiusa e si alterna al pannello dei livelli). La legenda occupa solo lo spazio libero sotto il pannello dei livelli e scorre al suo interno: i due riquadri non si sovrappongono. Il pannello dei livelli si può ridurre su ogni schermo.
 - Blocco della mappa: rotella disattivata sul computer e trascinamento disattivato sul telefono finché non si tocca il lucchetto, per non spostare la mappa scorrendo la pagina. Scala grafica.
 
-**App future**
-- I testi dell'app non citano più i nomi provvisori delle future app GeoHub, ancora in progetto: k_h, k_v e lo screening di liquefazione sono indicati come destinati a future app dedicate.
-
 **Pericolosità di base per i 9 periodi di ritorno**
 - Tabella di `a_g`, `F_0`, `T*_C` del sito per i 9 `T_R` del reticolo e spettri elastici su suolo A, T1, come la Fase 1 del foglio Spettri-NTC del CSLP.
 
@@ -139,17 +136,15 @@ Nuova impaginazione e carta di pericolosità INGV. I parametri calcolati non cam
 
 **Disaggregazione rimossa da SismaSite**
 - Il pannello con i campi manuali M, R, ε è stato eliminato: la disaggregazione non entra nella definizione della pericolosità sismica di base (parametri `a_g`, `F_0`, `T*_C`, spettri NTC) e i valori inseriti non venivano usati in alcun calcolo. Per la relazione il riferimento è il report ufficiale del nodo dall'applicazione INGV esse1-gis (modello MPS04-S1; Spallarossa e Barani 2007, Progetto DPC-INGV S1, Deliverable D14), da allegare così com'è.
-- La disaggregazione sarà gestita nell'app che usa la magnitudo (es. GeoHub-LiquiSite, fattore di scala della magnitudo).
-- Verificati e non adottati per SismaSite i servizi INGV/ESM REXEL (valori modali, distanza Joyner-Boore, 4 `T_R`) e BMSE (scenario per la selezione di accelerogrammi): da rivalutare nelle app successive.
+- La disaggregazione sarà gestita in una futura app dedicata che usa la magnitudo (fattore di scala della magnitudo).
 - Rimosso dal foglio di stile di stampa il codice della matrice di disaggregazione eliminata nella 1.5.0.
 
-**Altre modifiche (già su main)**
+**Altre modifiche**
 
 - README: corretti un errore di sintassi nel riquadro «Cos'è e cosa non è» e uno spazio iniziale; la struttura del progetto elenca tutti i file (anche `assets/`, `NOTICE`, modelli delle segnalazioni), raggruppati per funzione.
 - Codice: rimossi un import inutilizzato in `convert_grid.py` e una funzione mai usata in `convert_classificazione.py`.
 - Titolo della pagina, titolo per la condivisione (`og:title`) e sottotitolo nell'intestazione: «Parametri sismici del sito» al posto di «Analisi sismica del sito», che poteva far pensare a un'analisi di risposta sismica locale.
-- README: il riquadro «Cos'è e cosa non è» elenca anche gli spettri di progetto, che l'app calcola; tolta la frase che diceva il contrario.
-- Nomi provvisori delle app future: **GeoHub-LiquiSite** (screening di liquefazione) e **GeoHub-SoilSite** (coefficienti k_h, k_v per i pendii), al posto di GeoHub-Liquefazione e GeoHub-Versanti.
+- README: il riquadro «Cos'è e cosa non è» elenca anche gli spettri di progetto, che l'app calcola.
 - **Nuovi indirizzi in minuscolo**: repository `github.com/fabio-duronio/geohub-sismasite`, app `fabio-duronio.github.io/geohub-sismasite/`. I vecchi link al repository vengono reindirizzati da GitHub; il vecchio indirizzo di GitHub Pages (`/GeoHub-SismaSite/`) non viene reindirizzato. Aggiornati README, NOTICE e i metadati di condivisione (`og:url`, `og:image`) di `index.html`.
 
 ## 1.5.1 — 2026-11-04
@@ -188,7 +183,7 @@ Nuova sezione **Inquadramento sismico del sito** e due correzioni. I parametri d
 - Nuovi file dati e script: `classificazione-data.json`, `comuni-data.json`, `storica-data.json`; `convert_classificazione.py`, `convert_comuni.py`, `convert_storica.py`, `verifica_dati.py`. I file dati si caricano solo quando servono.
 
 **Note**
-- Lo screening di liquefazione e i coefficienti k_h, k_v restano, con l'indicazione che passeranno alle app GeoHub-Liquefazione e GeoHub-Versanti.
+- Lo screening di liquefazione e i coefficienti k_h, k_v restano, con l'indicazione che passeranno a future app dedicate.
 - NOTICE e README aggiornati con fonti, licenze e citazioni dei dati.
 
 ## 1.4.1 — 2026-10-31
@@ -223,7 +218,7 @@ Revisione di conformità all'Allegato A e alle NTC 2018 dopo la validazione indi
 
 ### Chiarimenti (nessuna modifica al calcolo)
 
-- **Periodo di riferimento `V_R` (§2.4.3)** — confermato `V_R = V_N·C_U` **senza valore minimo**: il limite `V_R ≥ 35` anni delle NTC 2008 è stato eliminato dalle NTC 2018. Aggiunti una nota sotto i campi `V_N`/`C_U` e un avviso quando `V_R < 35` anni.
+- **Periodo di riferimento `V_R` (§2.4.3)** — confermato `V_R = V_N·C_U` **senza valore minimo**: il limite `V_R ≥ 35` anni delle NTC 2008 è stato eliminato dalle NTC 2018. Aggiunti una nota sotto i campi `V_N`/`C_U` e un avviso quando `V_R < 35` anni. *(Superato dalla 1.11.0: minimo di 35 anni secondo la Circolare 7/2019.)*
 - **`β_s` oltre 0,4 g** — la Tab. 7.11.I non è definita oltre 0,4 g. I valori 0,36 / 0,32 adottati dalla v1.1.0 sono ora dichiarati come **scelta conservativa non normativa**, con avviso a schermo e nel report (la v1.1.0 li elencava erroneamente fra le correzioni normative).
 
 ### Tracciabilità e testi
@@ -287,10 +282,9 @@ Revisione tecnica di conformità alle NTC 2018 e correzione di anomalie emerse d
 
 ### Documentazione
 
-- README riscritto: comando di clone corretto (`GeoHub-Parametri-sismici`, prima puntava a un repository inesistente), metodo di calcolo con riferimenti puntuali alle norme, sezione **Limiti e perimetro d'uso**, nota **ED50/WGS84**, fonte dati con URL, tabella dei **valori di riferimento** per il collaudo.
+- README riscritto: comando di clone corretto, metodo di calcolo con riferimenti puntuali alle norme, sezione **Limiti e perimetro d'uso**, nota **ED50/WGS84**, fonte dati con URL, tabella dei **valori di riferimento** per il collaudo.
 - Aggiunto `verifica_numeri.py`: verifica automatica dei valori di riferimento, utile come test di non regressione.
 
 ### Note
 
 - Nessuna modifica al formato di `grid-data.json`, che resta compatibile con le versioni precedenti.
-- Il nome dell'applicazione (SismaSite) e quello del repository (GeoHub-Parametri-sismici) restano distinti: valutare se uniformarli.
