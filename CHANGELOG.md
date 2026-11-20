@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.11.1 — 2026-11-21
+
+Testi e documentazione. Nessun risultato di calcolo cambia.
+
+- Metodo di calcolo (a schermo e in stampa), esito del sito esterno alle zone ZS9 e `docs/metodo.md`: il criterio «M_w dalle sole zone con M_s,i < M_i» è indicato come criterio applicativo di GeoHub, senza riferimenti a documenti interni. Modulo `moduli/zs9.js` v1.2.1.
+- `docs/validazione.md` e `verifiche/verifica_zs9.mjs`: descrizione dei casi di prova A–G senza riferimenti a documenti interni.
+
 ## 1.11.0 — 2026-11-20
 
 Periodo di riferimento: minimo di 35 anni per il calcolo dell'azione sismica. Cambiano i risultati solo per V_N·C_U < 35 anni (ad esempio V_N = 10 anni, oppure V_N = 50 anni in classe d'uso I); per tutti gli altri casi nessun valore cambia.

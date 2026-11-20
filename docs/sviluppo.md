@@ -16,7 +16,7 @@ dati/               file dati letti dall'app
   storica-data.json           CPTI15 v4.0 + DBMI15 v4.0 (sismicità storica)
   zs9-data.json               zonazione sismogenetica ZS9 (INGV, 36 zone)
 moduli/             moduli di calcolo autonomi, senza interfaccia, riusabili in altre app GeoHub
-  zs9.js                      magnitudo di riferimento da ZS9 (Linee guida LQ v1.0), v1.2.0
+  zs9.js                      magnitudo di riferimento da ZS9 (Linee guida LQ v1.0), v1.2.1
 strumenti/          script che rigenerano i file in dati/ dalle fonti ufficiali
   convert_grid.py · convert_classificazione.py · convert_comuni.py · convert_storica.py · convert_zs9.py
 verifiche/          script di controllo (vedi docs/validazione.md)

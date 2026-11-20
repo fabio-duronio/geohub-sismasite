@@ -1,20 +1,19 @@
 /* verifica_zs9.mjs — SismaSite (GeoHub)
-   Test automatici del modulo moduli/zs9.js (v1.2.0) con dati/zs9-data.json.
+   Test automatici del modulo moduli/zs9.js (v1.2.1) con dati/zs9-data.json.
 
    Uso:   node verifiche/verifica_zs9.mjs
    Esce con codice 1 se un controllo fallisce.
 
    Contenuto
    1. Tab. A1.1 (Linee guida LQ v1.0, pag. 31): 36 zone, 8 valori, 923 e 927 = 7,06.
-   2. Località di controllo (casi decisi il 12/11/2026 e richiesti il 15/11/2026).
+   2. Località di controllo.
    3. Casi limite: sito su un vertice e su un lato di zona, bordo comune tra due
       zone, latitudine e longitudine invertite, punto fuori dall'Italia,
       coordinate non numeriche, dati non validi.
    4. Proprietà della procedura fuori zona: tabella di 36 righe ordinata,
       Ms_i = 1 + 3·log10(R_i), esito coerente con Ms_i < M_i.
    5. Distanza geodetica: valori di riferimento della formula di Vincenty.
-   6. Casi A–G della specifica «Gestione della magnitudo di riferimento Mw»
-      (15/11/2026, §10).
+   6. Casi A–G (sito interno, esterno, confine comune, nessuna zona ammissibile).
 */
 import { createRequire } from 'module';
 import { readFileSync } from 'fs';
@@ -220,7 +219,7 @@ ok(/36 zone/.test(errore), 'File dati con 35 zone: errore esplicito');
   ok(coerente, 'Fuori zona: 36 righe distinte, ordine per R, Ms = 1 + 3·log10 R, «ammissibile» se Ms < M, Mw = massima M fra le sole zone ammissibili, zone selezionate coerenti');
 }
 
-/* ---------------- 6. Casi della specifica (§10) ---------------- */
+/* ---------------- 6. Casi A–G ---------------- */
 // Caso A – sito interno: zona e Mw da Tab. A1.1, nessuna tabella
 {
   const r = ZS9.valuta(42.3498, 13.3995, D);

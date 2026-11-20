@@ -2,7 +2,7 @@
 """
 verifica_zs9.py — SismaSite (GeoHub)
 
-Verifica indipendente del modulo moduli/zs9.js (v1.2.0): stessa procedura
+Verifica indipendente del modulo moduli/zs9.js (v1.2.1): stessa procedura
 (Linee guida LQ v1.0, pag. 30–31) riscritta in Python con librerie diverse,
 e confronto dei risultati su località di controllo e punti casuali.
 

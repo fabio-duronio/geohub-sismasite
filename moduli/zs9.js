@@ -1,5 +1,5 @@
 /* ==========================================================================
-   zs9.js — modulo ZS9 v1.2.0 (GeoHub)
+   zs9.js — modulo ZS9 v1.2.1 (GeoHub)
    Magnitudo di riferimento Mw dalla zonazione sismogenetica ZS9, secondo la
    procedura dell'App. A1 delle Linee guida LQ v1.0.
 
@@ -37,7 +37,7 @@
      circostanti; altrimenti disaggregazione.
 
    Criteri applicativi (scelte di GeoHub, non prescritte dalle fonti)
-   - Decisione del 12/11/2026: zone circostanti = tutte le 36 zone; zona
+   - Zone circostanti = tutte le 36 zone; zona
      ammissibile se Ms_i < M_i (disuguaglianza stretta); Mw = massima M_i
      fra le sole zone ammissibili. Nessuna zona ammissibile → nessuna Mw
      (disaggregazione richiesta), mai la Mw della zona più vicina.
@@ -75,7 +75,7 @@
 })(typeof self !== 'undefined' ? self : this, function () {
   'use strict';
 
-  const VERSIONE = '1.2.0';
+  const VERSIONE = '1.2.1';
   const FORMATO_DATI = 'geohub-zs9/1';
 
   /* Tab. A1.1 delle Linee guida LQ v1.0, pag. 31: Mw,max per zona ZS9 */
@@ -126,7 +126,7 @@
     dato: 'Poligoni ZS9 dal file ufficiale INGV ZS9.ZIP del 06/05/2004. Il file non contiene il .prj: il sistema di riferimento (datum) non è dichiarato né verificabile. Le coordinate del file sono usate come sono, senza trasformazione e senza assumere che il datum originario sia WGS84; il confronto con le coordinate WGS84 del sito è quindi affetto da un\'incertezza di posizione non quantificabile con i dati disponibili.',
     dentro: 'Sito interno a una zona ZS9 (appartenenza geometrica al poligono): Mw = Mw,max della zona, Tab. A1.1 delle Linee guida LQ (pag. 30–31).',
     confine: 'Sito sul confine comune di più zone: Mw = massima Mw,max fra le zone il cui confine contiene il punto. Criterio applicativo prudenziale di GeoHub, non prescritto dalle Linee guida LQ.',
-    fuori: 'Sito esterno alle zone ZS9. Prescrizione delle Linee guida LQ (pag. 30–31): distanza minima R_i dalle zone, Ms_i = 1 + 3·log10(R_i) con R_i in km; se per almeno una zona Ms_i < M_i si assume la Mw più alta fra le zone circostanti, altrimenti disaggregazione. Criterio applicativo di GeoHub (decisione del 12/11/2026, interpretazione operativa, non trascrizione letterale delle Linee guida): R_i calcolata per tutte le 36 zone come distanza minima dal poligono sull\'ellissoide WGS84 (Vincenty); zona ammissibile se Ms_i < M_i (disuguaglianza stretta); Mw = massima M_i fra le sole zone ammissibili; se nessuna è ammissibile non si assegna alcuna Mw.',
+    fuori: 'Sito esterno alle zone ZS9. Prescrizione delle Linee guida LQ (pag. 30–31): distanza minima R_i dalle zone, Ms_i = 1 + 3·log10(R_i) con R_i in km; se per almeno una zona Ms_i < M_i si assume la Mw più alta fra le zone circostanti, altrimenti disaggregazione. Criterio applicativo di GeoHub (interpretazione operativa, non trascrizione letterale delle Linee guida): R_i calcolata per tutte le 36 zone come distanza minima dal poligono sull\'ellissoide WGS84 (Vincenty); zona ammissibile se Ms_i < M_i (disuguaglianza stretta); Mw = massima M_i fra le sole zone ammissibili; se nessuna è ammissibile non si assegna alcuna Mw.',
     bordi: 'Avviso di prossimità al bordo: compare se la distanza dal confine di una zona è minore di max(w_i; 0,5 km), con w_i = fascia di incertezza del confine («bordo morbido») assegnata dall\'INGV alla zona (App. 2 a ZS9, pag. 31–32, Fig. 19; valori letti sulla figura) e 0,5 km soglia minima convenzionale e cautelativa scelta da GeoHub (non prescritta dall\'INGV, non è una misura dell\'incertezza del datum). L\'avviso è solo informativo: non cambia la zona, la Mw né le zone ammissibili.',
     criticita: 'Criticità dichiarate dalle Linee guida LQ (pag. 31–32): le zone ZS9 sono molto estese e in alcuni settori la Mw può essere sovrastimata; per i siti esterni alle zone (es. aree costiere) la disaggregazione può comportare una sottostima.'
   };
